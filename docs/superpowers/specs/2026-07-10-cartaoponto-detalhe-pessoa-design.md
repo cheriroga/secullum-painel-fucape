@@ -12,9 +12,9 @@ Isso substitui o design anterior (`2026-07-10-painel-horas-fucape-design.md`) na
 
 `cartaoponto.xlsx` (exportado do Secullum Ponto Web), colocado em `extratos/` (mesma pasta e mesmo mecanismo de "pega o xlsx mais recente por data de modificação" já existente). O antigo `ExtratoBancoHoras.xlsx` e o parsing dele saem de uso — código do parser antigo é removido, não fica morto ao lado do novo.
 
-Estrutura real do arquivo: 1 sheet, blocos de tamanho fixo (216 linhas) — 1 bloco por colaborador, sem os marcadores textuais (`NOME:`, `PERÍODO`) que o extrato antigo usava. Cada bloco contém:
+Estrutura real do arquivo: 1 sheet, 1 bloco por colaborador (tamanho do bloco varia com o período coberto — ver detecção em "Modelo de dados"), sem os marcadores textuais (`NOME:`, `PERÍODO`) que o extrato antigo usava. Cada bloco contém:
 
-- Cabeçalho: nome, função, departamento, admissão, **Inscrição** (ex: `ISENTO` — flag literal de elegibilidade, novo campo que o extrato antigo não tinha).
+- Cabeçalho: nome, função, departamento, admissão. Existe também um campo **Inscrição** no arquivo, mas ele vem `ISENTO` para os 42 colaboradores do arquivo real sem exceção — não discrimina nada, não é usado pra classificação (ver seção de Cálculos).
 - Tabela de horário padrão semanal (Ent/Sai esperados por dia da semana) — não usada no painel, ignorada.
 - Linha `Totais` (período).
 - 1 linha por dia calendário do período: `Data | Ent.1 | Saí.1 | Ent.2 | Saí.2 | Ent.3 | Saí.3 | Ex50% | Atras. | BTotal | ExNot`.
@@ -27,15 +27,24 @@ O arquivo pode cobrir 1 mês ou vários meses no mesmo export — o parsing não
 ## Modelo de dados (`parser.py`)
 
 - `Dia`: `data`, `dia_semana`, batidas (`ent1..sai3`, cada uma hora ou código de status), `ex50_min`, `atraso_min`, `btotal_min` (int, signed, `None` se não houver — dia de status), `exnot_min`.
-- `Colaborador`: `nome`, `funcao`, `admissao: date | None`, `departamento`, `inscricao: str` (ex `"ISENTO"` ou vazio), `dias: list[Dia]`. Substitui o antigo `meses: list[Mes]` — `Mes`/semana viram agregações derivadas, não dado bruto do xlsx.
-- `ler_colaboradores()`: percorre blocos de tamanho fixo (não mais scan por marcador `NOME:`). Bloco com tamanho inesperado ou sem `Nome`/`Empresa` → aviso no console com a posição, pula o bloco, não trava o script.
+- `Colaborador`: `nome`, `funcao`, `admissao: date | None`, `departamento`, `dias: list[Dia]`. Substitui o antigo `meses: list[Mes]` — `Mes`/semana viram agregações derivadas, não dado bruto do xlsx.
+- `ler_colaboradores()`: os blocos **não têm tamanho fixo** — o tamanho varia com o período coberto (confirmado: um arquivo com ~190 dias por colaborador dá blocos de 216 linhas, mas isso é o período deste arquivo, não uma constante do formato). Detecção por marcador, igual em espírito ao parser antigo: escaneia coluna 1 procurando célula `"Nome"` (bate exato, sem prefixo `NOME:`) pra abrir um bloco. Campos de cabeçalho ficam em offsets fixos relativos à linha do `"Nome"` (confirmado no arquivo real):
+  - `Nome` → offset 0 (nome no col 2)
+  - `Inscrição` → offset -2 (não usado, ver acima)
+  - `Admissão` → offset +2 (valor direto no col 5, sem prefixo `"ADMISSÃO:"` como no extrato antigo)
+  - `Função` → offset +3 (valor direto no col 2)
+  - `Departamento` → offset +4 (valor direto no col 2)
+  - Cabeçalho da tabela diária (`"Data"` no col 1) e linha `"Totais"` logo abaixo aparecem 5-10 linhas depois de `Departamento` — busca sequencial igual ao parser antigo faz pra `PERÍODO`.
+  - Linhas diárias começam logo após `Totais` e continuam enquanto o col 1 for uma string no formato `"DD/MM/AAAA - Xxx"` (regex `^\d{2}/\d{2}/\d{4} - `) — para no primeiro valor que não bate (linha em branco ou legenda), o que funciona pra qualquer tamanho de período (1 mês ou vários) sem depender de contagem fixa de linhas.
+  - Bloco sem `"Nome"` reconhecível, ou sem `Admissão`/`Departamento` no offset esperado → mesmo fallback do parser antigo (aviso no console, "Sem Departamento").
 
 `horas.py`: `parse_horas` ganha suporte ao formato `"+HH:MM"` explícito (além do `"-HH:MM"` e `timedelta` que já suportava).
 
 ## Cálculos e classificação (`calculos.py`)
 
 - **Saldo bruto do colaborador** = soma de `btotal_min` de todos os `dias` (mesmo número que o saldo do extrato antigo — confirmado pelo usuário que BTotal acumulado bate com o saldo já exibido hoje).
-- **Fora da base / não elegível**: `colaborador.inscricao` bate com `"ISENTO"` (case/whitespace-insensitive). Substitui a heurística antiga (débito ≥ 300h e crédito ≤ 5% do débito) e a correção por data de admissão — ambas removidas, o flag já é autoritativo independente de quando a pessoa foi admitida. `Inscrição` com valor não reconhecido (nem `ISENTO` nem vazio) → trata como elegível por padrão e loga aviso (evita esconder gente da base por engano).
+- **Fora da base / não elegível**: colaborador sem nenhum dia com batida real (nenhum `Dia` do período tem `ent1`/`ent2`/`ent3` como hora — todos são código de status ou vazio). Substitui a heurística antiga (débito ≥ 300h e crédito ≤ 5% do débito) e a correção por data de admissão — ambas removidas, esse critério já é direto e não depende de quando a pessoa foi admitida.
+  - Validado nos dados reais: 8 dos 42 colaboradores do arquivo têm 0/190 dias com batida (só débito automático o período inteiro) — exatamente o grupo que a heurística antiga capturava (ex: débitos de -422h/-387h/-360h). O flag `Inscrição` do arquivo foi descartado como critério — vem `"ISENTO"` pros 42 colaboradores sem exceção, não discrimina nada (provavelmente status fiscal/sindical, não tem relação com isenção de bater ponto).
 - `dept_label()` (agrupamento CSC: Controladoria+Administrativo+Financeiro) mantido sem mudança.
 - Agregações novas por colaborador, usadas na página de pessoa:
   - Resumo mensal: soma de `btotal_min` por mês.
@@ -44,7 +53,7 @@ O arquivo pode cobrir 1 mês ou vários meses no mesmo export — o parsing não
 
 ## Página de pessoa
 
-Novo template (`pessoa.html.j2`, mesma linguagem visual dark theme do restante), gerado em `painel/deptos/pessoas/<slug>.html` — um por colaborador elegível (inscrição ≠ ISENTO). Colaboradores fora da base não ganham página (nome permanece sem link onde aparecem).
+Novo template (`pessoa.html.j2`, mesma linguagem visual dark theme do restante), gerado em `painel/deptos/pessoas/<slug>.html` — um por colaborador elegível (tem ao menos 1 dia com batida real no período). Colaboradores fora da base não ganham página (nome permanece sem link onde aparecem).
 
 Estrutura:
 
@@ -61,17 +70,17 @@ Nome do colaborador vira link `<a href="pessoas/<slug>.html">` em toda página d
 
 ## Erros e casos-limite
 
-- Bloco de tamanho diferente de 216 linhas ou sem `Nome`/`Empresa` → aviso no console com a posição, pula o bloco, não trava o script inteiro.
+- Bloco sem `Nome` reconhecível no offset esperado → aviso no console com a posição, pula o bloco, não trava o script inteiro.
 - Dia com código de status parcial (ex: `ATEST` só em Ent.2/Saí.2, resto com hora real) → parser trata célula por célula, não assume o dia inteiro como status.
 - Dias sem `BTotal` numérico → contam 0 no saldo, ficam fora do cálculo de melhor/pior dia.
-- `Inscrição` com valor não reconhecido → elegível por padrão + aviso no console.
-- `painel/deptos/pessoas/` recebe a mesma limpeza de página obsoleta que `deptos/` já tem hoje (remove htmls de quem saiu ou virou isento entre execuções).
+- Semana = segunda a domingo (segue a abreviação `SEG..DOM` do próprio arquivo).
+- `painel/deptos/pessoas/` recebe a mesma limpeza de página obsoleta que `deptos/` já tem hoje (remove htmls de quem saiu ou virou fora-da-base entre execuções).
 - `extratos/` vazia ou sem `.xlsx` → mesmo comportamento atual (mensagem clara no console, não gera nada, não sobrescreve painel anterior).
 
 ## Testes
 
-- `conftest.py`: builder de xlsx no formato cartaoponto (blocos fixos de 216 linhas) substitui o builder de extrato.
-- `test_parser.py`/`test_calculos.py`: reescritos pro novo modelo (`Dia`/`Colaborador.dias`, flag `inscricao`).
+- `conftest.py`: builder de xlsx no formato cartaoponto (marcador `Nome` + linhas diárias no padrão `DD/MM/AAAA - Xxx`, tamanho de bloco variável) substitui o builder de extrato.
+- `test_parser.py`/`test_calculos.py`: reescritos pro novo modelo (`Dia`/`Colaborador.dias`, classificação por "0 dias com batida real").
 - Novo `test_pessoa.py`: render do template de pessoa + geração/limpeza de página em `gerar_painel`.
 - `test_template.py`/`test_atualizar_painel.py`: cobrem também o link nome→pessoa nas páginas de depto e no index.
 
