@@ -202,3 +202,107 @@ def montar_relatorio(colaboradores: list, escopo: str = "geral", prefixo_pessoas
         "deptos": deptos,
         "nao_elegiveis_lista": nao_elegiveis_lista,
     }
+
+
+_MESES_PT = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+]
+
+
+def resumo_mensal(colab) -> list:
+    grupos: dict = {}
+    for d in colab.dias:
+        chave = (d.data.year, d.data.month)
+        grupos[chave] = grupos.get(chave, 0) + (d.btotal_min or 0)
+    resultado = []
+    for (ano, mes), total in sorted(grupos.items()):
+        resultado.append({
+            "label": f"{_MESES_PT[mes - 1]}/{ano}",
+            "total_min": total,
+            "total_fmt": format_horas(total),
+        })
+    return resultado
+
+
+def resumo_semanal(colab) -> list:
+    grupos: dict = {}
+    for d in colab.dias:
+        inicio_semana = d.data - datetime.timedelta(days=d.data.weekday())
+        grupos[inicio_semana] = grupos.get(inicio_semana, 0) + (d.btotal_min or 0)
+    resultado = []
+    for inicio, total in sorted(grupos.items()):
+        fim = inicio + datetime.timedelta(days=6)
+        resultado.append({
+            "inicio": inicio,
+            "fim": fim,
+            "label": f"{inicio.strftime('%d/%m')} – {fim.strftime('%d/%m')}",
+            "total_min": total,
+            "total_fmt": format_horas(total),
+        })
+    return resultado
+
+
+def _fmt_dia_destaque(dia):
+    if dia is None:
+        return None
+    return {
+        "data_fmt": dia.data.strftime("%d/%m/%Y"),
+        "total_fmt": format_horas(dia.btotal_min),
+        "classe": "tpos" if dia.btotal_min >= 0 else "tneg",
+    }
+
+
+def destaques(colab) -> dict:
+    dias_com_valor = [d for d in colab.dias if d.btotal_min is not None]
+    melhor_dia = max(dias_com_valor, key=lambda d: d.btotal_min) if dias_com_valor else None
+    pior_dia = min(dias_com_valor, key=lambda d: d.btotal_min) if dias_com_valor else None
+    meses = resumo_mensal(colab)
+    semanas = resumo_semanal(colab)
+    return {
+        "melhor_dia": _fmt_dia_destaque(melhor_dia),
+        "pior_dia": _fmt_dia_destaque(pior_dia),
+        "melhor_mes": max(meses, key=lambda m: m["total_min"]) if meses else None,
+        "pior_mes": min(meses, key=lambda m: m["total_min"]) if meses else None,
+        "melhor_semana": max(semanas, key=lambda s: s["total_min"]) if semanas else None,
+        "pior_semana": min(semanas, key=lambda s: s["total_min"]) if semanas else None,
+    }
+
+
+def _fmt_batida(valor):
+    if valor is None:
+        return ""
+    if isinstance(valor, datetime.timedelta):
+        total_min = int(valor.total_seconds() // 60)
+        h, m = divmod(total_min, 60)
+        return f"{h:02d}:{m:02d}"
+    return str(valor)  # código de status (FOLGA, FALTA, etc.)
+
+
+def montar_pessoa(colab) -> dict:
+    dias_ordenados = sorted(colab.dias, key=lambda d: d.data)
+    diario = [{
+        "data_fmt": dia.data.strftime("%d/%m/%Y"),
+        "dia_semana": dia.dia_semana,
+        "ent1": _fmt_batida(dia.ent1), "sai1": _fmt_batida(dia.sai1),
+        "ent2": _fmt_batida(dia.ent2), "sai2": _fmt_batida(dia.sai2),
+        "ent3": _fmt_batida(dia.ent3), "sai3": _fmt_batida(dia.sai3),
+        "ex50_fmt": format_horas(dia.ex50_min) if dia.ex50_min else "",
+        "atraso_fmt": format_horas(dia.atraso_min) if dia.atraso_min else "",
+        "btotal_fmt": format_horas(dia.btotal_min) if dia.btotal_min is not None else "",
+        "btotal_classe": ("tpos" if dia.btotal_min >= 0 else "tneg") if dia.btotal_min is not None else "",
+        "exnot_fmt": format_horas(dia.exnot_min) if dia.exnot_min else "",
+    } for dia in dias_ordenados]
+
+    return {
+        "nome": colab.nome,
+        "funcao": colab.funcao,
+        "departamento": dept_label(colab.departamento),
+        "admissao_fmt": colab.admissao.strftime("%d/%m/%Y") if colab.admissao else "",
+        "saldo_total_fmt": format_horas(colab.total_bruto_min),
+        "saldo_total_min": colab.total_bruto_min,
+        "destaques": destaques(colab),
+        "mensal": resumo_mensal(colab),
+        "semanal": resumo_semanal(colab),
+        "diario": diario,
+    }

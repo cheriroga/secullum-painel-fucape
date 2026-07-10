@@ -2,6 +2,7 @@ import datetime
 from painel_horas.parser import Colaborador, Dia
 from painel_horas.calculos import (
     dept_label, saldo_trabalhado_min, sem_batida_real, montar_relatorio,
+    resumo_mensal, resumo_semanal, destaques, montar_pessoa,
 )
 
 
@@ -144,3 +145,55 @@ def test_montar_relatorio_csc_mostra_time_original():
     )
     r = montar_relatorio([membro], escopo="csc")
     assert r["ranking"][0]["subtitulo"] == "Controladoria"
+
+
+def test_resumo_mensal_agrupa_por_ano_mes():
+    c = _colab("X", "TECNOLOGIA", admissao=None, dias=[
+        _dia(datetime.date(2026, 5, 10), btotal_min=100),
+        _dia(datetime.date(2026, 5, 20), btotal_min=50),
+        _dia(datetime.date(2026, 6, 1), btotal_min=-30),
+    ])
+    meses = resumo_mensal(c)
+    assert [m["label"] for m in meses] == ["Maio/2026", "Junho/2026"]
+    assert meses[0]["total_min"] == 150
+    assert meses[1]["total_min"] == -30
+
+
+def test_resumo_semanal_agrupa_segunda_a_domingo():
+    # 11/05/2026 é segunda-feira, 17/05/2026 é domingo da mesma semana
+    c = _colab("X", "TECNOLOGIA", admissao=None, dias=[
+        _dia(datetime.date(2026, 5, 11), btotal_min=100),
+        _dia(datetime.date(2026, 5, 17), btotal_min=50),
+        _dia(datetime.date(2026, 5, 18), btotal_min=-10),  # segunda seguinte
+    ])
+    semanas = resumo_semanal(c)
+    assert len(semanas) == 2
+    assert semanas[0]["total_min"] == 150
+    assert semanas[0]["label"] == "11/05 – 17/05"
+    assert semanas[1]["total_min"] == -10
+
+
+def test_destaques_encontra_melhor_pior_ignora_dias_sem_valor():
+    c = _colab("X", "TECNOLOGIA", admissao=None, dias=[
+        _dia(datetime.date(2026, 5, 11), btotal_min=200),
+        _dia(datetime.date(2026, 5, 12), btotal_min=-100),
+        _dia(datetime.date(2026, 5, 13), btotal_min=None, com_batida=False),
+    ])
+    d = destaques(c)
+    assert d["melhor_dia"]["total_fmt"] == "+3h20"
+    assert d["pior_dia"]["total_fmt"] == "−1h40"
+    assert d["melhor_mes"]["total_min"] == 100
+    assert d["melhor_semana"]["total_min"] == 100
+
+
+def test_montar_pessoa_monta_contexto_completo():
+    c = _colab(
+        "Fulano de Tal", "TECNOLOGIA", admissao=datetime.date(2020, 1, 1),
+        dias=[_dia(datetime.date(2026, 5, 11), btotal_min=100)],
+    )
+    ctx = montar_pessoa(c)
+    assert ctx["nome"] == "Fulano de Tal"
+    assert ctx["saldo_total_fmt"] == "+1h40"
+    assert len(ctx["diario"]) == 1
+    assert ctx["diario"][0]["data_fmt"] == "11/05/2026"
+    assert ctx["mensal"][0]["label"] == "Maio/2026"
