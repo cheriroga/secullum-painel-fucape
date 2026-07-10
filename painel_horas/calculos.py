@@ -2,7 +2,7 @@ from painel_horas.horas import format_horas
 from painel_horas.slug import slugify
 
 LIMITE_DEBITO_CONFIG_MIN = 300 * 60
-TOLERANCIA_CREDITO_CONFIG_MIN = 60
+TOLERANCIA_CREDITO_CONFIG_RATIO = 0.05
 ESCALA_RANKING_MAX_MIN = 40 * 60
 
 CSC_ORIGENS = {"CONTROLADORIA", "COMERCIAL", "FINANCEIRO"}
@@ -44,10 +44,9 @@ def _debito_trabalhado_min(colab) -> int:
 
 
 def is_config(colab) -> bool:
-    return (
-        abs(_debito_trabalhado_min(colab)) >= LIMITE_DEBITO_CONFIG_MIN
-        and abs(_credito_trabalhado_min(colab)) <= TOLERANCIA_CREDITO_CONFIG_MIN
-    )
+    debito = abs(_debito_trabalhado_min(colab))
+    credito = abs(_credito_trabalhado_min(colab))
+    return debito >= LIMITE_DEBITO_CONFIG_MIN and credito <= debito * TOLERANCIA_CREDITO_CONFIG_RATIO
 
 
 def _pct_ranking(minutos: int) -> float:

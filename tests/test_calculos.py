@@ -2,7 +2,7 @@ import datetime
 from painel_horas.parser import Colaborador, Mes
 from painel_horas.calculos import (
     dept_label, saldo_trabalhado_min, is_config, montar_relatorio,
-    LIMITE_DEBITO_CONFIG_MIN, TOLERANCIA_CREDITO_CONFIG_MIN,
+    LIMITE_DEBITO_CONFIG_MIN, TOLERANCIA_CREDITO_CONFIG_RATIO,
 )
 
 
@@ -77,7 +77,34 @@ def test_is_config_falso_quando_debito_abaixo_do_limite():
 
 def test_limites_config_batem_com_o_spec():
     assert LIMITE_DEBITO_CONFIG_MIN == 300 * 60
-    assert TOLERANCIA_CREDITO_CONFIG_MIN == 60
+    assert TOLERANCIA_CREDITO_CONFIG_RATIO == 0.05
+
+
+def test_is_config_true_quando_credito_residual_e_pequena_fracao_do_debito():
+    # THIAGO SOUZA DOS SANTOS (dado real): trabalhou de verdade em janeiro
+    # (826 min de crédito) antes do débito padrão de config tomar conta do
+    # resto do período (25580 min de débito) — crédito é só 3.2% do débito,
+    # deve continuar sendo classificado como config/isento.
+    c = _colab(
+        "Thiago", "MARKETING", admissao=datetime.date(2022, 4, 4),
+        meses_totais=[
+            (datetime.date(2026, 1, 1), datetime.date(2026, 1, 31), 626, 826, 200),
+            (datetime.date(2026, 2, 1), datetime.date(2026, 2, 28), 0, 0, 0),
+            (datetime.date(2026, 5, 1), datetime.date(2026, 5, 31), -10560, 0, 10560),
+            (datetime.date(2026, 6, 1), datetime.date(2026, 6, 30), -11100, 0, 11100),
+            (datetime.date(2026, 7, 1), datetime.date(2026, 7, 9), -3720, 0, 3720),
+        ],
+    )
+    assert is_config(c) is True
+
+
+def test_is_config_falso_quando_credito_e_fracao_grande_do_debito():
+    c = _colab(
+        "Meio a Meio", "TECNOLOGIA", admissao=datetime.date(2020, 1, 1),
+        meses_totais=[(datetime.date(2026, 1, 1), datetime.date(2026, 1, 31), -9000, 9000, 27000)],
+    )
+    # débito 27000 min (>=300h), crédito 9000 min = 33% do débito -> não é config
+    assert is_config(c) is False
 
 
 def test_montar_relatorio_geral_gera_kpis_gauge_ranking_e_deptos():
