@@ -34,3 +34,18 @@ def test_render_pagina_depto_omite_secao_deptos():
     })
     assert "Saldo por departamento" not in html
     assert "Ciclano" in html
+
+
+def test_render_pagina_escapes_html_special_chars():
+    # Regression test for XSS vulnerability: verify HTML characters are escaped
+    r = montar_relatorio([_colab_simples("Fulano <script>alert(1)</script> & Cia", "TECNOLOGIA", 100)], escopo="geral")
+    html = render_pagina({
+        "escopo_titulo": "Painel do CEO", "periodo_texto": "01/01/2026 → 09/07/2026",
+        "data_emissao": "10/07/2026", "mostrar_deptos": True, "r": r,
+    })
+    # Raw unescaped tag must not appear
+    assert "<script>alert(1)</script>" not in html
+    # Escaped version must appear in the HTML output
+    assert "&lt;script&gt;" in html
+    # Ampersand must also be escaped
+    assert "&amp;" in html

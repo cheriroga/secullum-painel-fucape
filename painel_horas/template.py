@@ -1,11 +1,11 @@
 import pathlib
 
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader
 
 _DIR_TEMPLATES = pathlib.Path(__file__).resolve().parent.parent / "templates"
 _env = Environment(
     loader=FileSystemLoader(str(_DIR_TEMPLATES)),
-    autoescape=select_autoescape(["html"]),
+    autoescape=True,
 )
 
 
