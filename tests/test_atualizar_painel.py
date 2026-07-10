@@ -62,8 +62,13 @@ def test_gerar_painel_cria_index_e_paginas_de_departamento(tmp_path, workbook_pa
     assert "Comercial" in conteudo_csc
 
 
-def test_gerar_painel_sem_xlsx_nao_gera_nada(tmp_path, capsys):
-    from atualizar_painel import main
-    pasta_extratos_vazia = tmp_path / "extratos"
-    pasta_extratos_vazia.mkdir()
-    assert encontrar_xlsx_mais_recente(pasta_extratos_vazia) is None
+def test_main_sem_xlsx_nao_gera_nada_e_avisa(tmp_path, monkeypatch, capsys):
+    import atualizar_painel
+    monkeypatch.setattr(atualizar_painel, "__file__", str(tmp_path / "atualizar_painel.py"))
+    (tmp_path / "extratos").mkdir()
+
+    atualizar_painel.main()
+
+    saida = capsys.readouterr()
+    assert "erro" in saida.out
+    assert not (tmp_path / "painel").exists()
