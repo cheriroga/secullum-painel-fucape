@@ -42,6 +42,7 @@ footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-
   </div>
   <div class="meta">
     {{ funcao }} · {{ departamento }}<br>
+    {% if periodo_texto %}Período <b>{{ periodo_texto }}</b><br>{% endif %}
     {% if admissao_fmt %}Admitido <b>{{ admissao_fmt }}</b><br>{% endif %}
     Saldo total <b class="{{ 'tpos' if saldo_total_min >= 0 else 'tneg' }}">{{ saldo_total_fmt }}</b>
   </div>
@@ -77,6 +78,11 @@ footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-
     <div class="d-val {{ 'tpos' if destaques.melhor_mes and destaques.melhor_mes.total_min >= 0 else 'tneg' if destaques.melhor_mes else '' }}">{{ destaques.melhor_mes.total_fmt if destaques.melhor_mes else '—' }}</div>
     <div class="d-lab">Melhor mês</div>
     <div class="d-sub">{{ destaques.melhor_mes.label if destaques.melhor_mes else '' }}</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val {{ 'tpos' if destaques.pior_mes and destaques.pior_mes.total_min >= 0 else 'tneg' if destaques.pior_mes else '' }}">{{ destaques.pior_mes.total_fmt if destaques.pior_mes else '—' }}</div>
+    <div class="d-lab">Pior mês</div>
+    <div class="d-sub">{{ destaques.pior_mes.label if destaques.pior_mes else '' }}</div>
   </div>
 </div>
 

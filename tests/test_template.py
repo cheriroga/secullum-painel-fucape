@@ -73,6 +73,19 @@ def test_render_pessoa_escapes_html_special_chars():
     assert "&lt;script&gt;" in html
 
 
+def test_render_pessoa_mostra_periodo_quando_fornecido():
+    c = _colab_simples("Fulano", "TECNOLOGIA", 100)
+    html = render_pessoa(montar_pessoa(c, periodo_texto="01/01/2026 → 09/07/2026"))
+    assert "Período" in html
+    assert "01/01/2026 → 09/07/2026" in html
+
+
+def test_render_pessoa_omite_periodo_quando_vazio():
+    c = _colab_simples("Fulano", "TECNOLOGIA", 100)
+    html = render_pessoa(montar_pessoa(c))
+    assert "Período" not in html
+
+
 def test_render_pagina_linka_nome_para_pagina_de_pessoa():
     r = montar_relatorio([_colab_simples("Fulano", "TECNOLOGIA", 100)], escopo="geral", prefixo_pessoas="deptos/pessoas/")
     html = render_pagina({

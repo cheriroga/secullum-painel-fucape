@@ -279,7 +279,7 @@ def _fmt_batida(valor):
     return str(valor)  # código de status (FOLGA, FALTA, etc.)
 
 
-def montar_pessoa(colab) -> dict:
+def montar_pessoa(colab, periodo_texto: str = "") -> dict:
     dias_ordenados = sorted(colab.dias, key=lambda d: d.data)
     diario = [{
         "data_fmt": dia.data.strftime("%d/%m/%Y"),
@@ -301,6 +301,7 @@ def montar_pessoa(colab) -> dict:
         "admissao_fmt": colab.admissao.strftime("%d/%m/%Y") if colab.admissao else "",
         "saldo_total_fmt": format_horas(colab.total_bruto_min),
         "saldo_total_min": colab.total_bruto_min,
+        "periodo_texto": periodo_texto,
         "destaques": destaques(colab),
         "mensal": resumo_mensal(colab),
         "semanal": resumo_semanal(colab),

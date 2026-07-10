@@ -70,7 +70,7 @@ def gerar_painel(caminho_xlsx: Path, pasta_saida: Path) -> dict:
         for c in membros:
             if sem_batida_real(c):
                 continue
-            html_pessoa = render_pessoa(montar_pessoa(c))
+            html_pessoa = render_pessoa(montar_pessoa(c, periodo_texto))
             (pasta_pessoas / f"{slugify(c.nome)}.html").write_text(html_pessoa, encoding="utf-8")
 
     return {

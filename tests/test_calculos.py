@@ -197,3 +197,21 @@ def test_montar_pessoa_monta_contexto_completo():
     assert len(ctx["diario"]) == 1
     assert ctx["diario"][0]["data_fmt"] == "11/05/2026"
     assert ctx["mensal"][0]["label"] == "Maio/2026"
+
+
+def test_montar_pessoa_periodo_texto_default_vazio():
+    c = _colab(
+        "Fulano de Tal", "TECNOLOGIA", admissao=datetime.date(2020, 1, 1),
+        dias=[_dia(datetime.date(2026, 5, 11), btotal_min=100)],
+    )
+    ctx = montar_pessoa(c)
+    assert ctx["periodo_texto"] == ""
+
+
+def test_montar_pessoa_periodo_texto_repassado():
+    c = _colab(
+        "Fulano de Tal", "TECNOLOGIA", admissao=datetime.date(2020, 1, 1),
+        dias=[_dia(datetime.date(2026, 5, 11), btotal_min=100)],
+    )
+    ctx = montar_pessoa(c, periodo_texto="01/01/2026 → 09/07/2026")
+    assert ctx["periodo_texto"] == "01/01/2026 → 09/07/2026"
