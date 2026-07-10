@@ -71,3 +71,12 @@ def test_render_pessoa_escapes_html_special_chars():
     html = render_pessoa(montar_pessoa(c))
     assert "<script>alert(1)</script>" not in html
     assert "&lt;script&gt;" in html
+
+
+def test_render_pagina_linka_nome_para_pagina_de_pessoa():
+    r = montar_relatorio([_colab_simples("Fulano", "TECNOLOGIA", 100)], escopo="geral", prefixo_pessoas="deptos/pessoas/")
+    html = render_pagina({
+        "escopo_titulo": "Painel do CEO", "periodo_texto": "01/01/2026 → 09/07/2026",
+        "data_emissao": "10/07/2026", "mostrar_deptos": True, "r": r,
+    })
+    assert 'href="deptos/pessoas/fulano.html"' in html

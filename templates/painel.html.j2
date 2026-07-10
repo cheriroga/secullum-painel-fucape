@@ -58,6 +58,7 @@ h2{margin:0;font-size:16px}
 .dept{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
 .d-name{font-size:12.5px;font-weight:600}
 .d-name a{color:inherit;text-decoration:none}
+.br-name a{color:inherit;text-decoration:none}
 .d-meta{font-size:11px;color:var(--mut);margin:2px 0 6px}
 .d-mini{position:relative;height:6px;background:var(--panel2);border-radius:3px;width:160px}
 .d-mini i{position:absolute;top:0;bottom:0;border-radius:3px}
@@ -75,7 +76,7 @@ footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-
 
 <header>
   <div>
-    <div class="eyebrow">Fucape Business School · Extrato Secullum</div>
+    <div class="eyebrow">Fucape Business School · Cartão Ponto Secullum</div>
     <h1>Banco de Horas <span>/ {{ escopo_titulo }}</span></h1>
   </div>
   <div class="meta">
@@ -107,7 +108,7 @@ footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-
   <div class="kpi p"><div class="k-val tpos">{{ r.kpis.passivo.valor_fmt }}</div><div class="k-lab">Passivo de horas<br>(a empresa deve pagar/folgar)</div><div class="k-sub">{{ r.kpis.passivo.sub }}</div></div>
   <div class="kpi n"><div class="k-val tneg">{{ r.kpis.receber.valor_fmt }}</div><div class="k-lab">A empresa tem a receber<br>(devem horas)</div><div class="k-sub">{{ r.kpis.receber.sub }}</div></div>
   <div class="kpi a"><div class="k-val" style="color:var(--amber)">{{ r.kpis.concentracao.valor_fmt }}</div><div class="k-lab">Concentração de risco<br>{{ r.kpis.concentracao.pct_fmt }} do passivo</div><div class="k-sub">{{ r.kpis.concentracao.sub }}</div></div>
-  <div class="kpi b"><div class="k-val" style="color:var(--blue)">{{ r.kpis.nao_elegiveis.valor }}</div><div class="k-lab">Registros não elegíveis<br>débito padrão &#8805;300h</div><div class="k-sub">{{ r.kpis.nao_elegiveis.sub }}</div></div>
+  <div class="kpi b"><div class="k-val" style="color:var(--blue)">{{ r.kpis.nao_elegiveis.valor }}</div><div class="k-lab">Registros não elegíveis<br>sem batida real no período</div><div class="k-sub">{{ r.kpis.nao_elegiveis.sub }}</div></div>
 </div>
 
 {% if r.alerta %}
@@ -127,7 +128,7 @@ footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-
   <div class="bars" id="bars">
     {% for pessoa in r.ranking %}
     <div class="bar-row" title="{{ pessoa.tooltip }}">
-      <div class="br-name">{{ pessoa.nome }}<small>{{ pessoa.subtitulo }}</small></div>
+      <div class="br-name"><a href="{{ pessoa.pessoa_href }}">{{ pessoa.nome }}</a><small>{{ pessoa.subtitulo }}</small></div>
       <div class="br-track"><div class="br-mid"></div>
         <div class="br-fill {{ pessoa.classe }}" style="width:{{ '%.4f'|format(pessoa.pct) }}%"></div></div>
       <div class="br-val {{ 'tpos' if pessoa.classe == 'p' else 'tneg' }}">{{ pessoa.valor_fmt }}</div>
@@ -174,9 +175,9 @@ footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-
 {% endif %}
 
 <footer>
-  <b>Metodologia.</b> Fonte: Extrato do Banco de Horas Secullum Ponto Web, período {{ periodo_texto }}.
-  Saldos somados a partir do total mensal de cada colaborador. "Elegível" = possui batidas reais no período.
-  "Não elegível" = débito padrão &#8805; 300h sem crédito, indicando isenção ou jornada mal configurada.<br>
+  <b>Metodologia.</b> Fonte: Cartão Ponto Secullum Ponto Web, período {{ periodo_texto }}.
+  Saldos somados a partir do saldo diário (BTotal) de cada colaborador. "Elegível" = tem ao menos uma batida real no período.
+  "Não elegível" = nenhuma batida real no período, indicando isenção de ponto ou jornada mal configurada.<br>
   <b>Limite de leitura.</b> Banco de horas mede presença registrada, não produtividade nem entrega. Use como sinal de gestão de jornada e compliance, cruzando com desempenho antes de qualquer decisão sobre pessoas.
 </footer>
 
