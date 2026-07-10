@@ -1,0 +1,8 @@
+extratos/*.xlsx
+*.xlsx
+*.mhtml
+*.pdf
+scratch_artifact.html
+painel/
+__pycache__/
+*.pyc
