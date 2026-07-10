@@ -38,6 +38,8 @@ def gerar_painel(caminho_xlsx: Path, pasta_saida: Path) -> dict:
     pasta_saida.mkdir(parents=True, exist_ok=True)
     pasta_deptos = pasta_saida / "deptos"
     pasta_deptos.mkdir(exist_ok=True)
+    for arquivo_antigo in pasta_deptos.glob("*.html"):
+        arquivo_antigo.unlink()
 
     relatorio_geral = montar_relatorio(colaboradores, escopo="geral")
     html_geral = render_pagina({

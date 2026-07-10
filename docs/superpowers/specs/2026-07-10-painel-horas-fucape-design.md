@@ -45,7 +45,7 @@ Colunas de hora vêm como `datetime.timedelta` (openpyxl) ou string `-HH:MM` qua
 
 ## Departamentos e agrupamento
 
-Cada departamento distinto no xlsx vira 1 página, **exceto**: Controladoria + Comercial + Financeiro, que são combinados em uma única página "Centro de Serviços Compartilhados" (CSC). Dentro da página CSC, cada colaborador mantém o nome do time original (Controladoria/Comercial/Financeiro) como subtexto de rastreabilidade.
+Cada departamento distinto no xlsx vira 1 página, **exceto**: Controladoria + Administrativo + Financeiro, que são combinados em uma única página "Centro de Serviços Compartilhados" (CSC). Comercial permanece com página própria. Dentro da página CSC, cada colaborador mantém o nome do time original (Controladoria/Administrativo/Financeiro) como subtexto de rastreabilidade.
 
 Se aparecer um departamento novo no xlsx que não existia antes, o script cria a página automaticamente (não precisa alterar código pra isso).
 
@@ -85,7 +85,7 @@ painel-horas/
         ├── diretoria.html
         ├── comunicacao.html
         ├── secretaria-pesquisa.html
-        ├── administrativo.html
+        ├── comercial.html
         ├── coordenacao-curso.html
         ├── atendimento.html
         ├── gente-cultura.html

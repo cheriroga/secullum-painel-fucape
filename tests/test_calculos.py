@@ -23,13 +23,14 @@ def _colab(nome, departamento, admissao, meses_totais, total_bruto=None, credito
 
 def test_dept_label_agrupa_csc():
     assert dept_label("CONTROLADORIA") == "Centro de Serviços Compartilhados"
-    assert dept_label("Comercial") == "Centro de Serviços Compartilhados"
+    assert dept_label("Administrativo") == "Centro de Serviços Compartilhados"
     assert dept_label("FINANCEIRO") == "Centro de Serviços Compartilhados"
 
 
 def test_dept_label_mantem_outros():
     assert dept_label("TECNOLOGIA") == "Tecnologia"
     assert dept_label("HUB FUCAPE") == "Hub Fucape"
+    assert dept_label("COMERCIAL") == "Comercial"
 
 
 def test_saldo_trabalhado_filtra_meses_antes_da_admissao():
