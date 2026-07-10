@@ -2,10 +2,10 @@ import webbrowser
 from datetime import date
 from pathlib import Path
 
-from painel_horas.calculos import CSC_LABEL, dept_label, montar_relatorio
+from painel_horas.calculos import CSC_LABEL, dept_label, montar_relatorio, montar_pessoa, sem_batida_real
 from painel_horas.parser import ler_colaboradores
 from painel_horas.slug import slugify
-from painel_horas.template import render_pagina
+from painel_horas.template import render_pagina, render_pessoa
 
 
 def encontrar_xlsx_mais_recente(pasta: Path) -> Path | None:
@@ -16,11 +16,10 @@ def encontrar_xlsx_mais_recente(pasta: Path) -> Path | None:
 
 
 def _periodo_texto(colaboradores) -> str:
-    todas_inicio = [m.inicio for c in colaboradores for m in c.meses]
-    todas_fim = [m.fim for c in colaboradores for m in c.meses]
-    if not todas_inicio:
+    todas_datas = [d.data for c in colaboradores for d in c.dias]
+    if not todas_datas:
         return ""
-    return f"{min(todas_inicio).strftime('%d/%m/%Y')} → {max(todas_fim).strftime('%d/%m/%Y')}"
+    return f"{min(todas_datas).strftime('%d/%m/%Y')} → {max(todas_datas).strftime('%d/%m/%Y')}"
 
 
 def _agrupar_por_departamento(colaboradores) -> dict:
@@ -40,8 +39,12 @@ def gerar_painel(caminho_xlsx: Path, pasta_saida: Path) -> dict:
     pasta_deptos.mkdir(exist_ok=True)
     for arquivo_antigo in pasta_deptos.glob("*.html"):
         arquivo_antigo.unlink()
+    pasta_pessoas = pasta_deptos / "pessoas"
+    pasta_pessoas.mkdir(exist_ok=True)
+    for arquivo_antigo in pasta_pessoas.glob("*.html"):
+        arquivo_antigo.unlink()
 
-    relatorio_geral = montar_relatorio(colaboradores, escopo="geral")
+    relatorio_geral = montar_relatorio(colaboradores, escopo="geral", prefixo_pessoas="deptos/pessoas/")
     html_geral = render_pagina({
         "escopo_titulo": "Painel do CEO",
         "periodo_texto": periodo_texto,
@@ -54,7 +57,7 @@ def gerar_painel(caminho_xlsx: Path, pasta_saida: Path) -> dict:
     grupos = _agrupar_por_departamento(colaboradores)
     for label, membros in grupos.items():
         escopo = "csc" if label == CSC_LABEL else "depto"
-        relatorio = montar_relatorio(membros, escopo=escopo)
+        relatorio = montar_relatorio(membros, escopo=escopo, prefixo_pessoas="pessoas/")
         html = render_pagina({
             "escopo_titulo": f"Painel {label}",
             "periodo_texto": periodo_texto,
@@ -63,6 +66,12 @@ def gerar_painel(caminho_xlsx: Path, pasta_saida: Path) -> dict:
             "r": relatorio,
         })
         (pasta_deptos / f"{slugify(label)}.html").write_text(html, encoding="utf-8")
+
+        for c in membros:
+            if sem_batida_real(c):
+                continue
+            html_pessoa = render_pessoa(montar_pessoa(c))
+            (pasta_pessoas / f"{slugify(c.nome)}.html").write_text(html_pessoa, encoding="utf-8")
 
     return {
         "colaboradores": len(colaboradores),
