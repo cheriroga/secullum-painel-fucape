@@ -12,3 +12,8 @@ _env = Environment(
 def render_pagina(contexto: dict) -> str:
     template = _env.get_template("painel.html.j2")
     return template.render(**contexto)
+
+
+def render_pessoa(contexto: dict) -> str:
+    template = _env.get_template("pessoa.html.j2")
+    return template.render(**contexto)

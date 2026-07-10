@@ -1,0 +1,147 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ nome }} · Cartão Ponto · Fucape</title>
+<style>
+:root{--bg:#0b0f14;--panel:#121821;--panel2:#0e141c;--line:#1f2933;--ink:#e8edf2;--mut:#8a97a6;--pos:#3ddc84;--neg:#ff5c5c;--amber:#ffb020;--blue:#4da3ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:32px 24px 64px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:24px}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+h1{margin:0;font-size:24px;font-weight:800}
+h1 span{color:var(--mut);font-weight:600}
+.meta{font-size:12px;color:var(--mut);text-align:right}
+.meta b{color:var(--ink)}
+.destaques{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.dcard{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
+.d-val{font-size:18px;font-weight:800}
+.d-lab{font-size:11.5px;color:var(--mut);margin-top:4px}
+.d-sub{font-size:11px;color:var(--mut);margin-top:6px}
+.tpos{color:var(--pos)}
+.tneg{color:var(--neg)}
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tab{background:var(--panel);border:1px solid var(--line);color:var(--mut);font-size:12px;padding:8px 14px;border-radius:6px;cursor:pointer}
+.tab.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.painel-tab{display:none}
+.painel-tab.on{display:block}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;padding:6px 8px;border-bottom:1px solid var(--line)}
+.tbl td{padding:8px;border-bottom:1px solid var(--line)}
+.tbl .rt{text-align:right}
+.tbl .mono{font-variant-numeric:tabular-nums}
+footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-top:16px;margin-top:8px}
+</style>
+</head><body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="eyebrow">Fucape Business School · Cartão Ponto Secullum</div>
+    <h1>{{ nome }} <span>/ Controle de ponto</span></h1>
+  </div>
+  <div class="meta">
+    {{ funcao }} · {{ departamento }}<br>
+    {% if admissao_fmt %}Admitido <b>{{ admissao_fmt }}</b><br>{% endif %}
+    Saldo total <b class="{{ 'tpos' if saldo_total_min >= 0 else 'tneg' }}">{{ saldo_total_fmt }}</b>
+  </div>
+</header>
+
+<div class="destaques">
+  <div class="dcard">
+    <div class="d-val {{ destaques.melhor_dia.classe if destaques.melhor_dia else '' }}">{{ destaques.melhor_dia.total_fmt if destaques.melhor_dia else '—' }}</div>
+    <div class="d-lab">Melhor dia</div>
+    <div class="d-sub">{{ destaques.melhor_dia.data_fmt if destaques.melhor_dia else '' }}</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val {{ destaques.pior_dia.classe if destaques.pior_dia else '' }}">{{ destaques.pior_dia.total_fmt if destaques.pior_dia else '—' }}</div>
+    <div class="d-lab">Pior dia</div>
+    <div class="d-sub">{{ destaques.pior_dia.data_fmt if destaques.pior_dia else '' }}</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val">{{ saldo_total_fmt }}</div>
+    <div class="d-lab">Saldo total do período</div>
+    <div class="d-sub">&nbsp;</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val {{ 'tpos' if destaques.melhor_semana and destaques.melhor_semana.total_min >= 0 else 'tneg' if destaques.melhor_semana else '' }}">{{ destaques.melhor_semana.total_fmt if destaques.melhor_semana else '—' }}</div>
+    <div class="d-lab">Melhor semana</div>
+    <div class="d-sub">{{ destaques.melhor_semana.label if destaques.melhor_semana else '' }}</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val {{ 'tpos' if destaques.pior_semana and destaques.pior_semana.total_min >= 0 else 'tneg' if destaques.pior_semana else '' }}">{{ destaques.pior_semana.total_fmt if destaques.pior_semana else '—' }}</div>
+    <div class="d-lab">Pior semana</div>
+    <div class="d-sub">{{ destaques.pior_semana.label if destaques.pior_semana else '' }}</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val {{ 'tpos' if destaques.melhor_mes and destaques.melhor_mes.total_min >= 0 else 'tneg' if destaques.melhor_mes else '' }}">{{ destaques.melhor_mes.total_fmt if destaques.melhor_mes else '—' }}</div>
+    <div class="d-lab">Melhor mês</div>
+    <div class="d-sub">{{ destaques.melhor_mes.label if destaques.melhor_mes else '' }}</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" data-tab="mensal">Resumo mensal</button>
+  <button class="tab" data-tab="semanal">Semanal</button>
+  <button class="tab" data-tab="diario">Diário completo</button>
+</div>
+
+<div class="painel-tab on" id="tab-mensal">
+  <table class="tbl">
+    <thead><tr><th>Mês</th><th class="rt">Saldo</th></tr></thead>
+    <tbody>
+      {% for m in mensal %}
+      <tr><td>{{ m.label }}</td><td class="rt mono {{ 'tpos' if m.total_min >= 0 else 'tneg' }}">{{ m.total_fmt }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="painel-tab" id="tab-semanal">
+  <table class="tbl">
+    <thead><tr><th>Semana</th><th class="rt">Saldo</th></tr></thead>
+    <tbody>
+      {% for s in semanal %}
+      <tr><td>{{ s.label }}</td><td class="rt mono {{ 'tpos' if s.total_min >= 0 else 'tneg' }}">{{ s.total_fmt }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="painel-tab" id="tab-diario">
+  <table class="tbl">
+    <thead><tr><th>Data</th><th>Ent.1</th><th>Saí.1</th><th>Ent.2</th><th>Saí.2</th><th>Ent.3</th><th>Saí.3</th><th class="rt">Ex50%</th><th class="rt">Atraso</th><th class="rt">Saldo</th><th class="rt">Ex.Not</th></tr></thead>
+    <tbody>
+      {% for d in diario %}
+      <tr>
+        <td>{{ d.data_fmt }} <span style="color:var(--mut)">{{ d.dia_semana }}</span></td>
+        <td class="mono">{{ d.ent1 }}</td><td class="mono">{{ d.sai1 }}</td>
+        <td class="mono">{{ d.ent2 }}</td><td class="mono">{{ d.sai2 }}</td>
+        <td class="mono">{{ d.ent3 }}</td><td class="mono">{{ d.sai3 }}</td>
+        <td class="rt mono">{{ d.ex50_fmt }}</td>
+        <td class="rt mono">{{ d.atraso_fmt }}</td>
+        <td class="rt mono {{ d.btotal_classe }}">{{ d.btotal_fmt }}</td>
+        <td class="rt mono">{{ d.exnot_fmt }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  <b>Metodologia.</b> Fonte: Cartão Ponto Secullum Ponto Web. Saldo diário (BTotal) somado dia a dia; os resumos mensal e semanal são agregações do mesmo valor.<br>
+  <b>Limite de leitura.</b> Cartão ponto mede presença registrada, não produtividade nem entrega.
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('.tabs .tab').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tabs .tab').forEach(function(b){ b.classList.remove('on'); });
+    btn.classList.add('on');
+    document.querySelectorAll('.painel-tab').forEach(function(p){ p.classList.remove('on'); });
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('on');
+  });
+});
+</script>
+</body></html>

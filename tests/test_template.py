@@ -1,14 +1,19 @@
-from painel_horas.calculos import montar_relatorio
-from painel_horas.parser import Colaborador, Mes
-from painel_horas.template import render_pagina
+from painel_horas.calculos import montar_relatorio, montar_pessoa
+from painel_horas.parser import Colaborador, Dia
+from painel_horas.template import render_pagina, render_pessoa
 import datetime
 
 
 def _colab_simples(nome, departamento, valor_min):
+    dia = Dia(
+        data=datetime.date(2026, 1, 15), dia_semana="Qui",
+        ent1=datetime.timedelta(hours=8), sai1=datetime.timedelta(hours=17),
+        ent2=None, sai2=None, ent3=None, sai3=None,
+        ex50_min=0, atraso_min=0, btotal_min=valor_min, exnot_min=0,
+    )
     return Colaborador(
         nome=nome, funcao="Cargo", admissao=datetime.date(2020, 1, 1), departamento=departamento,
-        meses=[Mes(datetime.date(2026, 1, 1), datetime.date(2026, 1, 31), valor_min, max(valor_min, 0), max(-valor_min, 0), 0)],
-        total_bruto_min=valor_min, credito_total_min=max(valor_min, 0), debito_total_min=max(-valor_min, 0),
+        dias=[dia], total_bruto_min=valor_min,
     )
 
 
@@ -49,3 +54,20 @@ def test_render_pagina_escapes_html_special_chars():
     assert "&lt;script&gt;" in html
     # Ampersand must also be escaped
     assert "&amp;" in html
+
+
+def test_render_pessoa_contem_secoes_esperadas():
+    c = _colab_simples("Fulano", "TECNOLOGIA", 100)
+    html = render_pessoa(montar_pessoa(c))
+    assert "<!DOCTYPE html>" in html
+    assert "Fulano" in html
+    assert "Resumo mensal" in html
+    assert "Diário completo" in html
+    assert "<script>" in html and "<link" not in html
+
+
+def test_render_pessoa_escapes_html_special_chars():
+    c = _colab_simples("Fulano <script>alert(1)</script> & Cia", "TECNOLOGIA", 100)
+    html = render_pessoa(montar_pessoa(c))
+    assert "<script>alert(1)</script>" not in html
+    assert "&lt;script&gt;" in html
