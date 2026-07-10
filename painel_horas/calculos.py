@@ -1,8 +1,8 @@
+import datetime
+
 from painel_horas.horas import format_horas
 from painel_horas.slug import slugify
 
-LIMITE_DEBITO_CONFIG_MIN = 300 * 60
-TOLERANCIA_CREDITO_CONFIG_RATIO = 0.05
 ESCALA_RANKING_MAX_MIN = 40 * 60
 
 CSC_ORIGENS = {"CONTROLADORIA", "ADMINISTRATIVO", "FINANCEIRO"}
@@ -15,38 +15,25 @@ def dept_label(departamento: str) -> str:
     return departamento.strip().title()
 
 
-def _meses_periodo_trabalhado(colab):
-    if colab.admissao is None:
-        return colab.meses
-    limite = (colab.admissao.year, colab.admissao.month)
-    return [m for m in colab.meses if (m.inicio.year, m.inicio.month) >= limite]
-
-
 def saldo_trabalhado_min(colab) -> int:
-    meses = _meses_periodo_trabalhado(colab)
-    if not meses:
+    if colab.admissao is None:
         return colab.total_bruto_min
-    return sum(m.total_min for m in meses)
+    dias = [d for d in colab.dias if d.data >= colab.admissao]
+    if not dias:
+        return colab.total_bruto_min
+    return sum(d.btotal_min or 0 for d in dias)
 
 
-def _credito_trabalhado_min(colab) -> int:
-    meses = _meses_periodo_trabalhado(colab)
-    if not meses:
-        return colab.credito_total_min
-    return sum(m.credito_min for m in meses)
+def _tem_batida_real(dia) -> bool:
+    return (
+        isinstance(dia.ent1, datetime.timedelta)
+        or isinstance(dia.ent2, datetime.timedelta)
+        or isinstance(dia.ent3, datetime.timedelta)
+    )
 
 
-def _debito_trabalhado_min(colab) -> int:
-    meses = _meses_periodo_trabalhado(colab)
-    if not meses:
-        return colab.debito_total_min
-    return sum(m.debito_min for m in meses)
-
-
-def is_config(colab) -> bool:
-    debito = abs(_debito_trabalhado_min(colab))
-    credito = abs(_credito_trabalhado_min(colab))
-    return debito >= LIMITE_DEBITO_CONFIG_MIN and credito <= debito * TOLERANCIA_CREDITO_CONFIG_RATIO
+def sem_batida_real(colab) -> bool:
+    return not any(_tem_batida_real(d) for d in colab.dias)
 
 
 def _pct_ranking(minutos: int) -> float:
@@ -73,9 +60,9 @@ def _subtitulo(colab, escopo: str) -> str:
     return base
 
 
-def montar_relatorio(colaboradores: list, escopo: str = "geral") -> dict:
-    elegiveis = [c for c in colaboradores if not is_config(c)]
-    nao_elegiveis = [c for c in colaboradores if is_config(c)]
+def montar_relatorio(colaboradores: list, escopo: str = "geral", prefixo_pessoas: str = "") -> dict:
+    elegiveis = [c for c in colaboradores if not sem_batida_real(c)]
+    nao_elegiveis = [c for c in colaboradores if sem_batida_real(c)]
 
     ranking_ordenado = sorted(elegiveis, key=lambda c: -c.total_bruto_min)
     passivo_lista = [c for c in elegiveis if c.total_bruto_min > 0]
@@ -98,6 +85,7 @@ def montar_relatorio(colaboradores: list, escopo: str = "geral") -> dict:
             "classe": "p" if c.total_bruto_min >= 0 else "n",
             "pct": _pct_ranking(c.total_bruto_min),
             "valor_fmt": format_horas(c.total_bruto_min),
+            "pessoa_href": f"{prefixo_pessoas}{slugify(c.nome)}.html",
         })
 
     nota_ranking = None
@@ -144,7 +132,7 @@ def montar_relatorio(colaboradores: list, escopo: str = "geral") -> dict:
         },
         "nao_elegiveis": {
             "valor": len(nao_elegiveis),
-            "sub": "Débito padrão configurado · não indica ausência real",
+            "sub": "Sem nenhuma batida real no período · não indica ausência real",
         },
     }
     if passivo_lista:
@@ -163,8 +151,8 @@ def montar_relatorio(colaboradores: list, escopo: str = "geral") -> dict:
     if n_nao:
         plural = n_nao != 1
         alerta = (
-            f"{n_nao} registro{'s' if plural else ''} marca{'m' if plural else ''} débito padrão automático "
-            "(isenção de ponto ou jornada mal configurada), sem crédito real correspondente. "
+            f"{n_nao} registro{'s' if plural else ''} sem nenhuma batida real no período "
+            "(isenção de ponto ou jornada mal configurada). "
             "Foram isolados na seção 03 para não contaminar o ranking."
         )
 
