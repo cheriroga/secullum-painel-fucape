@@ -23,6 +23,14 @@ def test_parse_horas_string_negativa_grande():
     assert parse_horas("-360:00") == -21600
 
 
+def test_parse_horas_string_positiva_com_sinal_explicito():
+    assert parse_horas("+00:12") == 12
+
+
+def test_parse_horas_string_positiva_grande_com_sinal_explicito():
+    assert parse_horas("+112:55") == 6775
+
+
 def test_format_horas_positivo():
     assert format_horas(148) == "+2h28"
 

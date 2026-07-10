@@ -10,7 +10,7 @@ def parse_horas(valor) -> int:
     if isinstance(valor, str):
         texto = valor.strip()
         negativo = texto.startswith("-")
-        texto = texto.lstrip("-")
+        texto = texto.lstrip("+-")
         horas_str, minutos_str = texto.split(":")
         total = int(horas_str) * 60 + int(minutos_str)
         return -total if negativo else total
