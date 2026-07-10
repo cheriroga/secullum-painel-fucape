@@ -9,13 +9,13 @@ def test_ler_colaboradores_bloco_completo(workbook_path):
             "funcao": "ASSISTENTE DE COORDENAÇÃO",
             "admissao": "13/05/2026",
             "departamento": "COORDENAÇÃO DE CURSO",
-            "meses": [
-                ("01/05/2026 até 31/05/2026", datetime.timedelta(hours=2, minutes=28),
-                 datetime.timedelta(hours=17, minutes=16), datetime.timedelta(hours=14, minutes=48),
-                 datetime.timedelta(0)),
-                ("01/06/2026 até 30/06/2026", "-03:11", "05:00", "08:11", "00:00"),
+            "dias": [
+                ("11/05/2026", "Seg", datetime.timedelta(hours=8), datetime.timedelta(hours=12),
+                 datetime.timedelta(hours=13), datetime.timedelta(hours=18), None, None,
+                 datetime.timedelta(0), datetime.timedelta(0), "+00:12", datetime.timedelta(0)),
+                ("12/05/2026", "Ter", "FALTA", "FALTA", None, None, None, None,
+                 None, None, None, None),
             ],
-            "total": ("-00:42", datetime.timedelta(hours=22, minutes=17), datetime.timedelta(hours=22, minutes=59), datetime.timedelta(0)),
         },
     ])
 
@@ -27,14 +27,14 @@ def test_ler_colaboradores_bloco_completo(workbook_path):
     assert c.funcao == "ASSISTENTE DE COORDENAÇÃO"
     assert c.admissao == datetime.date(2026, 5, 13)
     assert c.departamento == "COORDENAÇÃO DE CURSO"
-    assert len(c.meses) == 2
-    assert c.meses[0].inicio == datetime.date(2026, 5, 1)
-    assert c.meses[0].fim == datetime.date(2026, 5, 31)
-    assert c.meses[0].total_min == 148
-    assert c.meses[1].total_min == -191
-    assert c.total_bruto_min == -42
-    assert c.credito_total_min == 1337
-    assert c.debito_total_min == 1379
+    assert len(c.dias) == 2
+    assert c.dias[0].data == datetime.date(2026, 5, 11)
+    assert c.dias[0].dia_semana == "Seg"
+    assert c.dias[0].btotal_min == 12
+    assert c.dias[1].data == datetime.date(2026, 5, 12)
+    assert c.dias[1].btotal_min is None
+    assert c.dias[1].ent1 == "FALTA"
+    assert c.total_bruto_min == 12
 
 
 def test_ler_colaboradores_bloco_incompleto_usa_fallback(workbook_path, capsys):
@@ -44,11 +44,10 @@ def test_ler_colaboradores_bloco_incompleto_usa_fallback(workbook_path, capsys):
             "funcao": "ESTAGIARIO",
             "admissao": None,
             "departamento": None,
-            "meses": [
-                ("01/06/2026 até 30/06/2026", datetime.timedelta(0), datetime.timedelta(0),
-                 datetime.timedelta(0), datetime.timedelta(0)),
+            "dias": [
+                ("01/06/2026", "Seg", datetime.timedelta(hours=8), datetime.timedelta(hours=17),
+                 None, None, None, None, None, None, "+00:00", None),
             ],
-            "total": (datetime.timedelta(0), datetime.timedelta(0), datetime.timedelta(0), datetime.timedelta(0)),
         },
     ])
 
@@ -67,16 +66,14 @@ def test_ler_colaboradores_multiplos_blocos(workbook_path):
         {
             "nome": "PESSOA UM", "funcao": "CARGO A", "admissao": "01/01/2020",
             "departamento": "TECNOLOGIA",
-            "meses": [("01/06/2026 até 30/06/2026", datetime.timedelta(hours=1),
-                       datetime.timedelta(hours=1), datetime.timedelta(0), datetime.timedelta(0))],
-            "total": (datetime.timedelta(hours=1), datetime.timedelta(hours=1), datetime.timedelta(0), datetime.timedelta(0)),
+            "dias": [("01/06/2026", "Seg", datetime.timedelta(hours=8), datetime.timedelta(hours=17),
+                      None, None, None, None, None, None, "+01:00", None)],
         },
         {
             "nome": "PESSOA DOIS", "funcao": "CARGO B", "admissao": "01/02/2020",
             "departamento": "BIBLIOTECA",
-            "meses": [("01/06/2026 até 30/06/2026", datetime.timedelta(hours=-1),
-                       datetime.timedelta(0), datetime.timedelta(hours=1), datetime.timedelta(0))],
-            "total": ("-01:00", datetime.timedelta(0), datetime.timedelta(hours=1), datetime.timedelta(0)),
+            "dias": [("01/06/2026", "Seg", datetime.timedelta(hours=8), datetime.timedelta(hours=17),
+                      None, None, None, None, None, None, "-01:00", None)],
         },
     ])
 

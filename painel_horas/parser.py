@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass, field
 from datetime import date
 
@@ -5,15 +6,23 @@ import openpyxl
 
 from painel_horas.horas import parse_horas
 
+_PADRAO_DIA = re.compile(r"^(\d{2}/\d{2}/\d{4}) - (.+)$")
+
 
 @dataclass
-class Mes:
-    inicio: date
-    fim: date
-    total_min: int
-    credito_min: int
-    debito_min: int
-    ajuste_min: int
+class Dia:
+    data: date
+    dia_semana: str
+    ent1: object
+    sai1: object
+    ent2: object
+    sai2: object
+    ent3: object
+    sai3: object
+    ex50_min: int
+    atraso_min: int
+    btotal_min: int | None
+    exnot_min: int
 
 
 @dataclass
@@ -22,11 +31,8 @@ class Colaborador:
     funcao: str
     admissao: date | None
     departamento: str
-    meses: list[Mes] = field(default_factory=list)
+    dias: list[Dia] = field(default_factory=list)
     total_bruto_min: int = 0
-    credito_total_min: int = 0
-    debito_total_min: int = 0
-    ajuste_total_min: int = 0
 
 
 def _parse_data(texto: str) -> date:
@@ -45,73 +51,72 @@ def ler_colaboradores(caminho_xlsx) -> list[Colaborador]:
     colaboradores: list[Colaborador] = []
     r = 1
     while r <= max_row:
-        v = val(r, 1)
-        if not (isinstance(v, str) and v.startswith("NOME:")):
+        if val(r, 1) != "Nome":
             r += 1
             continue
 
-        nome = v.split(":", 1)[1].strip()
-        funcao = ""
-        admissao: date | None = None
-        departamento = "Sem Departamento"
-        incompleto = False
+        nome_bruto = val(r, 2)
+        nome = nome_bruto.strip() if isinstance(nome_bruto, str) else ""
+        if not nome:
+            print(f"[aviso] bloco na linha {r} sem nome reconhecível — pulando")
+            r += 1
+            continue
 
-        limite = min(max_row, r + 6)
-        j = r + 1
+        admissao_str = val(r + 2, 5)
+        admissao = (
+            _parse_data(admissao_str)
+            if isinstance(admissao_str, str) and admissao_str.strip()
+            else None
+        )
+        funcao_bruta = val(r + 3, 2)
+        funcao = funcao_bruta.strip() if isinstance(funcao_bruta, str) else ""
+        departamento_bruto = val(r + 4, 2)
+        departamento = (
+            departamento_bruto.strip()
+            if isinstance(departamento_bruto, str) and departamento_bruto.strip()
+            else "Sem Departamento"
+        )
+        if admissao is None or departamento == "Sem Departamento":
+            print(f"[aviso] colaborador '{nome}' com admissão/departamento incompleto — usando fallback")
+
+        header_row = None
+        limite = min(max_row, r + 15)
+        j = r + 5
         while j <= limite:
-            vj1 = val(j, 1)
-            if isinstance(vj1, str) and vj1.startswith("FUN"):
-                funcao = vj1.split(":", 1)[1].strip()
-                vj3 = val(j, 3)
-                data_str = ""
-                if isinstance(vj3, str) and "ADMISS" in vj3.upper():
-                    data_str = vj3.split(":", 1)[1].strip()
-                if data_str:
-                    admissao = _parse_data(data_str)
-                else:
-                    incompleto = True
-            elif isinstance(vj1, str) and vj1.startswith("DEPARTAMENTO:"):
-                dep = vj1.split(":", 1)[1].strip()
-                if dep:
-                    departamento = dep
-                else:
-                    incompleto = True
-            elif vj1 == "PERÍODO":
+            if val(j, 1) == "Data":
+                header_row = j
                 break
             j += 1
 
-        if incompleto:
-            print(f"[aviso] colaborador '{nome}' com admissão/departamento incompleto — usando fallback")
-
-        header_row = j
-        meses: list[Mes] = []
-        k = header_row + 1
-        total_bruto = credito_total = debito_total = ajuste_total = 0
-        while k <= max_row:
-            vk1 = val(k, 1)
-            if vk1 == "TOTAL":
-                total_bruto = parse_horas(val(k, 2))
-                credito_total = parse_horas(val(k, 3))
-                debito_total = parse_horas(val(k, 4))
-                ajuste_total = parse_horas(val(k, 5))
-                k += 1
-                break
-            if isinstance(vk1, str) and " até " in vk1:
-                inicio_str, fim_str = vk1.split(" até ")
-                meses.append(Mes(
-                    inicio=_parse_data(inicio_str),
-                    fim=_parse_data(fim_str),
-                    total_min=parse_horas(val(k, 2)),
-                    credito_min=parse_horas(val(k, 3)),
-                    debito_min=parse_horas(val(k, 4)),
-                    ajuste_min=parse_horas(val(k, 5)),
+        dias: list[Dia] = []
+        if header_row is None:
+            print(f"[aviso] colaborador '{nome}' sem tabela diária reconhecível — pulando dias")
+            k = r + 1
+        else:
+            k = header_row + 2  # pula a linha "Totais"
+            while k <= max_row:
+                bruto = val(k, 1)
+                m = _PADRAO_DIA.match(bruto) if isinstance(bruto, str) else None
+                if not m:
+                    break
+                btotal_raw = val(k, 10)
+                dias.append(Dia(
+                    data=_parse_data(m.group(1)),
+                    dia_semana=m.group(2),
+                    ent1=val(k, 2), sai1=val(k, 3),
+                    ent2=val(k, 4), sai2=val(k, 5),
+                    ent3=val(k, 6), sai3=val(k, 7),
+                    ex50_min=parse_horas(val(k, 8)),
+                    atraso_min=parse_horas(val(k, 9)),
+                    btotal_min=parse_horas(btotal_raw) if btotal_raw is not None else None,
+                    exnot_min=parse_horas(val(k, 11)),
                 ))
-            k += 1
+                k += 1
 
+        total_bruto = sum(d.btotal_min or 0 for d in dias)
         colaboradores.append(Colaborador(
             nome=nome, funcao=funcao, admissao=admissao, departamento=departamento,
-            meses=meses, total_bruto_min=total_bruto, credito_total_min=credito_total,
-            debito_total_min=debito_total, ajuste_total_min=ajuste_total,
+            dias=dias, total_bruto_min=total_bruto,
         ))
         r = k
 
