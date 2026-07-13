@@ -22,18 +22,58 @@ app = FastAPI()
 
 ESTADO: dict = {}
 
+ESTILO = """
+<style>
+:root{--bg:#0b0f14;--panel:#121821;--panel2:#0e141c;--line:#1f2933;--ink:#e8edf2;--mut:#8a97a6;--pos:#3ddc84;--neg:#ff5c5c;--amber:#ffb020;--blue:#4da3ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:32px 24px 64px}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+h1{margin:0 0 20px;font-size:22px;font-weight:800}
+h2{font-size:15px;margin:0 0 4px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:20px}
+.muted{color:var(--mut);font-size:12.5px;margin:0 0 14px}
+.row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:none}
+.row label{flex:0 0 240px;font-size:13px}
+input[type=email],input[type=text],input[type=file]{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:8px 10px;font-size:13px;flex:1;font-family:inherit}
+input:focus{outline:none;border-color:var(--blue)}
+button{background:var(--blue);color:#04101f;border:none;border-radius:6px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+button:hover{opacity:.9}
+.btn-secondary{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+a{color:var(--blue)}
+iframe{border:1px solid var(--line);border-radius:8px;background:#fff;display:block}
+.warn{background:#2a2410;border:1px solid #4d3f12;color:#e8dcae;border-radius:8px;padding:10px 14px;font-size:12.5px;margin-bottom:10px}
+.badge-warn{background:#2a2410;border:1px solid #4d3f12;color:var(--amber);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;margin-left:8px}
+.row-buttons{display:flex;justify-content:flex-end;gap:12px;margin-top:16px}
+.card.ok{border-left:3px solid var(--pos)}
+.card.err{border-left:3px solid var(--neg)}
+ul.resultados{list-style:none;padding:0;margin:0}
+ul.resultados li{padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
+ul.resultados li:last-child{border-bottom:none}
+</style>
+"""
+
 PASTA_BASE.mkdir(parents=True, exist_ok=True)
 app.mount("/painel", StaticFiles(directory=str(PASTA_BASE)), name="painel")
 
 @app.get("/", response_class=HTMLResponse)
 def index() -> str:
-    return """
-    <html><body>
-    <h1>Painel de horas</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      <input type="file" name="arquivo" accept=".xlsx" required>
-      <button type="submit">Enviar arquivo</button>
-    </form>
+    return f"""
+    <html><head><meta charset="UTF-8"><title>Painel de horas · Fucape</title>{ESTILO}</head><body>
+    <div class="wrap">
+      <div class="eyebrow">Fucape Business School · Cartão Ponto Secullum</div>
+      <h1>Painel de horas</h1>
+      <div class="card">
+        <form action="/upload" method="post" enctype="multipart/form-data">
+          <div class="row">
+            <label>Arquivo (.xlsx)</label>
+            <input type="file" name="arquivo" accept=".xlsx" required>
+          </div>
+          <button type="submit">Enviar arquivo</button>
+        </form>
+      </div>
+    </div>
     </body></html>
     """
 
@@ -49,10 +89,12 @@ async def upload(arquivo: UploadFile = File(...)) -> HTMLResponse | RedirectResp
         resumo = processar_upload(destino, PASTA_BASE)
     except ValueError as erro:
         return HTMLResponse(f"""
-        <html><body>
-        <h1>Não deu pra processar o arquivo</h1>
-        <p>{erro}</p>
-        <a href="/">Tentar de novo</a>
+        <html><head><meta charset="UTF-8"><title>Erro · Fucape</title>{ESTILO}</head><body>
+        <div class="wrap">
+          <h1>Não deu pra processar o arquivo</h1>
+          <div class="card err">{erro}</div>
+          <a href="/">Tentar de novo</a>
+        </div>
         </body></html>
         """)
 
@@ -69,35 +111,40 @@ def preview() -> HTMLResponse | RedirectResponse:
     mapa = config_mod.carregar_config(CAMINHO_CONFIG)
     deptos = sorted(set(mapa) | set(resumo["departamentos_labels"]))
     linhas_config = "".join(
-        f'<div>{depto}: <input name="email_{depto}" value="{mapa.get(depto, "")}"></div>'
+        f'<div class="row"><label>{depto}'
+        + ('' if mapa.get(depto) else ' <span class="badge-warn">sem e-mail</span>')
+        + '</label>'
+        f'<input type="email" name="email_{depto}" value="{mapa.get(depto, "")}" '
+        f'placeholder="email do gestor"></div>'
         for depto in deptos
-    )
-    faltando = [depto for depto in resumo["departamentos_labels"] if not mapa.get(depto)]
-    aviso_faltando = "".join(
-        f"<p style='color:orange'>{depto}: sem e-mail de gestor configurado — esse departamento "
-        "não vai receber notificação se você enviar agora.</p>"
-        for depto in faltando
     )
 
     return HTMLResponse(f"""
-    <html><body>
-    <h1>Painel gerado — período {resumo['periodo']}</h1>
-    <p>{resumo['colaboradores']} colaboradores · {resumo['departamentos']} departamentos ·
-       {resumo['elegiveis']} elegíveis · {resumo['nao_elegiveis']} fora da base</p>
-    <iframe src="/painel/{resumo['periodo']}/index.html" width="100%" height="600"></iframe>
+    <html><head><meta charset="UTF-8"><title>Painel gerado · Fucape</title>{ESTILO}</head><body>
+    <div class="wrap">
+      <div class="eyebrow">Fucape Business School · Cartão Ponto Secullum</div>
+      <h1>Painel gerado — período {resumo['periodo']}</h1>
+      <p class="muted">{resumo['colaboradores']} colaboradores · {resumo['departamentos']} departamentos ·
+         {resumo['elegiveis']} elegíveis · {resumo['nao_elegiveis']} fora da base</p>
 
-    <form action="/config" method="post">
-      <h2>Gestores por departamento</h2>
-      {linhas_config}
-      <button type="submit">Salvar configuração</button>
-    </form>
+      <div class="card">
+        <iframe src="/painel/{resumo['periodo']}/index.html" width="100%" height="600"></iframe>
+      </div>
 
-    {aviso_faltando}
-
-    <form action="/enviar" method="post"
-          onsubmit="return confirm('Confirma a publicação e o envio de e-mail?')">
-      <button type="submit">Enviar</button>
-    </form>
+      <div class="card">
+        <h2>Gestores por departamento</h2>
+        <p class="muted">Já configurado? Pode trocar o e-mail a qualquer momento — só editar o campo e salvar de novo.</p>
+        <form id="form-config" action="/config" method="post">
+          {linhas_config}
+        </form>
+        <form id="form-enviar" action="/enviar" method="post"
+              onsubmit="return confirm('Confirma a publicação e o envio de e-mail?')"></form>
+        <div class="row-buttons">
+          <button type="submit" form="form-config" class="btn-secondary">Salvar configuração</button>
+          <button type="submit" form="form-enviar">Enviar</button>
+        </div>
+      </div>
+    </div>
     </body></html>
     """)
 
@@ -119,23 +166,27 @@ def _renderizar_resultado(link: str, resultados: dict[str, str]) -> HTMLResponse
     linhas = "".join(f"<li>{destinatario}: {msg}</li>" for destinatario, msg in resultados.items())
 
     if falhas:
-        aviso = f"<p style='color:red'>{len(falhas)} envio(s) falharam.</p>"
+        classe_card = "err"
+        aviso = f"{len(falhas)} envio(s) falharam."
         botao_retry = """
         <form action="/reenviar" method="post">
-          <button type="submit">Reenviar só pra quem falhou</button>
+          <button type="submit" class="btn-secondary">Reenviar só pra quem falhou</button>
         </form>
         """
     else:
-        aviso = "<p>Todos os envios OK.</p>"
+        classe_card = "ok"
+        aviso = "Todos os envios OK."
         botao_retry = ""
 
     return HTMLResponse(f"""
-    <html><body>
-    <h1>Publicado em {link}</h1>
-    {aviso}
-    <ul>{linhas}</ul>
-    {botao_retry}
-    <a href="/preview">Voltar</a>
+    <html><head><meta charset="UTF-8"><title>Resultado do envio · Fucape</title>{ESTILO}</head><body>
+    <div class="wrap">
+      <h1>Publicado em <a href="{link}">{link}</a></h1>
+      <div class="card {classe_card}">{aviso}</div>
+      <div class="card"><ul class="resultados">{linhas}</ul></div>
+      {botao_retry}
+      <a href="/preview">Voltar</a>
+    </div>
     </body></html>
     """)
 
@@ -152,9 +203,12 @@ def enviar() -> HTMLResponse | RedirectResponse:
     for nome_variavel in VARIAVEIS_OBRIGATORIAS:
         if not os.environ.get(nome_variavel):
             return HTMLResponse(f"""
-            <html><body>
-            <h1>Falta configurar variável de ambiente: {nome_variavel}</h1>
-            <a href="/preview">Voltar</a>
+            <html><head><meta charset="UTF-8"><title>Erro · Fucape</title>{ESTILO}</head><body>
+            <div class="wrap">
+              <h1>Falta configurar variável de ambiente</h1>
+              <div class="card err">{nome_variavel}</div>
+              <a href="/preview">Voltar</a>
+            </div>
             </body></html>
             """)
 
@@ -167,10 +221,12 @@ def enviar() -> HTMLResponse | RedirectResponse:
         url_site = deploy_netlify.publicar(PASTA_BASE)
     except deploy_netlify.DeployError as erro:
         return HTMLResponse(f"""
-        <html><body>
-        <h1>Falha ao publicar</h1>
-        <p>{erro}</p>
-        <a href="/preview">Voltar</a>
+        <html><head><meta charset="UTF-8"><title>Erro · Fucape</title>{ESTILO}</head><body>
+        <div class="wrap">
+          <h1>Falha ao publicar</h1>
+          <div class="card err">{erro}</div>
+          <a href="/preview">Voltar</a>
+        </div>
         </body></html>
         """)
 

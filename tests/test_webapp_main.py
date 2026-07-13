@@ -101,7 +101,7 @@ def test_get_preview_apos_upload_mostra_resumo_e_iframe(tmp_path, monkeypatch, w
     assert "2026-06" in resposta.text
     assert '/painel/2026-06/index.html' in resposta.text
     assert 'name="email_Tecnologia"' in resposta.text
-    assert "Tecnologia: sem e-mail de gestor configurado" in resposta.text
+    assert 'Tecnologia <span class="badge-warn">sem e-mail</span>' in resposta.text
 
 
 def test_get_preview_sem_departamento_faltando_nao_mostra_alerta(tmp_path, monkeypatch, workbook_path):
@@ -127,7 +127,7 @@ def test_get_preview_sem_departamento_faltando_nao_mostra_alerta(tmp_path, monke
 
     resposta = client.get("/preview")
 
-    assert "sem e-mail de gestor configurado" not in resposta.text
+    assert '<span class="badge-warn">' not in resposta.text
 
 
 def test_post_config_salva_mapa_e_redireciona(tmp_path, monkeypatch):
