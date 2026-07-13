@@ -7,3 +7,4 @@ painel/
 __pycache__/
 *.pyc
 webapp_data/
+painel_web/
