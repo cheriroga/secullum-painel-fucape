@@ -137,11 +137,28 @@ def _renderizar_resultado(link: str, resultados: dict[str, str]) -> HTMLResponse
     """)
 
 
+VARIAVEIS_OBRIGATORIAS = ("PAINEL_CEO_EMAIL", "GRAPH_TENANT_ID", "GRAPH_CLIENT_ID", "GRAPH_CLIENT_SECRET")
+
+
 @app.post("/enviar", response_class=HTMLResponse, response_model=None)
 def enviar() -> HTMLResponse | RedirectResponse:
     resumo = ESTADO.get("ultimo")
     if not resumo:
         return RedirectResponse("/", status_code=303)
+
+    for nome_variavel in VARIAVEIS_OBRIGATORIAS:
+        if not os.environ.get(nome_variavel):
+            return HTMLResponse(f"""
+            <html><body>
+            <h1>Falta configurar variável de ambiente: {nome_variavel}</h1>
+            <a href="/preview">Voltar</a>
+            </body></html>
+            """)
+
+    ceo_email = os.environ["PAINEL_CEO_EMAIL"]
+    tenant_id = os.environ["GRAPH_TENANT_ID"]
+    client_id = os.environ["GRAPH_CLIENT_ID"]
+    client_secret = os.environ["GRAPH_CLIENT_SECRET"]
 
     try:
         url_site = deploy_netlify.publicar(PASTA_BASE)
@@ -155,12 +172,10 @@ def enviar() -> HTMLResponse | RedirectResponse:
         """)
 
     mapa = config_mod.carregar_config(CAMINHO_CONFIG)
-    destinatarios = [os.environ["PAINEL_CEO_EMAIL"]] + list(mapa.values())
+    destinatarios = [ceo_email] + list(mapa.values())
 
     link = f"{url_site}/{resumo['periodo']}/"
-    token = mailer_graph.obter_token(
-        os.environ["GRAPH_TENANT_ID"], os.environ["GRAPH_CLIENT_ID"], os.environ["GRAPH_CLIENT_SECRET"],
-    )
+    token = mailer_graph.obter_token(tenant_id, client_id, client_secret)
     remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
     resultados = mailer_graph.enviar_notificacao(token, remetente, destinatarios, resumo["periodo"], link)
 

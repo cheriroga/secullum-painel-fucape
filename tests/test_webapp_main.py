@@ -219,6 +219,11 @@ def test_post_enviar_com_falha_de_deploy_nao_envia_email(tmp_path, monkeypatch, 
         client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
 
+    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
+    monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
+    monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
+    monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
+
     def falha_deploy(pasta_base):
         raise main.deploy_netlify.DeployError("not authenticated")
 
@@ -231,6 +236,44 @@ def test_post_enviar_com_falha_de_deploy_nao_envia_email(tmp_path, monkeypatch, 
 
     assert resposta.status_code == 200
     assert "Falha ao publicar" in resposta.text
+    assert chamado == []
+
+
+def test_post_enviar_sem_variavel_de_ambiente_nao_publica_nem_envia(tmp_path, monkeypatch, workbook_path):
+    monkeypatch.setattr(main, "PASTA_BASE", tmp_path / "painel_web")
+    monkeypatch.setattr(main, "PASTA_UPLOADS", tmp_path / "uploads")
+    monkeypatch.setattr(main, "CAMINHO_CONFIG", tmp_path / "config.json")
+    main.ESTADO.clear()
+
+    monkeypatch.delenv("PAINEL_CEO_EMAIL", raising=False)
+    monkeypatch.delenv("GRAPH_TENANT_ID", raising=False)
+    monkeypatch.delenv("GRAPH_CLIENT_ID", raising=False)
+    monkeypatch.delenv("GRAPH_CLIENT_SECRET", raising=False)
+
+    caminho = workbook_path([
+        {
+            "nome": "PESSOA TECNOLOGIA", "funcao": "ANALISTA", "admissao": "01/01/2020",
+            "departamento": "TECNOLOGIA",
+            "dias": [_dia_com_batida("15/06/2026", "+05:00")],
+        },
+    ])
+    client = TestClient(main.app)
+    with caminho.open("rb") as arquivo:
+        client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
+
+    def publicar_nao_deveria_ser_chamado(pasta_base):
+        raise AssertionError("deploy_netlify.publicar não deveria ser chamado sem as variáveis de ambiente")
+
+    monkeypatch.setattr(main.deploy_netlify, "publicar", publicar_nao_deveria_ser_chamado)
+
+    chamado = []
+    monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: chamado.append(1))
+
+    resposta = client.post("/enviar")
+
+    assert resposta.status_code == 200
+    assert "Falta configurar variável de ambiente" in resposta.text
     assert chamado == []
 
 
