@@ -66,3 +66,31 @@ Assunto + corpo curto (ex.: "Painel de horas — [período] disponível") com o 
 - Pasta de rede compartilhada / watcher automático — descartado em favor do upload direto na página, mais intuitivo para usuária não técnica.
 - Retry automático, log de auditoria de quem recebeu o quê e quando, geração de PDF alternativo — adiar para uma fase de produção, se o protótipo for aprovado.
 - Suporte a múltiplos usuários/perfis no app local — só a responsável pelo Secullum usa, sem gestão de usuários.
+
+## Verificação manual
+
+Esta tarefa não possui testes automatizados — requer login real do Netlify CLI e registro real de aplicativo no Entra ID, que existem apenas no ambiente real da empresa (não na máquina de CI/dev que constrói este plano). A verificação deve ser feita manualmente pelo responsável antes de mostrar o protótipo ao CEO.
+
+### Pré-requisitos (configurar uma única vez, fora do repositório)
+
+1. Instalar o Netlify CLI (`npm install -g netlify-cli`) e rodar `netlify login` na máquina que executará este protótipo; criar um site Netlify uma vez (`netlify sites:create`) e anotar seu nome.
+
+2. Registrar um aplicativo no Entra ID (Azure Portal → App registrations), conceder a permissão de aplicativo `Mail.Send` no Microsoft Graph com consentimento de admin e criar um segredo de cliente. Solicitar ao admin de M365 que crie a caixa de correio compartilhada `relatorios@fucape.br` se ela ainda não existir, e que conceda ao aplicativo permissão para enviar como essa caixa de correio (a permissão de aplicativo `Mail.Send` cobre isso por padrão em todo o locatário, a menos que o IT a restrinja — se restringir, usar uma `applicationAccessPolicy` limitada a essa caixa em vez de todo o locatário).
+
+3. Definir variáveis de ambiente antes de executar: `PAINEL_CEO_EMAIL`, `GRAPH_TENANT_ID`, `GRAPH_CLIENT_ID`, `GRAPH_CLIENT_SECRET` (e opcionalmente `GRAPH_REMETENTE` se não usar o padrão `relatorios@fucape.br`).
+
+### Passos de verificação manual
+
+1. Executar `iniciar_painel_web.bat` (ou `python iniciar_painel_web.py`) — confirmar que o navegador abre em `http://127.0.0.1:8000/` mostrando o formulário de upload.
+
+2. Subir um `cartaoponto.xlsx` real — confirmar que redireciona para `/preview`, mostra as contagens corretas e o iframe renderiza o painel real (ranking, cartões de departamento, abas funcionais "mensal/semanal/diário" em uma página de pessoa).
+
+3. Preencher o e-mail do gestor em pelo menos um departamento no formulário de configuração, clicar em "Salvar configuração" — confirmar que redireciona de volta para `/preview` com o valor persistido (recarregar a página).
+
+4. Clicar em "Enviar", confirmar no diálogo `confirm()` do JS, confirmar que a página de resultado mostra "Publicado em https://.../<periodo>/" e "Todos os envios OK".
+
+5. Abrir o link impresso em um celular com dados móveis (não Wi-Fi da empresa) — confirmar que o painel carrega e as abas da página de pessoa ainda funcionam (este é o problema do SharePoint que este design foi escolhido para evitar — verificar que realmente não acontece no Netlify).
+
+6. Verificar que a caixa de correio do CEO/gestor de teste recebeu realmente o e-mail com o link correto.
+
+7. Re-executar todo o fluxo com um arquivo de outro período — confirmar que o link do período anterior (passo 5) ainda resolve depois desse segundo deploy (esta é a garantia de preservação de histórico da especificação).
