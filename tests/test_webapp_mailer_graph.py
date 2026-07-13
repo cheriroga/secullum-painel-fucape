@@ -52,13 +52,40 @@ def test_enviar_notificacao_marca_ok_e_erro_por_destinatario(monkeypatch):
 
     resultado = mailer_graph.enviar_notificacao(
         token="token-123", remetente="relatorios@fucape.br",
-        destinatarios=["ceo@fucape.br", "falha@fucape.br"],
-        periodo="2026-06", link="https://painel-fucape.netlify.app/2026-06/",
+        destinatarios_links={
+            "ceo@fucape.br": "https://painel-fucape.netlify.app/2026-06/",
+            "falha@fucape.br": "https://painel-fucape.netlify.app/2026-06/deptos/atendimento.html",
+        },
+        periodo="2026-06",
     )
 
     assert resultado["ceo@fucape.br"] == "ok"
     assert resultado["falha@fucape.br"].startswith("erro:")
     assert len(chamadas) == 2
+
+
+def test_enviar_notificacao_manda_link_especifico_por_destinatario(monkeypatch):
+    corpos = {}
+
+    def fake_post(url, headers, json, timeout):
+        destinatario = json["message"]["toRecipients"][0]["emailAddress"]["address"]
+        corpos[destinatario] = json["message"]["body"]["content"]
+        return _RespostaFalsa(202)
+
+    monkeypatch.setattr(mailer_graph.requests, "post", fake_post)
+
+    mailer_graph.enviar_notificacao(
+        token="token-123", remetente="relatorios@fucape.br",
+        destinatarios_links={
+            "ceo@fucape.br": "https://painel-fucape.netlify.app/2026-06/",
+            "gestor.atendimento@fucape.br": "https://painel-fucape.netlify.app/2026-06/deptos/atendimento.html",
+        },
+        periodo="2026-06",
+    )
+
+    assert "https://painel-fucape.netlify.app/2026-06/" in corpos["ceo@fucape.br"]
+    assert "deptos/atendimento.html" not in corpos["ceo@fucape.br"]
+    assert "deptos/atendimento.html" in corpos["gestor.atendimento@fucape.br"]
 
 
 def test_enviar_notificacao_nao_propaga_excecao_de_conexao(monkeypatch):
@@ -75,8 +102,11 @@ def test_enviar_notificacao_nao_propaga_excecao_de_conexao(monkeypatch):
 
     resultado = mailer_graph.enviar_notificacao(
         token="token-123", remetente="relatorios@fucape.br",
-        destinatarios=["instavel@fucape.br", "ceo@fucape.br"],
-        periodo="2026-06", link="https://painel-fucape.netlify.app/2026-06/",
+        destinatarios_links={
+            "instavel@fucape.br": "https://painel-fucape.netlify.app/2026-06/",
+            "ceo@fucape.br": "https://painel-fucape.netlify.app/2026-06/",
+        },
+        periodo="2026-06",
     )
 
     assert resultado["ceo@fucape.br"] == "ok"

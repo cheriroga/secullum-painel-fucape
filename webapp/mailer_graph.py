@@ -20,13 +20,16 @@ def obter_token(tenant_id: str, client_id: str, client_secret: str) -> str:
 
 
 def enviar_notificacao(
-    token: str, remetente: str, destinatarios: list[str], periodo: str, link: str,
+    token: str, remetente: str, destinatarios_links: dict[str, str], periodo: str,
 ) -> dict[str, str]:
+    """Manda um e-mail por destinatário, cada um com o link específico
+    mapeado em destinatarios_links (CEO recebe o painel geral, cada
+    gestor recebe só o link do departamento dele)."""
     resultados: dict[str, str] = {}
     assunto = f"Painel de horas — {periodo} disponível"
-    conteudo = f"O painel de horas de {periodo} já está disponível: {link}"
 
-    for destinatario in destinatarios:
+    for destinatario, link in destinatarios_links.items():
+        conteudo = f"O painel de horas de {periodo} já está disponível: {link}"
         payload = {
             "message": {
                 "subject": assunto,

@@ -7,6 +7,7 @@ from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+from painel_horas.slug import slugify
 from webapp import config as config_mod
 from webapp import deploy_netlify, mailer_graph
 from webapp.pipeline import processar_upload
@@ -35,8 +36,9 @@ h2{font-size:15px;margin:0 0 4px}
 .muted{color:var(--mut);font-size:12.5px;margin:0 0 14px}
 .row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
 .row:last-child{border-bottom:none}
-.row label{flex:0 0 240px;font-size:13px}
+.row label{flex:1;font-size:13px;min-width:0}
 input[type=email],input[type=text],input[type=file]{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:8px 10px;font-size:13px;flex:1;font-family:inherit}
+.row input[type=email]{flex:0 0 220px;max-width:220px}
 input:focus{outline:none;border-color:var(--blue)}
 button{background:var(--blue);color:#04101f;border:none;border-radius:6px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
 button:hover{opacity:.9}
@@ -161,9 +163,12 @@ async def salvar_config_route(request: Request) -> RedirectResponse:
     return RedirectResponse("/preview", status_code=303)
 
 
-def _renderizar_resultado(link: str, resultados: dict[str, str]) -> HTMLResponse:
+def _renderizar_resultado(link_geral: str, resultados: dict[str, str], links: dict[str, str]) -> HTMLResponse:
     falhas = {destinatario: msg for destinatario, msg in resultados.items() if msg != "ok"}
-    linhas = "".join(f"<li>{destinatario}: {msg}</li>" for destinatario, msg in resultados.items())
+    linhas = "".join(
+        f"<li>{destinatario}: {msg} — <a href=\"{links.get(destinatario, '')}\">{links.get(destinatario, '')}</a></li>"
+        for destinatario, msg in resultados.items()
+    )
 
     if falhas:
         classe_card = "err"
@@ -181,7 +186,7 @@ def _renderizar_resultado(link: str, resultados: dict[str, str]) -> HTMLResponse
     return HTMLResponse(f"""
     <html><head><meta charset="UTF-8"><title>Resultado do envio · Fucape</title>{ESTILO}</head><body>
     <div class="wrap">
-      <h1>Publicado em <a href="{link}">{link}</a></h1>
+      <h1>Publicado em <a href="{link_geral}">{link_geral}</a></h1>
       <div class="card {classe_card}">{aviso}</div>
       <div class="card"><ul class="resultados">{linhas}</ul></div>
       {botao_retry}
@@ -231,24 +236,33 @@ def enviar() -> HTMLResponse | RedirectResponse:
         """)
 
     mapa = config_mod.carregar_config(CAMINHO_CONFIG)
-    destinatarios = list(dict.fromkeys([ceo_email] + list(mapa.values())))
+    link_geral = f"{url_site}/{resumo['periodo']}/"
 
-    link = f"{url_site}/{resumo['periodo']}/"
+    destinatarios_links = {
+        email: f"{link_geral}deptos/{slugify(depto)}.html" for depto, email in mapa.items()
+    }
+    destinatarios_links[ceo_email] = link_geral  # CEO sempre recebe o painel geral, mesmo se também for gestor
 
     try:
         token = mailer_graph.obter_token(tenant_id, client_id, client_secret)
     except mailer_graph.EnvioError as erro:
         resultados = {
-            destinatario: f"erro: falha de autenticação Graph — {erro}" for destinatario in destinatarios
+            destinatario: f"erro: falha de autenticação Graph — {erro}" for destinatario in destinatarios_links
         }
-        ESTADO["ultima_publicacao"] = {"link": link, "periodo": resumo["periodo"], "resultados": resultados}
-        return _renderizar_resultado(link, resultados)
+        ESTADO["ultima_publicacao"] = {
+            "link_geral": link_geral, "periodo": resumo["periodo"],
+            "resultados": resultados, "links": destinatarios_links,
+        }
+        return _renderizar_resultado(link_geral, resultados, destinatarios_links)
 
     remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
-    resultados = mailer_graph.enviar_notificacao(token, remetente, destinatarios, resumo["periodo"], link)
+    resultados = mailer_graph.enviar_notificacao(token, remetente, destinatarios_links, resumo["periodo"])
 
-    ESTADO["ultima_publicacao"] = {"link": link, "periodo": resumo["periodo"], "resultados": resultados}
-    return _renderizar_resultado(link, resultados)
+    ESTADO["ultima_publicacao"] = {
+        "link_geral": link_geral, "periodo": resumo["periodo"],
+        "resultados": resultados, "links": destinatarios_links,
+    }
+    return _renderizar_resultado(link_geral, resultados, destinatarios_links)
 
 
 @app.post("/reenviar", response_class=HTMLResponse, response_model=None)
@@ -260,6 +274,7 @@ def reenviar() -> HTMLResponse | RedirectResponse:
     destinatarios_com_falha = [
         destinatario for destinatario, msg in publicacao["resultados"].items() if msg != "ok"
     ]
+    links_com_falha = {destinatario: publicacao["links"][destinatario] for destinatario in destinatarios_com_falha}
 
     try:
         token = mailer_graph.obter_token(
@@ -270,12 +285,10 @@ def reenviar() -> HTMLResponse | RedirectResponse:
             destinatario: f"erro: falha de autenticação Graph — {erro}"
             for destinatario in destinatarios_com_falha
         })
-        return _renderizar_resultado(publicacao["link"], publicacao["resultados"])
+        return _renderizar_resultado(publicacao["link_geral"], publicacao["resultados"], publicacao["links"])
 
     remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
-    novos_resultados = mailer_graph.enviar_notificacao(
-        token, remetente, destinatarios_com_falha, publicacao["periodo"], publicacao["link"],
-    )
+    novos_resultados = mailer_graph.enviar_notificacao(token, remetente, links_com_falha, publicacao["periodo"])
 
     publicacao["resultados"].update(novos_resultados)
-    return _renderizar_resultado(publicacao["link"], publicacao["resultados"])
+    return _renderizar_resultado(publicacao["link_geral"], publicacao["resultados"], publicacao["links"])

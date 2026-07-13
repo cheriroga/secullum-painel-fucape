@@ -184,21 +184,62 @@ def test_post_enviar_publica_e_notifica_com_sucesso(tmp_path, monkeypatch, workb
     monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
     monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: "token-123")
 
-    destinatarios_chamados = []
+    links_chamados = {}
 
-    def fake_enviar(token, remetente, destinatarios, periodo, link):
-        destinatarios_chamados.extend(destinatarios)
-        assert link == "https://painel-fucape.netlify.app/2026-06/"
-        return {destinatario: "ok" for destinatario in destinatarios}
+    def fake_enviar(token, remetente, destinatarios_links, periodo):
+        links_chamados.update(destinatarios_links)
+        return {destinatario: "ok" for destinatario in destinatarios_links}
 
     monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", fake_enviar)
 
     resposta = client.post("/enviar")
 
     assert resposta.status_code == 200
-    assert "ceo@fucape.br" in destinatarios_chamados
-    assert "gestor.ti@fucape.br" in destinatarios_chamados
+    assert links_chamados["ceo@fucape.br"] == "https://painel-fucape.netlify.app/2026-06/"
+    assert links_chamados["gestor.ti@fucape.br"] == "https://painel-fucape.netlify.app/2026-06/deptos/tecnologia.html"
     assert "Todos os envios OK" in resposta.text
+
+
+def test_post_enviar_ceo_tambem_gestor_recebe_link_geral_nao_o_do_depto(tmp_path, monkeypatch, workbook_path):
+    monkeypatch.setattr(main, "PASTA_BASE", tmp_path / "painel_web")
+    monkeypatch.setattr(main, "PASTA_UPLOADS", tmp_path / "uploads")
+    monkeypatch.setattr(main, "CAMINHO_CONFIG", tmp_path / "config.json")
+    main.ESTADO.clear()
+
+    from webapp.config import salvar_config
+    salvar_config(tmp_path / "config.json", {"Tecnologia": "ceo@fucape.br"})
+
+    caminho = workbook_path([
+        {
+            "nome": "PESSOA TECNOLOGIA", "funcao": "ANALISTA", "admissao": "01/01/2020",
+            "departamento": "TECNOLOGIA",
+            "dias": [_dia_com_batida("15/06/2026", "+05:00")],
+        },
+    ])
+    client = TestClient(main.app)
+    with caminho.open("rb") as arquivo:
+        client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
+
+    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
+    monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
+    monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
+    monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
+
+    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+    monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: "token-123")
+
+    links_chamados = {}
+
+    def fake_enviar(token, remetente, destinatarios_links, periodo):
+        links_chamados.update(destinatarios_links)
+        return {destinatario: "ok" for destinatario in destinatarios_links}
+
+    monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", fake_enviar)
+
+    client.post("/enviar")
+
+    assert links_chamados == {"ceo@fucape.br": "https://painel-fucape.netlify.app/2026-06/"}
 
 
 def test_post_enviar_com_falha_de_deploy_nao_envia_email(tmp_path, monkeypatch, workbook_path):
@@ -315,18 +356,20 @@ def test_post_reenviar_manda_so_pra_quem_falhou(tmp_path, monkeypatch, workbook_
     monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
     monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: "token-123")
 
-    def enviar_com_uma_falha(token, remetente, destinatarios, periodo, link):
+    def enviar_com_uma_falha(token, remetente, destinatarios_links, periodo):
         return {
             destinatario: ("ok" if destinatario != "gestor.ti@fucape.br" else "erro: 400 endereço inválido")
-            for destinatario in destinatarios
+            for destinatario in destinatarios_links
         }
 
     monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", enviar_com_uma_falha)
     client.post("/enviar")
     assert main.ESTADO["ultima_publicacao"]["resultados"]["gestor.ti@fucape.br"].startswith("erro:")
 
-    def reenviar_com_sucesso(token, remetente, destinatarios, periodo, link):
-        assert destinatarios == ["gestor.ti@fucape.br"]
+    def reenviar_com_sucesso(token, remetente, destinatarios_links, periodo):
+        assert list(destinatarios_links.keys()) == ["gestor.ti@fucape.br"]
+        assert destinatarios_links["gestor.ti@fucape.br"] == \
+            "https://painel-fucape.netlify.app/2026-06/deptos/tecnologia.html"
         return {"gestor.ti@fucape.br": "ok"}
 
     monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", reenviar_com_sucesso)
@@ -411,10 +454,10 @@ def test_post_reenviar_com_falha_de_autenticacao_graph_mantem_falha(tmp_path, mo
     monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
     monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: "token-123")
 
-    def enviar_com_uma_falha(token, remetente, destinatarios, periodo, link):
+    def enviar_com_uma_falha(token, remetente, destinatarios_links, periodo):
         return {
             destinatario: ("ok" if destinatario != "gestor.ti@fucape.br" else "erro: 400 endereço inválido")
-            for destinatario in destinatarios
+            for destinatario in destinatarios_links
         }
 
     monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", enviar_com_uma_falha)
