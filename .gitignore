@@ -8,3 +8,8 @@ __pycache__/
 *.pyc
 webapp_data/
 painel_web/
+
+# Local Netlify folder
+.netlify
+
+.env

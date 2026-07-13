@@ -2,6 +2,7 @@ import os
 import shutil
 from pathlib import Path
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -9,6 +10,8 @@ from fastapi.staticfiles import StaticFiles
 from webapp import config as config_mod
 from webapp import deploy_netlify, mailer_graph
 from webapp.pipeline import processar_upload
+
+load_dotenv()
 
 RAIZ = Path(__file__).resolve().parent.parent
 PASTA_BASE = RAIZ / "painel_web"
