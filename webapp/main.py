@@ -1,3 +1,4 @@
+import os
 import shutil
 from pathlib import Path
 
@@ -6,6 +7,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from webapp import config as config_mod
+from webapp import deploy_netlify, mailer_graph
 from webapp.pipeline import processar_upload
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -107,3 +109,81 @@ async def salvar_config_route(request: Request) -> RedirectResponse:
             mapa[depto] = str(valor).strip()
     config_mod.salvar_config(CAMINHO_CONFIG, mapa)
     return RedirectResponse("/preview", status_code=303)
+
+
+def _renderizar_resultado(link: str, resultados: dict[str, str]) -> HTMLResponse:
+    falhas = {destinatario: msg for destinatario, msg in resultados.items() if msg != "ok"}
+    linhas = "".join(f"<li>{destinatario}: {msg}</li>" for destinatario, msg in resultados.items())
+
+    if falhas:
+        aviso = f"<p style='color:red'>{len(falhas)} envio(s) falharam.</p>"
+        botao_retry = """
+        <form action="/reenviar" method="post">
+          <button type="submit">Reenviar só pra quem falhou</button>
+        </form>
+        """
+    else:
+        aviso = "<p>Todos os envios OK.</p>"
+        botao_retry = ""
+
+    return HTMLResponse(f"""
+    <html><body>
+    <h1>Publicado em {link}</h1>
+    {aviso}
+    <ul>{linhas}</ul>
+    {botao_retry}
+    <a href="/preview">Voltar</a>
+    </body></html>
+    """)
+
+
+@app.post("/enviar", response_class=HTMLResponse, response_model=None)
+def enviar() -> HTMLResponse | RedirectResponse:
+    resumo = ESTADO.get("ultimo")
+    if not resumo:
+        return RedirectResponse("/", status_code=303)
+
+    try:
+        url_site = deploy_netlify.publicar(PASTA_BASE)
+    except deploy_netlify.DeployError as erro:
+        return HTMLResponse(f"""
+        <html><body>
+        <h1>Falha ao publicar</h1>
+        <p>{erro}</p>
+        <a href="/preview">Voltar</a>
+        </body></html>
+        """)
+
+    mapa = config_mod.carregar_config(CAMINHO_CONFIG)
+    destinatarios = [os.environ["PAINEL_CEO_EMAIL"]] + list(mapa.values())
+
+    link = f"{url_site}/{resumo['periodo']}/"
+    token = mailer_graph.obter_token(
+        os.environ["GRAPH_TENANT_ID"], os.environ["GRAPH_CLIENT_ID"], os.environ["GRAPH_CLIENT_SECRET"],
+    )
+    remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
+    resultados = mailer_graph.enviar_notificacao(token, remetente, destinatarios, resumo["periodo"], link)
+
+    ESTADO["ultima_publicacao"] = {"link": link, "periodo": resumo["periodo"], "resultados": resultados}
+    return _renderizar_resultado(link, resultados)
+
+
+@app.post("/reenviar", response_class=HTMLResponse, response_model=None)
+def reenviar() -> HTMLResponse | RedirectResponse:
+    publicacao = ESTADO.get("ultima_publicacao")
+    if not publicacao:
+        return RedirectResponse("/", status_code=303)
+
+    destinatarios_com_falha = [
+        destinatario for destinatario, msg in publicacao["resultados"].items() if msg != "ok"
+    ]
+    token = mailer_graph.obter_token(
+        os.environ["GRAPH_TENANT_ID"], os.environ["GRAPH_CLIENT_ID"], os.environ["GRAPH_CLIENT_SECRET"],
+    )
+    remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
+    novos_resultados = mailer_graph.enviar_notificacao(
+        token, remetente, destinatarios_com_falha, publicacao["periodo"], publicacao["link"],
+    )
+
+    publicacao["resultados"].update(novos_resultados)
+    return _renderizar_resultado(publicacao["link"], publicacao["resultados"])
