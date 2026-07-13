@@ -11,6 +11,7 @@ def test_publicar_retorna_url_sem_barra_final(tmp_path, monkeypatch):
     def fake_run(comando, capture_output, text, shell):
         assert comando[:3] == ["netlify", "deploy", "--prod"]
         assert str(tmp_path) in comando
+        assert "--no-build" in comando
         assert shell is True
         return subprocess.CompletedProcess(
             comando, returncode=0, stdout='{"deploy_url": "https://painel-fucape.netlify.app/"}', stderr="",

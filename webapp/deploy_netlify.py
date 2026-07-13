@@ -12,7 +12,7 @@ def publicar(pasta_base: Path) -> str:
     """Publica pasta_base (a raiz acumulada de todos os períodos já
     gerados) no Netlify e retorna a URL base do site, sem barra final."""
     resultado = subprocess.run(
-        ["netlify", "deploy", "--prod", "--dir", str(pasta_base), "--json"],
+        ["netlify", "deploy", "--prod", "--dir", str(pasta_base), "--json", "--no-build"],
         capture_output=True, text=True, shell=(os.name == "nt"),
     )
     if resultado.returncode != 0:
