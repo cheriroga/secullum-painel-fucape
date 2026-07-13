@@ -1,5 +1,7 @@
 import os
 import shutil
+import threading
+import time
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -54,10 +56,37 @@ ul.resultados{list-style:none;padding:0;margin:0}
 ul.resultados li{padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
 ul.resultados li:last-child{border-bottom:none}
 </style>
+<script>
+setInterval(() => { fetch('/heartbeat', {method: 'POST'}).catch(() => {}) }, 4000);
+</script>
 """
 
 PASTA_BASE.mkdir(parents=True, exist_ok=True)
 app.mount("/painel", StaticFiles(directory=str(PASTA_BASE)), name="painel")
+
+ULTIMO_HEARTBEAT = {"quando": time.monotonic()}
+
+
+@app.post("/heartbeat")
+def heartbeat() -> dict:
+    ULTIMO_HEARTBEAT["quando"] = time.monotonic()
+    return {"ok": True}
+
+
+def iniciar_monitor_heartbeat(timeout_segundos: int = 20) -> None:
+    """Inicia uma thread em segundo plano que encerra o processo se
+    nenhum heartbeat chegar por timeout_segundos — assim o servidor
+    fecha sozinho quando a pessoa fecha a aba do navegador, sem depender
+    dela lembrar de fechar o terminal. Não é chamada na importação do
+    módulo (só pelo entry point real), pra nunca matar o processo de
+    testes que importa este módulo sem nunca mandar heartbeat."""
+    def _monitorar() -> None:
+        while True:
+            time.sleep(2)
+            if time.monotonic() - ULTIMO_HEARTBEAT["quando"] > timeout_segundos:
+                os._exit(0)
+
+    threading.Thread(target=_monitorar, daemon=True).start()
 
 @app.get("/", response_class=HTMLResponse)
 def index() -> str:

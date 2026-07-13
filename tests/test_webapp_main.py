@@ -1,8 +1,27 @@
 import datetime
+import threading
 
 from fastapi.testclient import TestClient
 
 from webapp import main
+
+
+def test_post_heartbeat_atualiza_timestamp():
+    client = TestClient(main.app)
+    main.ULTIMO_HEARTBEAT["quando"] = 0
+
+    resposta = client.post("/heartbeat")
+
+    assert resposta.status_code == 200
+    assert main.ULTIMO_HEARTBEAT["quando"] > 0
+
+
+def test_iniciar_monitor_heartbeat_inicia_thread_em_segundo_plano():
+    contagem_antes = threading.active_count()
+
+    main.iniciar_monitor_heartbeat(timeout_segundos=1000)
+
+    assert threading.active_count() == contagem_antes + 1
 
 
 def _dia_com_batida(data_str, btotal_str):
