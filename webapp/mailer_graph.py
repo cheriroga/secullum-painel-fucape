@@ -34,12 +34,17 @@ def enviar_notificacao(
                 "toRecipients": [{"emailAddress": {"address": destinatario}}],
             }
         }
-        resposta = requests.post(
-            f"https://graph.microsoft.com/v1.0/users/{remetente}/sendMail",
-            headers={"Authorization": f"Bearer {token}"},
-            json=payload,
-            timeout=30,
-        )
+        try:
+            resposta = requests.post(
+                f"https://graph.microsoft.com/v1.0/users/{remetente}/sendMail",
+                headers={"Authorization": f"Bearer {token}"},
+                json=payload,
+                timeout=30,
+            )
+        except requests.exceptions.RequestException as exc:
+            resultados[destinatario] = f"erro: falha de conexão — {exc}"
+            continue
+
         if resposta.status_code == 202:
             resultados[destinatario] = "ok"
         else:

@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 from webapp import mailer_graph
 
@@ -57,4 +58,27 @@ def test_enviar_notificacao_marca_ok_e_erro_por_destinatario(monkeypatch):
 
     assert resultado["ceo@fucape.br"] == "ok"
     assert resultado["falha@fucape.br"].startswith("erro:")
+    assert len(chamadas) == 2
+
+
+def test_enviar_notificacao_nao_propaga_excecao_de_conexao(monkeypatch):
+    chamadas = []
+
+    def fake_post(url, headers, json, timeout):
+        destinatario = json["message"]["toRecipients"][0]["emailAddress"]["address"]
+        chamadas.append(destinatario)
+        if destinatario == "instavel@fucape.br":
+            raise requests.exceptions.RequestException("timeout")
+        return _RespostaFalsa(202)
+
+    monkeypatch.setattr(mailer_graph.requests, "post", fake_post)
+
+    resultado = mailer_graph.enviar_notificacao(
+        token="token-123", remetente="relatorios@fucape.br",
+        destinatarios=["instavel@fucape.br", "ceo@fucape.br"],
+        periodo="2026-06", link="https://painel-fucape.netlify.app/2026-06/",
+    )
+
+    assert resultado["ceo@fucape.br"] == "ok"
+    assert resultado["instavel@fucape.br"].startswith("erro:")
     assert len(chamadas) == 2
