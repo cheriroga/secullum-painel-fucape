@@ -136,14 +136,13 @@ def preview() -> HTMLResponse | RedirectResponse:
       <div class="card">
         <h2>Gestores por departamento</h2>
         <p class="muted">Já configurado? Pode trocar o e-mail a qualquer momento — só editar o campo e salvar de novo.</p>
-        <form id="form-config" action="/config" method="post">
+        <form id="form-gestores" method="post">
           {linhas_config}
         </form>
-        <form id="form-enviar" action="/enviar" method="post"
-              onsubmit="return confirm('Confirma a publicação e o envio de e-mail?')"></form>
         <div class="row-buttons">
-          <button type="submit" form="form-config" class="btn-secondary">Salvar configuração</button>
-          <button type="submit" form="form-enviar">Enviar</button>
+          <button type="submit" form="form-gestores" formaction="/config" class="btn-secondary">Salvar configuração</button>
+          <button type="submit" form="form-gestores" formaction="/enviar"
+                  onclick="return confirm('Confirma a publicação e o envio de e-mail?')">Enviar</button>
         </div>
       </div>
     </div>
@@ -151,14 +150,18 @@ def preview() -> HTMLResponse | RedirectResponse:
     """)
 
 
-@app.post("/config")
-async def salvar_config_route(request: Request) -> RedirectResponse:
-    formulario = await request.form()
+def _extrair_mapa_do_formulario(formulario) -> dict[str, str]:
     mapa = {}
     for chave, valor in formulario.items():
         if chave.startswith("email_") and str(valor).strip():
             depto = chave[len("email_"):]
             mapa[depto] = str(valor).strip()
+    return mapa
+
+
+@app.post("/config")
+async def salvar_config_route(request: Request) -> RedirectResponse:
+    mapa = _extrair_mapa_do_formulario(await request.form())
     config_mod.salvar_config(CAMINHO_CONFIG, mapa)
     return RedirectResponse("/preview", status_code=303)
 
@@ -200,10 +203,13 @@ VARIAVEIS_OBRIGATORIAS = ("PAINEL_CEO_EMAIL", "GRAPH_TENANT_ID", "GRAPH_CLIENT_I
 
 
 @app.post("/enviar", response_class=HTMLResponse, response_model=None)
-def enviar() -> HTMLResponse | RedirectResponse:
+async def enviar(request: Request) -> HTMLResponse | RedirectResponse:
     resumo = ESTADO.get("ultimo")
     if not resumo:
         return RedirectResponse("/", status_code=303)
+
+    mapa = _extrair_mapa_do_formulario(await request.form())
+    config_mod.salvar_config(CAMINHO_CONFIG, mapa)
 
     for nome_variavel in VARIAVEIS_OBRIGATORIAS:
         if not os.environ.get(nome_variavel):
@@ -235,7 +241,6 @@ def enviar() -> HTMLResponse | RedirectResponse:
         </body></html>
         """)
 
-    mapa = config_mod.carregar_config(CAMINHO_CONFIG)
     link_geral = f"{url_site}/{resumo['periodo']}/"
 
     destinatarios_links = {
