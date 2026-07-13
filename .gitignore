@@ -6,3 +6,4 @@ scratch_artifact.html
 painel/
 __pycache__/
 *.pyc
+webapp_data/
