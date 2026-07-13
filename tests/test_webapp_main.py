@@ -336,3 +336,98 @@ def test_post_reenviar_manda_so_pra_quem_falhou(tmp_path, monkeypatch, workbook_
     assert resposta.status_code == 200
     assert "Todos os envios OK" in resposta.text
     assert main.ESTADO["ultima_publicacao"]["resultados"]["gestor.ti@fucape.br"] == "ok"
+
+
+def test_post_enviar_com_falha_de_autenticacao_graph_mostra_link_e_marca_falhas(
+    tmp_path, monkeypatch, workbook_path,
+):
+    monkeypatch.setattr(main, "PASTA_BASE", tmp_path / "painel_web")
+    monkeypatch.setattr(main, "PASTA_UPLOADS", tmp_path / "uploads")
+    monkeypatch.setattr(main, "CAMINHO_CONFIG", tmp_path / "config.json")
+    main.ESTADO.clear()
+
+    from webapp.config import salvar_config
+    salvar_config(tmp_path / "config.json", {"Tecnologia": "gestor.ti@fucape.br"})
+
+    caminho = workbook_path([
+        {
+            "nome": "PESSOA TECNOLOGIA", "funcao": "ANALISTA", "admissao": "01/01/2020",
+            "departamento": "TECNOLOGIA",
+            "dias": [_dia_com_batida("15/06/2026", "+05:00")],
+        },
+    ])
+    client = TestClient(main.app)
+    with caminho.open("rb") as arquivo:
+        client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
+
+    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
+    monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
+    monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
+    monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
+
+    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+
+    def falha_auth(*a, **k):
+        raise main.mailer_graph.EnvioError("bad creds")
+
+    monkeypatch.setattr(main.mailer_graph, "obter_token", falha_auth)
+
+    resposta = client.post("/enviar")
+
+    assert resposta.status_code == 200
+    assert "painel-fucape.netlify.app" in resposta.text
+    resultados = main.ESTADO["ultima_publicacao"]["resultados"]
+    assert resultados["ceo@fucape.br"] != "ok"
+    assert resultados["gestor.ti@fucape.br"] != "ok"
+    assert "falha de autenticação Graph" in resposta.text
+
+
+def test_post_reenviar_com_falha_de_autenticacao_graph_mantem_falha(tmp_path, monkeypatch, workbook_path):
+    monkeypatch.setattr(main, "PASTA_BASE", tmp_path / "painel_web")
+    monkeypatch.setattr(main, "PASTA_UPLOADS", tmp_path / "uploads")
+    monkeypatch.setattr(main, "CAMINHO_CONFIG", tmp_path / "config.json")
+    main.ESTADO.clear()
+
+    from webapp.config import salvar_config
+    salvar_config(tmp_path / "config.json", {"Tecnologia": "gestor.ti@fucape.br"})
+
+    caminho = workbook_path([
+        {
+            "nome": "PESSOA TECNOLOGIA", "funcao": "ANALISTA", "admissao": "01/01/2020",
+            "departamento": "TECNOLOGIA",
+            "dias": [_dia_com_batida("15/06/2026", "+05:00")],
+        },
+    ])
+    client = TestClient(main.app)
+    with caminho.open("rb") as arquivo:
+        client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
+
+    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
+    monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
+    monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
+    monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
+    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+    monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: "token-123")
+
+    def enviar_com_uma_falha(token, remetente, destinatarios, periodo, link):
+        return {
+            destinatario: ("ok" if destinatario != "gestor.ti@fucape.br" else "erro: 400 endereço inválido")
+            for destinatario in destinatarios
+        }
+
+    monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", enviar_com_uma_falha)
+    client.post("/enviar")
+    assert main.ESTADO["ultima_publicacao"]["resultados"]["gestor.ti@fucape.br"].startswith("erro:")
+
+    def falha_auth(*a, **k):
+        raise main.mailer_graph.EnvioError("bad creds")
+
+    monkeypatch.setattr(main.mailer_graph, "obter_token", falha_auth)
+
+    resposta = client.post("/reenviar")
+
+    assert resposta.status_code == 200
+    resultado_gestor = main.ESTADO["ultima_publicacao"]["resultados"]["gestor.ti@fucape.br"]
+    assert resultado_gestor != "ok"

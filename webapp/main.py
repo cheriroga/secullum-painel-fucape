@@ -38,7 +38,7 @@ def index() -> str:
 @app.post("/upload", response_class=HTMLResponse, response_model=None)
 async def upload(arquivo: UploadFile = File(...)) -> HTMLResponse | RedirectResponse:
     PASTA_UPLOADS.mkdir(parents=True, exist_ok=True)
-    destino = PASTA_UPLOADS / arquivo.filename
+    destino = PASTA_UPLOADS / Path(arquivo.filename).name
     with destino.open("wb") as saida:
         shutil.copyfileobj(arquivo.file, saida)
 
@@ -172,10 +172,19 @@ def enviar() -> HTMLResponse | RedirectResponse:
         """)
 
     mapa = config_mod.carregar_config(CAMINHO_CONFIG)
-    destinatarios = [ceo_email] + list(mapa.values())
+    destinatarios = list(dict.fromkeys([ceo_email] + list(mapa.values())))
 
     link = f"{url_site}/{resumo['periodo']}/"
-    token = mailer_graph.obter_token(tenant_id, client_id, client_secret)
+
+    try:
+        token = mailer_graph.obter_token(tenant_id, client_id, client_secret)
+    except mailer_graph.EnvioError as erro:
+        resultados = {
+            destinatario: f"erro: falha de autenticação Graph — {erro}" for destinatario in destinatarios
+        }
+        ESTADO["ultima_publicacao"] = {"link": link, "periodo": resumo["periodo"], "resultados": resultados}
+        return _renderizar_resultado(link, resultados)
+
     remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
     resultados = mailer_graph.enviar_notificacao(token, remetente, destinatarios, resumo["periodo"], link)
 
@@ -192,9 +201,18 @@ def reenviar() -> HTMLResponse | RedirectResponse:
     destinatarios_com_falha = [
         destinatario for destinatario, msg in publicacao["resultados"].items() if msg != "ok"
     ]
-    token = mailer_graph.obter_token(
-        os.environ["GRAPH_TENANT_ID"], os.environ["GRAPH_CLIENT_ID"], os.environ["GRAPH_CLIENT_SECRET"],
-    )
+
+    try:
+        token = mailer_graph.obter_token(
+            os.environ["GRAPH_TENANT_ID"], os.environ["GRAPH_CLIENT_ID"], os.environ["GRAPH_CLIENT_SECRET"],
+        )
+    except mailer_graph.EnvioError as erro:
+        publicacao["resultados"].update({
+            destinatario: f"erro: falha de autenticação Graph — {erro}"
+            for destinatario in destinatarios_com_falha
+        })
+        return _renderizar_resultado(publicacao["link"], publicacao["resultados"])
+
     remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
     novos_resultados = mailer_graph.enviar_notificacao(
         token, remetente, destinatarios_com_falha, publicacao["periodo"], publicacao["link"],
