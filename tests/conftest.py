@@ -2,6 +2,22 @@ import openpyxl
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def _isolar_variaveis_de_ambiente_do_app(monkeypatch):
+    """Garante que nenhum teste dependa do .env real do desenvolvedor.
+
+    webapp.main chama load_dotenv() na importação, o que deixa essas
+    variáveis no os.environ pelo resto da sessão de testes — sem isso,
+    o valor real de PAINEL_METODO_ENVIO (ou qualquer outra) no .env de
+    quem está rodando os testes vaza pros testes que não a definem
+    explicitamente."""
+    for nome in (
+        "PAINEL_CEO_EMAIL", "PAINEL_METODO_ENVIO", "PAINEL_MODO_TESTE",
+        "GRAPH_TENANT_ID", "GRAPH_CLIENT_ID", "GRAPH_CLIENT_SECRET", "GRAPH_REMETENTE",
+    ):
+        monkeypatch.delenv(nome, raising=False)
+
+
 @pytest.fixture
 def workbook_path(tmp_path):
     def _construir(blocos):

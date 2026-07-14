@@ -1,7 +1,11 @@
+import base64
+
 import msal
 import requests
 
-from webapp.mensagem_email import montar_assunto, montar_corpo_html
+from webapp.mensagem_email import CAMINHO_ASSINATURA, CID_ASSINATURA, montar_assunto, montar_corpo_html
+
+_ASSINATURA_BASE64 = base64.b64encode(CAMINHO_ASSINATURA.read_bytes()).decode("ascii")
 
 
 class EnvioError(RuntimeError):
@@ -37,6 +41,16 @@ def enviar_notificacao(
                 "subject": assunto,
                 "body": {"contentType": "HTML", "content": conteudo},
                 "toRecipients": [{"emailAddress": {"address": destinatario}}],
+                "attachments": [
+                    {
+                        "@odata.type": "#microsoft.graph.fileAttachment",
+                        "name": CAMINHO_ASSINATURA.name,
+                        "contentType": "image/png",
+                        "contentBytes": _ASSINATURA_BASE64,
+                        "contentId": CID_ASSINATURA,
+                        "isInline": True,
+                    },
+                ],
             }
         }
         try:

@@ -1,7 +1,10 @@
+import base64
+
 import pytest
 import requests
 
 from webapp import mailer_graph
+from webapp.mensagem_email import CAMINHO_ASSINATURA, CID_ASSINATURA
 
 
 class _RespostaFalsa:
@@ -86,6 +89,30 @@ def test_enviar_notificacao_manda_link_especifico_por_destinatario(monkeypatch):
     assert "https://painel-fucape.netlify.app/2026-06/" in corpos["ceo@fucape.br"]
     assert "deptos/atendimento.html" not in corpos["ceo@fucape.br"]
     assert "deptos/atendimento.html" in corpos["gestor.atendimento@fucape.br"]
+
+
+def test_enviar_notificacao_anexa_assinatura_inline(monkeypatch):
+    payloads = []
+
+    def fake_post(url, headers, json, timeout):
+        payloads.append(json)
+        return _RespostaFalsa(202)
+
+    monkeypatch.setattr(mailer_graph.requests, "post", fake_post)
+
+    mailer_graph.enviar_notificacao(
+        token="token-123", remetente="relatorios@fucape.br",
+        destinatarios_links={"ceo@fucape.br": "https://painel-fucape.netlify.app/2026-06/"},
+        periodo="2026-06",
+    )
+
+    anexos = payloads[0]["message"]["attachments"]
+    assert len(anexos) == 1
+    anexo = anexos[0]
+    assert anexo["contentId"] == CID_ASSINATURA
+    assert anexo["isInline"] is True
+    assert anexo["contentType"] == "image/png"
+    assert base64.b64decode(anexo["contentBytes"]) == CAMINHO_ASSINATURA.read_bytes()
 
 
 def test_enviar_notificacao_nao_propaga_excecao_de_conexao(monkeypatch):

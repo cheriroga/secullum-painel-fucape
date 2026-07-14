@@ -1,6 +1,31 @@
 import pytest
 
 from webapp import mailer_outlook
+from webapp.mensagem_email import CAMINHO_ASSINATURA, CID_ASSINATURA
+
+
+class _FakePropertyAccessor:
+    def __init__(self):
+        self.propriedades = {}
+
+    def SetProperty(self, nome, valor):
+        self.propriedades[nome] = valor
+
+
+class _FakeAttachment:
+    def __init__(self, caminho):
+        self.caminho = caminho
+        self.PropertyAccessor = _FakePropertyAccessor()
+
+
+class _FakeAttachments:
+    def __init__(self):
+        self.itens = []
+
+    def Add(self, caminho):
+        anexo = _FakeAttachment(caminho)
+        self.itens.append(anexo)
+        return anexo
 
 
 class _FakeMailItem:
@@ -8,6 +33,7 @@ class _FakeMailItem:
         self.To = None
         self.Subject = None
         self.HTMLBody = None
+        self.Attachments = _FakeAttachments()
         self.enviado = False
 
     def Send(self):
@@ -42,6 +68,19 @@ def test_enviar_notificacao_manda_um_email_por_destinatario(monkeypatch):
     assert app_falso.itens_criados[0].Subject == "Banco de horas da equipe Junho/2026"
     assert app_falso.itens_criados[0].enviado is True
     assert "deptos/tecnologia.html" in app_falso.itens_criados[1].HTMLBody
+
+
+def test_enviar_notificacao_anexa_assinatura_inline_com_cid(monkeypatch):
+    app_falso = _FakeOutlookApp()
+    monkeypatch.setattr(mailer_outlook.win32com.client, "Dispatch", lambda nome: app_falso)
+
+    mailer_outlook.enviar_notificacao({"ceo@fucape.br": "https://x/2026-06/"}, "Junho/2026")
+
+    item = app_falso.itens_criados[0]
+    assert len(item.Attachments.itens) == 1
+    anexo = item.Attachments.itens[0]
+    assert anexo.caminho == str(CAMINHO_ASSINATURA)
+    assert anexo.PropertyAccessor.propriedades[mailer_outlook.PROPRIEDADE_MAPI_CID] == CID_ASSINATURA
 
 
 def test_enviar_notificacao_outlook_indisponivel_levanta_envio_error(monkeypatch):

@@ -1,3 +1,9 @@
+from pathlib import Path
+
+CAMINHO_ASSINATURA = Path(__file__).resolve().parent / "assets" / "assinatura_kris.png"
+CID_ASSINATURA = "assinatura_kris"
+
+
 def montar_assunto(periodo: str) -> str:
     return f"Banco de horas da equipe {periodo}"
 
@@ -15,5 +21,7 @@ def montar_corpo_html(periodo: str, link: str) -> str:
         "<li>Eventuais saldos positivos ou negativos que mereçam atenção.</li>"
         "</ul>"
         "<p>Caso identifiquem algum ponto que precise de ajuste ou queiram um detalhamento "
-        "adicional, é só me avisar em kristielledantas@fucape.br</p>"
+        "adicional, é só me avisar.</p>"
+        "<p>Atenciosamente,</p>"
+        f'<p><img src="cid:{CID_ASSINATURA}" alt="Assinatura" style="max-width:300px"></p>'
     )

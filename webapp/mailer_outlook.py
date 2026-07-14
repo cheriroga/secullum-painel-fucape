@@ -1,6 +1,9 @@
 import win32com.client
 
-from webapp.mensagem_email import montar_assunto, montar_corpo_html
+from webapp.mensagem_email import CAMINHO_ASSINATURA, CID_ASSINATURA, montar_assunto, montar_corpo_html
+
+# Propriedade MAPI PidTagAttachContentId - liga o anexo ao <img src="cid:...">
+PROPRIEDADE_MAPI_CID = "http://schemas.microsoft.com/mapi/proptag/0x3712001F"
 
 
 class EnvioError(RuntimeError):
@@ -26,6 +29,8 @@ def enviar_notificacao(destinatarios_links: dict[str, str], periodo: str) -> dic
             email.To = destinatario
             email.Subject = assunto
             email.HTMLBody = montar_corpo_html(periodo, link)
+            anexo = email.Attachments.Add(str(CAMINHO_ASSINATURA))
+            anexo.PropertyAccessor.SetProperty(PROPRIEDADE_MAPI_CID, CID_ASSINATURA)
             email.Send()
             resultados[destinatario] = "ok"
         except Exception as exc:

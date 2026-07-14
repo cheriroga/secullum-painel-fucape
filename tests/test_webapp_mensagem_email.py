@@ -1,4 +1,4 @@
-from webapp.mensagem_email import montar_assunto, montar_corpo_html
+from webapp.mensagem_email import CAMINHO_ASSINATURA, CID_ASSINATURA, montar_assunto, montar_corpo_html
 
 
 def test_montar_assunto_inclui_periodo():
@@ -11,4 +11,15 @@ def test_montar_corpo_html_inclui_periodo_e_link():
     assert "Junho/2026" in corpo
     assert 'href="https://painel-fucape.netlify.app/2026-06/"' in corpo
     assert "<ul>" in corpo and "</ul>" in corpo
-    assert "kristielledantas@fucape.br" in corpo
+
+
+def test_montar_corpo_html_termina_com_atenciosamente_e_assinatura():
+    corpo = montar_corpo_html("Junho/2026", "https://painel-fucape.netlify.app/2026-06/")
+
+    assert "Atenciosamente" in corpo
+    assert f'src="cid:{CID_ASSINATURA}"' in corpo
+
+
+def test_caminho_assinatura_aponta_pro_arquivo_real():
+    assert CAMINHO_ASSINATURA.name == "assinatura_kris.png"
+    assert CAMINHO_ASSINATURA.exists()
