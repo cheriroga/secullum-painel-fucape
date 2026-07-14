@@ -1,4 +1,4 @@
 @echo off
 cd /d "%~dp0"
-python atualizar_painel.py
+".venv\Scripts\python.exe" atualizar_painel.py
 pause

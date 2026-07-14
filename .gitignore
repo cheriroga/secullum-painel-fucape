@@ -13,3 +13,6 @@ painel_web/
 .netlify
 
 .env
+
+# Ambiente virtual Python
+.venv/

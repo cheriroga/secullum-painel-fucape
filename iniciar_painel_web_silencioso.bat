@@ -1,2 +1,2 @@
 @echo off
-start "" pythonw "%~dp0iniciar_painel_web.py"
+start "" "%~dp0.venv\Scripts\pythonw.exe" "%~dp0iniciar_painel_web.py"
