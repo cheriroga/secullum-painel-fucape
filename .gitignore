@@ -1,0 +1,18 @@
+extratos/*.xlsx
+*.xlsx
+*.mhtml
+*.pdf
+scratch_artifact.html
+painel/
+__pycache__/
+*.pyc
+webapp_data/
+painel_web/
+
+# Local Netlify folder
+.netlify
+
+.env
+
+# Ambiente virtual Python
+.venv/
