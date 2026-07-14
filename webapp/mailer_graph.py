@@ -1,6 +1,8 @@
 import msal
 import requests
 
+from webapp.mensagem_email import montar_assunto, montar_corpo_html
+
 
 class EnvioError(RuntimeError):
     pass
@@ -26,23 +28,10 @@ def enviar_notificacao(
     mapeado em destinatarios_links (CEO recebe o painel geral, cada
     gestor recebe só o link do departamento dele)."""
     resultados: dict[str, str] = {}
-    assunto = f"Banco de horas da equipe {periodo}"
+    assunto = montar_assunto(periodo)
 
     for destinatario, link in destinatarios_links.items():
-        conteudo = (
-            "<p>Prezados (as)</p>"
-            f"<p>Compartilho abaixo o link com o banco de horas da equipe referente ao período de "
-            f"{periodo}:</p>"
-            f'<p>🔗 <a href="{link}">{link}</a></p>'
-            "<p>No relatório é possível acompanhar:</p>"
-            "<ul>"
-            "<li>O saldo de horas individual de cada colaborador;</li>"
-            "<li>O consolidado da equipe no período;</li>"
-            "<li>Eventuais saldos positivos ou negativos que mereçam atenção.</li>"
-            "</ul>"
-            "<p>Caso identifiquem algum ponto que precise de ajuste ou queiram um detalhamento "
-            "adicional, é só me avisar.</p>"
-        )
+        conteudo = montar_corpo_html(periodo, link)
         payload = {
             "message": {
                 "subject": assunto,

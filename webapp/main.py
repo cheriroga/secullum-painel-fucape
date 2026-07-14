@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 
 from painel_horas.slug import slugify
 from webapp import config as config_mod
-from webapp import deploy_netlify, mailer_graph
+from webapp import deploy_netlify, mailer_graph, mailer_outlook
 from webapp.pipeline import processar_upload
 
 load_dotenv()
@@ -235,7 +235,27 @@ def _renderizar_resultado(link_geral: str, resultados: dict[str, str], links: di
     """)
 
 
-VARIAVEIS_OBRIGATORIAS = ("PAINEL_CEO_EMAIL", "GRAPH_TENANT_ID", "GRAPH_CLIENT_ID", "GRAPH_CLIENT_SECRET")
+VARIAVEIS_OBRIGATORIAS_COMUNS = ("PAINEL_CEO_EMAIL",)
+VARIAVEIS_OBRIGATORIAS_GRAPH = ("GRAPH_TENANT_ID", "GRAPH_CLIENT_ID", "GRAPH_CLIENT_SECRET")
+
+
+def _metodo_envio() -> str:
+    return os.environ.get("PAINEL_METODO_ENVIO", "graph").strip().lower()
+
+
+def _enviar_por_metodo(destinatarios_links: dict[str, str], periodo_extenso: str) -> dict[str, str]:
+    """Manda a notificação pelo método configurado em PAINEL_METODO_ENVIO
+    ("graph", default, ou "outlook"). Levanta EnvioError (de mailer_graph
+    ou mailer_outlook) se a conexão/autenticação falhar antes de tentar
+    mandar qualquer mensagem."""
+    if _metodo_envio() == "outlook":
+        return mailer_outlook.enviar_notificacao(destinatarios_links, periodo_extenso)
+
+    token = mailer_graph.obter_token(
+        os.environ["GRAPH_TENANT_ID"], os.environ["GRAPH_CLIENT_ID"], os.environ["GRAPH_CLIENT_SECRET"],
+    )
+    remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
+    return mailer_graph.enviar_notificacao(token, remetente, destinatarios_links, periodo_extenso)
 
 
 @app.post("/enviar", response_class=HTMLResponse, response_model=None)
@@ -247,7 +267,11 @@ async def enviar(request: Request) -> HTMLResponse | RedirectResponse:
     mapa = _extrair_mapa_do_formulario(await request.form())
     config_mod.salvar_config(CAMINHO_CONFIG, mapa)
 
-    for nome_variavel in VARIAVEIS_OBRIGATORIAS:
+    metodo = _metodo_envio()
+    variaveis_necessarias = VARIAVEIS_OBRIGATORIAS_COMUNS + (
+        VARIAVEIS_OBRIGATORIAS_GRAPH if metodo == "graph" else ()
+    )
+    for nome_variavel in variaveis_necessarias:
         if not os.environ.get(nome_variavel):
             return HTMLResponse(f"""
             <html><head><meta charset="UTF-8"><title>Erro · Fucape</title>{ESTILO}</head><body>
@@ -260,9 +284,6 @@ async def enviar(request: Request) -> HTMLResponse | RedirectResponse:
             """)
 
     ceo_email = os.environ["PAINEL_CEO_EMAIL"]
-    tenant_id = os.environ["GRAPH_TENANT_ID"]
-    client_id = os.environ["GRAPH_CLIENT_ID"]
-    client_secret = os.environ["GRAPH_CLIENT_SECRET"]
     modo_teste = bool(os.environ.get("PAINEL_MODO_TESTE"))
 
     if modo_teste:
@@ -292,21 +313,17 @@ async def enviar(request: Request) -> HTMLResponse | RedirectResponse:
         resultados = {destinatario: "ok" for destinatario in destinatarios_links}
     else:
         try:
-            token = mailer_graph.obter_token(tenant_id, client_id, client_secret)
-        except mailer_graph.EnvioError as erro:
+            resultados = _enviar_por_metodo(destinatarios_links, resumo["periodo_extenso"])
+        except (mailer_graph.EnvioError, mailer_outlook.EnvioError) as erro:
             resultados = {
-                destinatario: f"erro: falha de autenticação Graph — {erro}" for destinatario in destinatarios_links
+                destinatario: f"erro: falha ao autenticar/conectar ({metodo}) — {erro}"
+                for destinatario in destinatarios_links
             }
             ESTADO["ultima_publicacao"] = {
                 "link_geral": link_geral, "periodo": resumo["periodo"], "periodo_extenso": resumo["periodo_extenso"],
                 "resultados": resultados, "links": destinatarios_links,
             }
             return _renderizar_resultado(link_geral, resultados, destinatarios_links)
-
-        remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
-        resultados = mailer_graph.enviar_notificacao(
-            token, remetente, destinatarios_links, resumo["periodo_extenso"],
-        )
 
     ESTADO["ultima_publicacao"] = {
         "link_geral": link_geral, "periodo": resumo["periodo"], "periodo_extenso": resumo["periodo_extenso"],
@@ -326,24 +343,18 @@ def reenviar() -> HTMLResponse | RedirectResponse:
     ]
     links_com_falha = {destinatario: publicacao["links"][destinatario] for destinatario in destinatarios_com_falha}
 
+    metodo = _metodo_envio()
     if bool(os.environ.get("PAINEL_MODO_TESTE")):
         novos_resultados = {destinatario: "ok" for destinatario in destinatarios_com_falha}
     else:
         try:
-            token = mailer_graph.obter_token(
-                os.environ["GRAPH_TENANT_ID"], os.environ["GRAPH_CLIENT_ID"], os.environ["GRAPH_CLIENT_SECRET"],
-            )
-        except mailer_graph.EnvioError as erro:
+            novos_resultados = _enviar_por_metodo(links_com_falha, publicacao["periodo_extenso"])
+        except (mailer_graph.EnvioError, mailer_outlook.EnvioError) as erro:
             publicacao["resultados"].update({
-                destinatario: f"erro: falha de autenticação Graph — {erro}"
+                destinatario: f"erro: falha ao autenticar/conectar ({metodo}) — {erro}"
                 for destinatario in destinatarios_com_falha
             })
             return _renderizar_resultado(publicacao["link_geral"], publicacao["resultados"], publicacao["links"])
-
-        remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
-        novos_resultados = mailer_graph.enviar_notificacao(
-            token, remetente, links_com_falha, publicacao["periodo_extenso"],
-        )
 
     publicacao["resultados"].update(novos_resultados)
     return _renderizar_resultado(publicacao["link_geral"], publicacao["resultados"], publicacao["links"])

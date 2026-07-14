@@ -548,7 +548,91 @@ def test_post_enviar_com_falha_de_autenticacao_graph_mostra_link_e_marca_falhas(
     resultados = main.ESTADO["ultima_publicacao"]["resultados"]
     assert resultados["ceo@fucape.br"] != "ok"
     assert resultados["gestor.ti@fucape.br"] != "ok"
-    assert "falha de autenticação Graph" in resposta.text
+    assert "falha ao autenticar/conectar" in resposta.text
+
+
+def test_post_enviar_metodo_outlook_nao_exige_graph_e_usa_mailer_outlook(tmp_path, monkeypatch, workbook_path):
+    monkeypatch.setattr(main, "PASTA_BASE", tmp_path / "painel_web")
+    monkeypatch.setattr(main, "PASTA_UPLOADS", tmp_path / "uploads")
+    monkeypatch.setattr(main, "CAMINHO_CONFIG", tmp_path / "config.json")
+    main.ESTADO.clear()
+
+    caminho = workbook_path([
+        {
+            "nome": "PESSOA TECNOLOGIA", "funcao": "ANALISTA", "admissao": "01/01/2020",
+            "departamento": "TECNOLOGIA",
+            "dias": [_dia_com_batida("15/06/2026", "+05:00")],
+        },
+    ])
+    client = TestClient(main.app)
+    with caminho.open("rb") as arquivo:
+        client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
+
+    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
+    monkeypatch.setenv("PAINEL_METODO_ENVIO", "outlook")
+    monkeypatch.delenv("GRAPH_TENANT_ID", raising=False)
+    monkeypatch.delenv("GRAPH_CLIENT_ID", raising=False)
+    monkeypatch.delenv("GRAPH_CLIENT_SECRET", raising=False)
+
+    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+
+    def graph_nao_deveria_ser_chamado(*a, **k):
+        raise AssertionError("mailer_graph não deveria ser chamado com PAINEL_METODO_ENVIO=outlook")
+
+    monkeypatch.setattr(main.mailer_graph, "obter_token", graph_nao_deveria_ser_chamado)
+    monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", graph_nao_deveria_ser_chamado)
+
+    chamado_com = {}
+
+    def fake_outlook_enviar(destinatarios_links, periodo):
+        chamado_com["destinatarios_links"] = destinatarios_links
+        chamado_com["periodo"] = periodo
+        return {destinatario: "ok" for destinatario in destinatarios_links}
+
+    monkeypatch.setattr(main.mailer_outlook, "enviar_notificacao", fake_outlook_enviar)
+
+    resposta = client.post("/enviar", data={"email_Tecnologia": "gestor.ti@fucape.br"})
+
+    assert resposta.status_code == 200
+    assert "Todos os envios OK" in resposta.text
+    assert chamado_com["destinatarios_links"]["ceo@fucape.br"] == "https://painel-fucape.netlify.app/2026-06/"
+    assert chamado_com["periodo"] == "Junho/2026"
+
+
+def test_post_enviar_metodo_outlook_falha_de_conexao_marca_falhas(tmp_path, monkeypatch, workbook_path):
+    monkeypatch.setattr(main, "PASTA_BASE", tmp_path / "painel_web")
+    monkeypatch.setattr(main, "PASTA_UPLOADS", tmp_path / "uploads")
+    monkeypatch.setattr(main, "CAMINHO_CONFIG", tmp_path / "config.json")
+    main.ESTADO.clear()
+
+    caminho = workbook_path([
+        {
+            "nome": "PESSOA TECNOLOGIA", "funcao": "ANALISTA", "admissao": "01/01/2020",
+            "departamento": "TECNOLOGIA",
+            "dias": [_dia_com_batida("15/06/2026", "+05:00")],
+        },
+    ])
+    client = TestClient(main.app)
+    with caminho.open("rb") as arquivo:
+        client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
+
+    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
+    monkeypatch.setenv("PAINEL_METODO_ENVIO", "outlook")
+    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+
+    def falha_outlook(*a, **k):
+        raise main.mailer_outlook.EnvioError("Outlook não está instalado")
+
+    monkeypatch.setattr(main.mailer_outlook, "enviar_notificacao", falha_outlook)
+
+    resposta = client.post("/enviar")
+
+    assert resposta.status_code == 200
+    assert "falha ao autenticar/conectar" in resposta.text
+    resultados = main.ESTADO["ultima_publicacao"]["resultados"]
+    assert resultados["ceo@fucape.br"] != "ok"
 
 
 def test_post_reenviar_com_falha_de_autenticacao_graph_mantem_falha(tmp_path, monkeypatch, workbook_path):
