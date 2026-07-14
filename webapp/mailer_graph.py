@@ -30,20 +30,23 @@ def enviar_notificacao(
 
     for destinatario, link in destinatarios_links.items():
         conteudo = (
-            "Prezados (as)\n\n"
-            f"Compartilho abaixo o link com o banco de horas da equipe referente ao período de {periodo}:\n\n"
-            f"🔗 {link}\n\n"
-            "No relatório é possível acompanhar:\n"
-            "• O saldo de horas individual de cada colaborador;\n"
-            "• O consolidado da equipe no período;\n"
-            "• Eventuais saldos positivos ou negativos que mereçam atenção.\n\n"
-            "Caso identifiquem algum ponto que precise de ajuste ou queiram um detalhamento adicional, "
-            "é só me avisar."
+            "<p>Prezados (as)</p>"
+            f"<p>Compartilho abaixo o link com o banco de horas da equipe referente ao período de "
+            f"{periodo}:</p>"
+            f'<p>🔗 <a href="{link}">{link}</a></p>'
+            "<p>No relatório é possível acompanhar:</p>"
+            "<ul>"
+            "<li>O saldo de horas individual de cada colaborador;</li>"
+            "<li>O consolidado da equipe no período;</li>"
+            "<li>Eventuais saldos positivos ou negativos que mereçam atenção.</li>"
+            "</ul>"
+            "<p>Caso identifiquem algum ponto que precise de ajuste ou queiram um detalhamento "
+            "adicional, é só me avisar.</p>"
         )
         payload = {
             "message": {
                 "subject": assunto,
-                "body": {"contentType": "Text", "content": conteudo},
+                "body": {"contentType": "HTML", "content": conteudo},
                 "toRecipients": [{"emailAddress": {"address": destinatario}}],
             }
         }
