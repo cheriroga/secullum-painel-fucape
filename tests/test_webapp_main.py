@@ -299,6 +299,74 @@ def test_post_enviar_salva_config_antes_de_publicar_mesmo_sem_clicar_salvar(tmp_
     assert "novo.gestor@fucape.br" in main.ESTADO["ultima_publicacao"]["resultados"]
 
 
+def test_post_enviar_modo_teste_nao_chama_netlify_nem_graph(tmp_path, monkeypatch, workbook_path):
+    monkeypatch.setattr(main, "PASTA_BASE", tmp_path / "painel_web")
+    monkeypatch.setattr(main, "PASTA_UPLOADS", tmp_path / "uploads")
+    monkeypatch.setattr(main, "CAMINHO_CONFIG", tmp_path / "config.json")
+    main.ESTADO.clear()
+
+    caminho = workbook_path([
+        {
+            "nome": "PESSOA TECNOLOGIA", "funcao": "ANALISTA", "admissao": "01/01/2020",
+            "departamento": "TECNOLOGIA",
+            "dias": [_dia_com_batida("15/06/2026", "+05:00")],
+        },
+    ])
+    client = TestClient(main.app)
+    with caminho.open("rb") as arquivo:
+        client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
+
+    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
+    monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
+    monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
+    monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
+    monkeypatch.setenv("PAINEL_MODO_TESTE", "1")
+
+    def nao_deveria_chamar(*a, **k):
+        raise AssertionError("não deveria chamar Netlify/Graph em modo teste")
+
+    monkeypatch.setattr(main.deploy_netlify, "publicar", nao_deveria_chamar)
+    monkeypatch.setattr(main.mailer_graph, "obter_token", nao_deveria_chamar)
+    monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", nao_deveria_chamar)
+
+    resposta = client.post("/enviar", data={"email_Tecnologia": "gestor.ti@fucape.br"})
+
+    assert resposta.status_code == 200
+    assert "Modo teste ativo" in resposta.text
+    resultados = main.ESTADO["ultima_publicacao"]["resultados"]
+    assert resultados["ceo@fucape.br"] == "ok"
+    assert resultados["gestor.ti@fucape.br"] == "ok"
+
+
+def test_post_reenviar_modo_teste_nao_chama_graph(tmp_path, monkeypatch):
+    monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
+    monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
+    monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
+    monkeypatch.setenv("PAINEL_MODO_TESTE", "1")
+
+    main.ESTADO.clear()
+    main.ESTADO["ultima_publicacao"] = {
+        "link_geral": "https://modo-teste.invalido/2026-06/",
+        "periodo": "2026-06",
+        "resultados": {"gestor.ti@fucape.br": "erro: 400 endereço inválido"},
+        "links": {"gestor.ti@fucape.br": "https://modo-teste.invalido/2026-06/deptos/tecnologia.html"},
+    }
+
+    def nao_deveria_chamar(*a, **k):
+        raise AssertionError("não deveria chamar Graph em modo teste")
+
+    monkeypatch.setattr(main.mailer_graph, "obter_token", nao_deveria_chamar)
+    monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", nao_deveria_chamar)
+
+    client = TestClient(main.app)
+    resposta = client.post("/reenviar")
+
+    assert resposta.status_code == 200
+    assert "Modo teste ativo" in resposta.text
+    assert main.ESTADO["ultima_publicacao"]["resultados"]["gestor.ti@fucape.br"] == "ok"
+
+
 def test_post_enviar_com_falha_de_deploy_nao_envia_email(tmp_path, monkeypatch, workbook_path):
     monkeypatch.setattr(main, "PASTA_BASE", tmp_path / "painel_web")
     monkeypatch.setattr(main, "PASTA_UPLOADS", tmp_path / "uploads")

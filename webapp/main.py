@@ -215,10 +215,17 @@ def _renderizar_resultado(link_geral: str, resultados: dict[str, str], links: di
         aviso = "Todos os envios OK."
         botao_retry = ""
 
+    aviso_modo_teste = (
+        "<div class='warn'>Modo teste ativo (PAINEL_MODO_TESTE) — nada foi publicado no Netlify "
+        "nem enviado por e-mail de verdade.</div>"
+        if os.environ.get("PAINEL_MODO_TESTE") else ""
+    )
+
     return HTMLResponse(f"""
     <html><head><meta charset="UTF-8"><title>Resultado do envio · Fucape</title>{ESTILO}</head><body>
     <div class="wrap">
       <h1>Publicado em <a href="{link_geral}">{link_geral}</a></h1>
+      {aviso_modo_teste}
       <div class="card {classe_card}">{aviso}</div>
       <div class="card"><ul class="resultados">{linhas}</ul></div>
       {botao_retry}
@@ -256,19 +263,23 @@ async def enviar(request: Request) -> HTMLResponse | RedirectResponse:
     tenant_id = os.environ["GRAPH_TENANT_ID"]
     client_id = os.environ["GRAPH_CLIENT_ID"]
     client_secret = os.environ["GRAPH_CLIENT_SECRET"]
+    modo_teste = bool(os.environ.get("PAINEL_MODO_TESTE"))
 
-    try:
-        url_site = deploy_netlify.publicar(PASTA_BASE)
-    except deploy_netlify.DeployError as erro:
-        return HTMLResponse(f"""
-        <html><head><meta charset="UTF-8"><title>Erro · Fucape</title>{ESTILO}</head><body>
-        <div class="wrap">
-          <h1>Falha ao publicar</h1>
-          <div class="card err">{erro}</div>
-          <a href="/preview">Voltar</a>
-        </div>
-        </body></html>
-        """)
+    if modo_teste:
+        url_site = "https://modo-teste.invalido"
+    else:
+        try:
+            url_site = deploy_netlify.publicar(PASTA_BASE)
+        except deploy_netlify.DeployError as erro:
+            return HTMLResponse(f"""
+            <html><head><meta charset="UTF-8"><title>Erro · Fucape</title>{ESTILO}</head><body>
+            <div class="wrap">
+              <h1>Falha ao publicar</h1>
+              <div class="card err">{erro}</div>
+              <a href="/preview">Voltar</a>
+            </div>
+            </body></html>
+            """)
 
     link_geral = f"{url_site}/{resumo['periodo']}/"
 
@@ -277,20 +288,23 @@ async def enviar(request: Request) -> HTMLResponse | RedirectResponse:
     }
     destinatarios_links[ceo_email] = link_geral  # CEO sempre recebe o painel geral, mesmo se também for gestor
 
-    try:
-        token = mailer_graph.obter_token(tenant_id, client_id, client_secret)
-    except mailer_graph.EnvioError as erro:
-        resultados = {
-            destinatario: f"erro: falha de autenticação Graph — {erro}" for destinatario in destinatarios_links
-        }
-        ESTADO["ultima_publicacao"] = {
-            "link_geral": link_geral, "periodo": resumo["periodo"],
-            "resultados": resultados, "links": destinatarios_links,
-        }
-        return _renderizar_resultado(link_geral, resultados, destinatarios_links)
+    if modo_teste:
+        resultados = {destinatario: "ok" for destinatario in destinatarios_links}
+    else:
+        try:
+            token = mailer_graph.obter_token(tenant_id, client_id, client_secret)
+        except mailer_graph.EnvioError as erro:
+            resultados = {
+                destinatario: f"erro: falha de autenticação Graph — {erro}" for destinatario in destinatarios_links
+            }
+            ESTADO["ultima_publicacao"] = {
+                "link_geral": link_geral, "periodo": resumo["periodo"],
+                "resultados": resultados, "links": destinatarios_links,
+            }
+            return _renderizar_resultado(link_geral, resultados, destinatarios_links)
 
-    remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
-    resultados = mailer_graph.enviar_notificacao(token, remetente, destinatarios_links, resumo["periodo"])
+        remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
+        resultados = mailer_graph.enviar_notificacao(token, remetente, destinatarios_links, resumo["periodo"])
 
     ESTADO["ultima_publicacao"] = {
         "link_geral": link_geral, "periodo": resumo["periodo"],
@@ -310,19 +324,22 @@ def reenviar() -> HTMLResponse | RedirectResponse:
     ]
     links_com_falha = {destinatario: publicacao["links"][destinatario] for destinatario in destinatarios_com_falha}
 
-    try:
-        token = mailer_graph.obter_token(
-            os.environ["GRAPH_TENANT_ID"], os.environ["GRAPH_CLIENT_ID"], os.environ["GRAPH_CLIENT_SECRET"],
-        )
-    except mailer_graph.EnvioError as erro:
-        publicacao["resultados"].update({
-            destinatario: f"erro: falha de autenticação Graph — {erro}"
-            for destinatario in destinatarios_com_falha
-        })
-        return _renderizar_resultado(publicacao["link_geral"], publicacao["resultados"], publicacao["links"])
+    if bool(os.environ.get("PAINEL_MODO_TESTE")):
+        novos_resultados = {destinatario: "ok" for destinatario in destinatarios_com_falha}
+    else:
+        try:
+            token = mailer_graph.obter_token(
+                os.environ["GRAPH_TENANT_ID"], os.environ["GRAPH_CLIENT_ID"], os.environ["GRAPH_CLIENT_SECRET"],
+            )
+        except mailer_graph.EnvioError as erro:
+            publicacao["resultados"].update({
+                destinatario: f"erro: falha de autenticação Graph — {erro}"
+                for destinatario in destinatarios_com_falha
+            })
+            return _renderizar_resultado(publicacao["link_geral"], publicacao["resultados"], publicacao["links"])
 
-    remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
-    novos_resultados = mailer_graph.enviar_notificacao(token, remetente, links_com_falha, publicacao["periodo"])
+        remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
+        novos_resultados = mailer_graph.enviar_notificacao(token, remetente, links_com_falha, publicacao["periodo"])
 
     publicacao["resultados"].update(novos_resultados)
     return _renderizar_resultado(publicacao["link_geral"], publicacao["resultados"], publicacao["links"])
