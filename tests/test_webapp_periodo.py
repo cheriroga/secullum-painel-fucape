@@ -3,7 +3,7 @@ import datetime
 import pytest
 
 from painel_horas.parser import Colaborador, Dia
-from webapp.periodo import periodo_slug
+from webapp.periodo import periodo_extenso, periodo_slug
 
 
 def _dia(data_str):
@@ -33,3 +33,29 @@ def test_periodo_slug_sem_dias_registrados_leva_a_erro():
     colaboradores = [Colaborador(nome="A", funcao="X", admissao=None, departamento="TI", dias=[])]
     with pytest.raises(ValueError):
         periodo_slug(colaboradores)
+
+
+def test_periodo_extenso_um_unico_mes():
+    colaboradores = [
+        Colaborador(
+            nome="A", funcao="X", admissao=None, departamento="TI",
+            dias=[_dia("2026-06-01"), _dia("2026-06-30")],
+        ),
+    ]
+    assert periodo_extenso(colaboradores) == "Junho/2026"
+
+
+def test_periodo_extenso_faixa_de_meses():
+    colaboradores = [
+        Colaborador(
+            nome="A", funcao="X", admissao=None, departamento="TI",
+            dias=[_dia("2026-01-15"), _dia("2026-06-30")],
+        ),
+    ]
+    assert periodo_extenso(colaboradores) == "Janeiro/2026 a Junho/2026"
+
+
+def test_periodo_extenso_sem_dias_registrados_leva_a_erro():
+    colaboradores = [Colaborador(nome="A", funcao="X", admissao=None, departamento="TI", dias=[])]
+    with pytest.raises(ValueError):
+        periodo_extenso(colaboradores)

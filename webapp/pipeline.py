@@ -3,7 +3,7 @@ from pathlib import Path
 from atualizar_painel import gerar_painel
 from painel_horas.calculos import dept_label
 from painel_horas.parser import ler_colaboradores
-from webapp.periodo import periodo_slug
+from webapp.periodo import periodo_extenso, periodo_slug
 
 
 def processar_upload(caminho_xlsx: Path, pasta_base: Path) -> dict:
@@ -18,6 +18,7 @@ def processar_upload(caminho_xlsx: Path, pasta_base: Path) -> dict:
 
     return {
         "periodo": periodo,
+        "periodo_extenso": periodo_extenso(colaboradores),
         "pasta": pasta_periodo,
         "departamentos_labels": departamentos_labels,
         **resumo,

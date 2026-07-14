@@ -298,16 +298,18 @@ async def enviar(request: Request) -> HTMLResponse | RedirectResponse:
                 destinatario: f"erro: falha de autenticação Graph — {erro}" for destinatario in destinatarios_links
             }
             ESTADO["ultima_publicacao"] = {
-                "link_geral": link_geral, "periodo": resumo["periodo"],
+                "link_geral": link_geral, "periodo": resumo["periodo"], "periodo_extenso": resumo["periodo_extenso"],
                 "resultados": resultados, "links": destinatarios_links,
             }
             return _renderizar_resultado(link_geral, resultados, destinatarios_links)
 
         remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
-        resultados = mailer_graph.enviar_notificacao(token, remetente, destinatarios_links, resumo["periodo"])
+        resultados = mailer_graph.enviar_notificacao(
+            token, remetente, destinatarios_links, resumo["periodo_extenso"],
+        )
 
     ESTADO["ultima_publicacao"] = {
-        "link_geral": link_geral, "periodo": resumo["periodo"],
+        "link_geral": link_geral, "periodo": resumo["periodo"], "periodo_extenso": resumo["periodo_extenso"],
         "resultados": resultados, "links": destinatarios_links,
     }
     return _renderizar_resultado(link_geral, resultados, destinatarios_links)
@@ -339,7 +341,9 @@ def reenviar() -> HTMLResponse | RedirectResponse:
             return _renderizar_resultado(publicacao["link_geral"], publicacao["resultados"], publicacao["links"])
 
         remetente = os.environ.get("GRAPH_REMETENTE", "relatorios@fucape.br")
-        novos_resultados = mailer_graph.enviar_notificacao(token, remetente, links_com_falha, publicacao["periodo"])
+        novos_resultados = mailer_graph.enviar_notificacao(
+            token, remetente, links_com_falha, publicacao["periodo_extenso"],
+        )
 
     publicacao["resultados"].update(novos_resultados)
     return _renderizar_resultado(publicacao["link_geral"], publicacao["resultados"], publicacao["links"])

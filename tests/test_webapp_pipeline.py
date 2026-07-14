@@ -23,6 +23,7 @@ def test_processar_upload_gera_painel_em_pasta_do_periodo(tmp_path, workbook_pat
     resultado = processar_upload(caminho, pasta_base)
 
     assert resultado["periodo"] == "2026-06"
+    assert resultado["periodo_extenso"] == "Junho/2026"
     assert resultado["pasta"] == pasta_base / "2026-06"
     assert resultado["colaboradores"] == 1
     assert resultado["departamentos_labels"] == ["Tecnologia"]

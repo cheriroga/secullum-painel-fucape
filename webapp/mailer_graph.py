@@ -26,10 +26,20 @@ def enviar_notificacao(
     mapeado em destinatarios_links (CEO recebe o painel geral, cada
     gestor recebe só o link do departamento dele)."""
     resultados: dict[str, str] = {}
-    assunto = f"Painel de horas — {periodo} disponível"
+    assunto = f"Banco de horas da equipe {periodo}"
 
     for destinatario, link in destinatarios_links.items():
-        conteudo = f"O painel de horas de {periodo} já está disponível: {link}"
+        conteudo = (
+            "Prezados (as)\n\n"
+            f"Compartilho abaixo o link com o banco de horas da equipe referente ao período de {periodo}:\n\n"
+            f"🔗 {link}\n\n"
+            "No relatório é possível acompanhar:\n"
+            "• O saldo de horas individual de cada colaborador;\n"
+            "• O consolidado da equipe no período;\n"
+            "• Eventuais saldos positivos ou negativos que mereçam atenção.\n\n"
+            "Caso identifiquem algum ponto que precise de ajuste ou queiram um detalhamento adicional, "
+            "é só me avisar."
+        )
         payload = {
             "message": {
                 "subject": assunto,
