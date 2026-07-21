@@ -119,8 +119,9 @@ def test_get_preview_apos_upload_mostra_resumo_e_iframe(tmp_path, monkeypatch, w
     assert resposta.status_code == 200
     assert "2026-06" in resposta.text
     assert '/painel/2026-06/index.html' in resposta.text
-    assert 'name="email_Tecnologia"' in resposta.text
+    assert 'name="ceo_email"' in resposta.text
     assert 'Tecnologia <span class="badge-warn">sem e-mail</span>' in resposta.text
+    assert "Nenhum e-mail configurado" in resposta.text
 
 
 def test_get_preview_sem_departamento_faltando_nao_mostra_alerta(tmp_path, monkeypatch, workbook_path):
@@ -130,7 +131,9 @@ def test_get_preview_sem_departamento_faltando_nao_mostra_alerta(tmp_path, monke
     main.ESTADO.clear()
 
     from webapp.config import salvar_config
-    salvar_config(tmp_path / "config.json", {"Tecnologia": "gestor.ti@fucape.br"})
+    salvar_config(tmp_path / "config.json", {
+        "ceo_email": "ceo@fucape.br", "gestores": {"Tecnologia": "gestor.ti@fucape.br"},
+    })
 
     caminho = workbook_path([
         {
@@ -147,21 +150,25 @@ def test_get_preview_sem_departamento_faltando_nao_mostra_alerta(tmp_path, monke
     resposta = client.get("/preview")
 
     assert '<span class="badge-warn">' not in resposta.text
+    assert "Nenhum e-mail configurado" not in resposta.text
 
 
-def test_post_config_salva_mapa_e_redireciona(tmp_path, monkeypatch):
+def test_post_config_salva_ceo_e_mapa_de_gestores_e_redireciona(tmp_path, monkeypatch):
     monkeypatch.setattr(main, "CAMINHO_CONFIG", tmp_path / "config.json")
     client = TestClient(main.app)
 
     resposta = client.post(
-        "/config", data={"email_Tecnologia": "gestor.ti@fucape.br", "email_Vazio": ""},
+        "/config",
+        data={"ceo_email": "ceo@fucape.br", "email_Tecnologia": "gestor.ti@fucape.br", "email_Vazio": ""},
         follow_redirects=False,
     )
 
     assert resposta.status_code == 303
     assert resposta.headers["location"] == "/preview"
     from webapp.config import carregar_config
-    assert carregar_config(tmp_path / "config.json") == {"Tecnologia": "gestor.ti@fucape.br"}
+    assert carregar_config(tmp_path / "config.json") == {
+        "ceo_email": "ceo@fucape.br", "gestores": {"Tecnologia": "gestor.ti@fucape.br"},
+    }
 
 
 def test_post_enviar_sem_upload_redireciona_pro_index():
@@ -181,7 +188,9 @@ def test_post_enviar_publica_e_notifica_com_sucesso(tmp_path, monkeypatch, workb
     main.ESTADO.clear()
 
     from webapp.config import salvar_config
-    salvar_config(tmp_path / "config.json", {"Tecnologia": "gestor.ti@fucape.br"})
+    salvar_config(tmp_path / "config.json", {
+        "ceo_email": "ceo@fucape.br", "gestores": {"Tecnologia": "gestor.ti@fucape.br"},
+    })
 
     caminho = workbook_path([
         {
@@ -195,7 +204,6 @@ def test_post_enviar_publica_e_notifica_com_sucesso(tmp_path, monkeypatch, workb
         client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
 
-    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
     monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
@@ -211,7 +219,7 @@ def test_post_enviar_publica_e_notifica_com_sucesso(tmp_path, monkeypatch, workb
 
     monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", fake_enviar)
 
-    resposta = client.post("/enviar", data={"email_Tecnologia": "gestor.ti@fucape.br"})
+    resposta = client.post("/enviar", data={"ceo_email": "ceo@fucape.br", "email_Tecnologia": "gestor.ti@fucape.br"})
 
     assert resposta.status_code == 200
     assert links_chamados["ceo@fucape.br"] == "https://painel-fucape.netlify.app/2026-06/"
@@ -226,7 +234,9 @@ def test_post_enviar_ceo_tambem_gestor_recebe_link_geral_nao_o_do_depto(tmp_path
     main.ESTADO.clear()
 
     from webapp.config import salvar_config
-    salvar_config(tmp_path / "config.json", {"Tecnologia": "ceo@fucape.br"})
+    salvar_config(tmp_path / "config.json", {
+        "ceo_email": "ceo@fucape.br", "gestores": {"Tecnologia": "ceo@fucape.br"},
+    })
 
     caminho = workbook_path([
         {
@@ -240,7 +250,6 @@ def test_post_enviar_ceo_tambem_gestor_recebe_link_geral_nao_o_do_depto(tmp_path
         client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
 
-    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
     monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
@@ -256,7 +265,7 @@ def test_post_enviar_ceo_tambem_gestor_recebe_link_geral_nao_o_do_depto(tmp_path
 
     monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", fake_enviar)
 
-    client.post("/enviar", data={"email_Tecnologia": "ceo@fucape.br"})
+    client.post("/enviar", data={"ceo_email": "ceo@fucape.br", "email_Tecnologia": "ceo@fucape.br"})
 
     assert links_chamados == {"ceo@fucape.br": "https://painel-fucape.netlify.app/2026-06/"}
 
@@ -279,7 +288,6 @@ def test_post_enviar_salva_config_antes_de_publicar_mesmo_sem_clicar_salvar(tmp_
         client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
 
-    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
     monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
@@ -291,11 +299,13 @@ def test_post_enviar_salva_config_antes_de_publicar_mesmo_sem_clicar_salvar(tmp_
     )
 
     # ninguém clicou em "Salvar configuração" antes — só editou o campo e clicou direto em "Enviar"
-    resposta = client.post("/enviar", data={"email_Tecnologia": "novo.gestor@fucape.br"})
+    resposta = client.post("/enviar", data={"ceo_email": "ceo@fucape.br", "email_Tecnologia": "novo.gestor@fucape.br"})
 
     assert resposta.status_code == 200
     from webapp.config import carregar_config
-    assert carregar_config(tmp_path / "config.json") == {"Tecnologia": "novo.gestor@fucape.br"}
+    assert carregar_config(tmp_path / "config.json") == {
+        "ceo_email": "ceo@fucape.br", "gestores": {"Tecnologia": "novo.gestor@fucape.br"},
+    }
     assert "novo.gestor@fucape.br" in main.ESTADO["ultima_publicacao"]["resultados"]
 
 
@@ -317,7 +327,6 @@ def test_post_enviar_modo_teste_nao_chama_netlify_nem_graph(tmp_path, monkeypatc
         client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
 
-    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
     monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
@@ -330,7 +339,7 @@ def test_post_enviar_modo_teste_nao_chama_netlify_nem_graph(tmp_path, monkeypatc
     monkeypatch.setattr(main.mailer_graph, "obter_token", nao_deveria_chamar)
     monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", nao_deveria_chamar)
 
-    resposta = client.post("/enviar", data={"email_Tecnologia": "gestor.ti@fucape.br"})
+    resposta = client.post("/enviar", data={"ceo_email": "ceo@fucape.br", "email_Tecnologia": "gestor.ti@fucape.br"})
 
     assert resposta.status_code == 200
     assert "Modo teste ativo" in resposta.text
@@ -385,7 +394,6 @@ def test_post_enviar_com_falha_de_deploy_nao_envia_email(tmp_path, monkeypatch, 
         client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
 
-    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
     monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
@@ -398,11 +406,41 @@ def test_post_enviar_com_falha_de_deploy_nao_envia_email(tmp_path, monkeypatch, 
     chamado = []
     monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: chamado.append(1))
 
-    resposta = client.post("/enviar")
+    resposta = client.post("/enviar", data={"ceo_email": "ceo@fucape.br"})
 
     assert resposta.status_code == 200
     assert "Falha ao publicar" in resposta.text
     assert chamado == []
+
+
+def test_post_enviar_sem_nenhum_email_configurado_mostra_mensagem_na_tela(tmp_path, monkeypatch, workbook_path):
+    monkeypatch.setattr(main, "PASTA_BASE", tmp_path / "painel_web")
+    monkeypatch.setattr(main, "PASTA_UPLOADS", tmp_path / "uploads")
+    monkeypatch.setattr(main, "CAMINHO_CONFIG", tmp_path / "config.json")
+    main.ESTADO.clear()
+
+    caminho = workbook_path([
+        {
+            "nome": "PESSOA TECNOLOGIA", "funcao": "ANALISTA", "admissao": "01/01/2020",
+            "departamento": "TECNOLOGIA",
+            "dias": [_dia_com_batida("15/06/2026", "+05:00")],
+        },
+    ])
+    client = TestClient(main.app)
+    with caminho.open("rb") as arquivo:
+        client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
+
+    def nao_deveria_chamar(*a, **k):
+        raise AssertionError("não deveria publicar/enviar sem nenhum e-mail configurado")
+
+    monkeypatch.setattr(main.deploy_github, "publicar", nao_deveria_chamar)
+    monkeypatch.setattr(main.mailer_graph, "obter_token", nao_deveria_chamar)
+
+    resposta = client.post("/enviar")
+
+    assert resposta.status_code == 200
+    assert "Nenhum e-mail configurado" in resposta.text
 
 
 def test_post_enviar_sem_variavel_de_ambiente_nao_publica_nem_envia(tmp_path, monkeypatch, workbook_path):
@@ -410,11 +448,6 @@ def test_post_enviar_sem_variavel_de_ambiente_nao_publica_nem_envia(tmp_path, mo
     monkeypatch.setattr(main, "PASTA_UPLOADS", tmp_path / "uploads")
     monkeypatch.setattr(main, "CAMINHO_CONFIG", tmp_path / "config.json")
     main.ESTADO.clear()
-
-    monkeypatch.delenv("PAINEL_CEO_EMAIL", raising=False)
-    monkeypatch.delenv("GRAPH_TENANT_ID", raising=False)
-    monkeypatch.delenv("GRAPH_CLIENT_ID", raising=False)
-    monkeypatch.delenv("GRAPH_CLIENT_SECRET", raising=False)
 
     caminho = workbook_path([
         {
@@ -429,14 +462,14 @@ def test_post_enviar_sem_variavel_de_ambiente_nao_publica_nem_envia(tmp_path, mo
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
 
     def publicar_nao_deveria_ser_chamado(pasta_base):
-        raise AssertionError("deploy_netlify.publicar não deveria ser chamado sem as variáveis de ambiente")
+        raise AssertionError("deploy_github.publicar não deveria ser chamado sem as variáveis de ambiente")
 
     monkeypatch.setattr(main.deploy_github, "publicar", publicar_nao_deveria_ser_chamado)
 
     chamado = []
     monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: chamado.append(1))
 
-    resposta = client.post("/enviar")
+    resposta = client.post("/enviar", data={"ceo_email": "ceo@fucape.br"})
 
     assert resposta.status_code == 200
     assert "Falta configurar variável de ambiente" in resposta.text
@@ -460,7 +493,9 @@ def test_post_reenviar_manda_so_pra_quem_falhou(tmp_path, monkeypatch, workbook_
     main.ESTADO.clear()
 
     from webapp.config import salvar_config
-    salvar_config(tmp_path / "config.json", {"Tecnologia": "gestor.ti@fucape.br"})
+    salvar_config(tmp_path / "config.json", {
+        "ceo_email": "ceo@fucape.br", "gestores": {"Tecnologia": "gestor.ti@fucape.br"},
+    })
 
     caminho = workbook_path([
         {
@@ -474,7 +509,6 @@ def test_post_reenviar_manda_so_pra_quem_falhou(tmp_path, monkeypatch, workbook_
         client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
 
-    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
     monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
@@ -488,7 +522,7 @@ def test_post_reenviar_manda_so_pra_quem_falhou(tmp_path, monkeypatch, workbook_
         }
 
     monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", enviar_com_uma_falha)
-    client.post("/enviar", data={"email_Tecnologia": "gestor.ti@fucape.br"})
+    client.post("/enviar", data={"ceo_email": "ceo@fucape.br", "email_Tecnologia": "gestor.ti@fucape.br"})
     assert main.ESTADO["ultima_publicacao"]["resultados"]["gestor.ti@fucape.br"].startswith("erro:")
 
     def reenviar_com_sucesso(token, remetente, destinatarios_links, periodo):
@@ -515,7 +549,9 @@ def test_post_enviar_com_falha_de_autenticacao_graph_mostra_link_e_marca_falhas(
     main.ESTADO.clear()
 
     from webapp.config import salvar_config
-    salvar_config(tmp_path / "config.json", {"Tecnologia": "gestor.ti@fucape.br"})
+    salvar_config(tmp_path / "config.json", {
+        "ceo_email": "ceo@fucape.br", "gestores": {"Tecnologia": "gestor.ti@fucape.br"},
+    })
 
     caminho = workbook_path([
         {
@@ -529,7 +565,6 @@ def test_post_enviar_com_falha_de_autenticacao_graph_mostra_link_e_marca_falhas(
         client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
 
-    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
     monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
@@ -541,7 +576,7 @@ def test_post_enviar_com_falha_de_autenticacao_graph_mostra_link_e_marca_falhas(
 
     monkeypatch.setattr(main.mailer_graph, "obter_token", falha_auth)
 
-    resposta = client.post("/enviar", data={"email_Tecnologia": "gestor.ti@fucape.br"})
+    resposta = client.post("/enviar", data={"ceo_email": "ceo@fucape.br", "email_Tecnologia": "gestor.ti@fucape.br"})
 
     assert resposta.status_code == 200
     assert "painel-fucape.netlify.app" in resposta.text
@@ -569,7 +604,6 @@ def test_post_enviar_metodo_outlook_nao_exige_graph_e_usa_mailer_outlook(tmp_pat
         client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
 
-    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
     monkeypatch.setenv("PAINEL_METODO_ENVIO", "outlook")
     monkeypatch.delenv("GRAPH_TENANT_ID", raising=False)
     monkeypatch.delenv("GRAPH_CLIENT_ID", raising=False)
@@ -592,7 +626,7 @@ def test_post_enviar_metodo_outlook_nao_exige_graph_e_usa_mailer_outlook(tmp_pat
 
     monkeypatch.setattr(main.mailer_outlook, "enviar_notificacao", fake_outlook_enviar)
 
-    resposta = client.post("/enviar", data={"email_Tecnologia": "gestor.ti@fucape.br"})
+    resposta = client.post("/enviar", data={"ceo_email": "ceo@fucape.br", "email_Tecnologia": "gestor.ti@fucape.br"})
 
     assert resposta.status_code == 200
     assert "Todos os envios OK" in resposta.text
@@ -618,7 +652,6 @@ def test_post_enviar_metodo_outlook_falha_de_conexao_marca_falhas(tmp_path, monk
         client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
 
-    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
     monkeypatch.setenv("PAINEL_METODO_ENVIO", "outlook")
     monkeypatch.setattr(main.deploy_github, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
 
@@ -627,7 +660,7 @@ def test_post_enviar_metodo_outlook_falha_de_conexao_marca_falhas(tmp_path, monk
 
     monkeypatch.setattr(main.mailer_outlook, "enviar_notificacao", falha_outlook)
 
-    resposta = client.post("/enviar")
+    resposta = client.post("/enviar", data={"ceo_email": "ceo@fucape.br"})
 
     assert resposta.status_code == 200
     assert "falha ao autenticar/conectar" in resposta.text
@@ -642,7 +675,9 @@ def test_post_reenviar_com_falha_de_autenticacao_graph_mantem_falha(tmp_path, mo
     main.ESTADO.clear()
 
     from webapp.config import salvar_config
-    salvar_config(tmp_path / "config.json", {"Tecnologia": "gestor.ti@fucape.br"})
+    salvar_config(tmp_path / "config.json", {
+        "ceo_email": "ceo@fucape.br", "gestores": {"Tecnologia": "gestor.ti@fucape.br"},
+    })
 
     caminho = workbook_path([
         {
@@ -656,7 +691,6 @@ def test_post_reenviar_com_falha_de_autenticacao_graph_mantem_falha(tmp_path, mo
         client.post("/upload", files={"arquivo": ("cartaoponto.xlsx", arquivo,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")})
 
-    monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
     monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
@@ -670,7 +704,7 @@ def test_post_reenviar_com_falha_de_autenticacao_graph_mantem_falha(tmp_path, mo
         }
 
     monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", enviar_com_uma_falha)
-    client.post("/enviar", data={"email_Tecnologia": "gestor.ti@fucape.br"})
+    client.post("/enviar", data={"ceo_email": "ceo@fucape.br", "email_Tecnologia": "gestor.ti@fucape.br"})
     assert main.ESTADO["ultima_publicacao"]["resultados"]["gestor.ti@fucape.br"].startswith("erro:")
 
     def falha_auth(*a, **k):

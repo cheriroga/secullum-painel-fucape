@@ -139,8 +139,16 @@ def preview() -> HTMLResponse | RedirectResponse:
     if not resumo:
         return RedirectResponse("/", status_code=303)
 
-    mapa = config_mod.carregar_config(CAMINHO_CONFIG)
+    config = config_mod.carregar_config(CAMINHO_CONFIG)
+    mapa = config["gestores"]
+    ceo_email = config["ceo_email"]
     deptos = sorted(set(mapa) | set(resumo["departamentos_labels"]))
+    linha_ceo = (
+        '<div class="row"><label>CEO'
+        + ('' if ceo_email else ' <span class="badge-warn">sem e-mail</span>')
+        + '</label>'
+        f'<input type="email" name="ceo_email" value="{ceo_email}" placeholder="email do CEO"></div>'
+    )
     linhas_config = "".join(
         f'<div class="row"><label>{depto}'
         + ('' if mapa.get(depto) else ' <span class="badge-warn">sem e-mail</span>')
@@ -148,6 +156,10 @@ def preview() -> HTMLResponse | RedirectResponse:
         f'<input type="email" name="email_{depto}" value="{mapa.get(depto, "")}" '
         f'placeholder="email do gestor"></div>'
         for depto in deptos
+    )
+    aviso_sem_email = (
+        '<div class="warn">Nenhum e-mail configurado — configure o CEO ou ao menos um gestor antes de enviar.</div>'
+        if not config_mod.tem_algum_email(config) else ""
     )
 
     return HTMLResponse(f"""
@@ -163,9 +175,11 @@ def preview() -> HTMLResponse | RedirectResponse:
       </div>
 
       <div class="card">
-        <h2>Gestores por departamento</h2>
+        <h2>CEO e gestores por departamento</h2>
         <p class="muted">Já configurado? Pode trocar o e-mail a qualquer momento — só editar o campo e salvar de novo.</p>
+        {aviso_sem_email}
         <form id="form-gestores" method="post">
+          {linha_ceo}
           {linhas_config}
         </form>
         <div class="row-buttons">
@@ -188,10 +202,17 @@ def _extrair_mapa_do_formulario(formulario) -> dict[str, str]:
     return mapa
 
 
+def _extrair_config_do_formulario(formulario) -> dict:
+    return {
+        "ceo_email": str(formulario.get("ceo_email", "")).strip(),
+        "gestores": _extrair_mapa_do_formulario(formulario),
+    }
+
+
 @app.post("/config")
 async def salvar_config_route(request: Request) -> RedirectResponse:
-    mapa = _extrair_mapa_do_formulario(await request.form())
-    config_mod.salvar_config(CAMINHO_CONFIG, mapa)
+    config = _extrair_config_do_formulario(await request.form())
+    config_mod.salvar_config(CAMINHO_CONFIG, config)
     return RedirectResponse("/preview", status_code=303)
 
 
@@ -235,7 +256,6 @@ def _renderizar_resultado(link_geral: str, resultados: dict[str, str], links: di
     """)
 
 
-VARIAVEIS_OBRIGATORIAS_COMUNS = ("PAINEL_CEO_EMAIL",)
 VARIAVEIS_OBRIGATORIAS_GRAPH = ("GRAPH_TENANT_ID", "GRAPH_CLIENT_ID", "GRAPH_CLIENT_SECRET")
 
 
@@ -264,13 +284,25 @@ async def enviar(request: Request) -> HTMLResponse | RedirectResponse:
     if not resumo:
         return RedirectResponse("/", status_code=303)
 
-    mapa = _extrair_mapa_do_formulario(await request.form())
-    config_mod.salvar_config(CAMINHO_CONFIG, mapa)
+    config = _extrair_config_do_formulario(await request.form())
+    config_mod.salvar_config(CAMINHO_CONFIG, config)
+
+    if not config_mod.tem_algum_email(config):
+        return HTMLResponse(f"""
+        <html><head><meta charset="UTF-8"><title>Erro · Fucape</title>{ESTILO}</head><body>
+        <div class="wrap">
+          <h1>Nenhum e-mail configurado</h1>
+          <div class="card err">Configure o e-mail do CEO ou de ao menos um gestor antes de enviar.</div>
+          <a href="/preview">Voltar</a>
+        </div>
+        </body></html>
+        """)
+
+    mapa = config["gestores"]
+    ceo_email = config["ceo_email"]
 
     metodo = _metodo_envio()
-    variaveis_necessarias = VARIAVEIS_OBRIGATORIAS_COMUNS + (
-        VARIAVEIS_OBRIGATORIAS_GRAPH if metodo == "graph" else ()
-    )
+    variaveis_necessarias = VARIAVEIS_OBRIGATORIAS_GRAPH if metodo == "graph" else ()
     for nome_variavel in variaveis_necessarias:
         if not os.environ.get(nome_variavel):
             return HTMLResponse(f"""
@@ -283,7 +315,6 @@ async def enviar(request: Request) -> HTMLResponse | RedirectResponse:
             </body></html>
             """)
 
-    ceo_email = os.environ["PAINEL_CEO_EMAIL"]
     modo_teste = bool(os.environ.get("PAINEL_MODO_TESTE"))
 
     if modo_teste:
@@ -307,7 +338,8 @@ async def enviar(request: Request) -> HTMLResponse | RedirectResponse:
     destinatarios_links = {
         email: f"{link_geral}deptos/{slugify(depto)}.html" for depto, email in mapa.items()
     }
-    destinatarios_links[ceo_email] = link_geral  # CEO sempre recebe o painel geral, mesmo se também for gestor
+    if ceo_email:
+        destinatarios_links[ceo_email] = link_geral  # CEO sempre recebe o painel geral, mesmo se também for gestor
 
     if modo_teste:
         resultados = {destinatario: "ok" for destinatario in destinatarios_links}

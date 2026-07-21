@@ -12,7 +12,7 @@ def _isolar_variaveis_de_ambiente_do_app(monkeypatch):
     quem está rodando os testes vaza pros testes que não a definem
     explicitamente."""
     for nome in (
-        "PAINEL_CEO_EMAIL", "PAINEL_METODO_ENVIO", "PAINEL_MODO_TESTE",
+        "PAINEL_METODO_ENVIO", "PAINEL_MODO_TESTE",
         "GRAPH_TENANT_ID", "GRAPH_CLIENT_ID", "GRAPH_CLIENT_SECRET", "GRAPH_REMETENTE",
     ):
         monkeypatch.delenv(nome, raising=False)

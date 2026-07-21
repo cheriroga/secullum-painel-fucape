@@ -67,7 +67,6 @@ No instalador do Python no Windows, marque **"Add python.exe to PATH"**.
       ```
 
       Variáveis:
-      - `PAINEL_CEO_EMAIL` — e-mail de quem recebe o painel geral
       - `PAINEL_METODO_ENVIO` — `graph` ou `outlook` (ver passo c)
       - `GRAPH_TENANT_ID`, `GRAPH_CLIENT_ID`, `GRAPH_CLIENT_SECRET` — só se `PAINEL_METODO_ENVIO=graph`, do app registration do passo (c)
       - `GRAPH_REMETENTE` — opcional, só pro método `graph` (default `relatorios@fucape.br`)
@@ -87,7 +86,7 @@ No instalador do Python no Windows, marque **"Add python.exe to PATH"**.
 - `iniciar_painel_web.bat` — abre um terminal (mostra os logs) e o navegador em `http://127.0.0.1:8000`.
 - `iniciar_painel_web_silencioso.bat` — mesma coisa, mas sem janela de terminal (roda em segundo plano).
 
-Em ambos: sobe o `.xlsx`, revisa o preview, configura o e-mail dos gestores por departamento (se ainda não configurado) e clica **Enviar**. O servidor fecha sozinho quando a aba do navegador é fechada — não precisa lembrar de fechar nada manualmente.
+Em ambos: sobe o `.xlsx`, revisa o preview, configura o e-mail do CEO e dos gestores por departamento (se ainda não configurado — sem nenhum e-mail preenchido, a tela avisa e o botão **Enviar** não publica nada) e clica **Enviar**. O servidor fecha sozinho quando a aba do navegador é fechada — não precisa lembrar de fechar nada manualmente.
 
 ## Testes
 
@@ -111,5 +110,5 @@ Use sempre `python -m pytest`, **não** `pytest` sozinho — nesse projeto o `py
 - `extratos/` — onde entra o `.xlsx` pro CLI local
 - `painel/` — saída do CLI local
 - `painel_web/` — saída do app web, uma subpasta por período (ex.: `painel_web/2026-06/`)
-- `webapp_data/` — config de gestores (`config.json`), uploads temporários e log do modo silencioso
+- `webapp_data/` — config do CEO e dos gestores (`config.json`), uploads temporários e log do modo silencioso
 - `.gh-pages-worktree/` — worktree git temporário usado pelo `deploy_github.py` durante a publicação (apagado ao fim de cada deploy)
