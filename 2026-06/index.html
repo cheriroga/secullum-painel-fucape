@@ -1,0 +1,514 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco de Horas · Painel do CEO · Fucape</title>
+<style>
+:root{--bg:#0b0f14;--panel:#121821;--panel2:#0e141c;--line:#1f2933;--ink:#e8edf2;--mut:#8a97a6;--pos:#3ddc84;--neg:#ff5c5c;--amber:#ffb020;--blue:#4da3ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:32px 24px 64px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:24px}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+h1{margin:0;font-size:24px;font-weight:800}
+h1 span{color:var(--mut);font-weight:600}
+.meta{font-size:12px;color:var(--mut);text-align:right}
+.meta b{color:var(--ink)}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:20px}
+.hero-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.hero-label{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+.hero-note{font-size:11.5px;color:var(--mut)}
+.gauge{position:relative;display:flex;height:28px;border-radius:6px;overflow:hidden;margin-top:16px;background:var(--panel2)}
+.seg{display:flex;align-items:center;font-size:12px;font-weight:700}
+.seg.neg{background:var(--neg);color:#2a0b0b;justify-content:flex-end;padding-right:8px}
+.seg.pos{background:var(--pos);color:#08110c;justify-content:flex-start;padding-left:8px}
+.divider{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.6}
+.gauge-legend{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mut);margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--mut);border-radius:8px;padding:14px}
+.kpi.p{border-left-color:var(--pos)}
+.kpi.n{border-left-color:var(--neg)}
+.kpi.a{border-left-color:var(--amber)}
+.kpi.b{border-left-color:var(--blue)}
+.k-val{font-size:20px;font-weight:800}
+.k-lab{font-size:11.5px;color:var(--mut);margin-top:4px}
+.k-sub{font-size:11px;color:var(--mut);margin-top:6px;opacity:.85}
+.tpos{color:var(--pos)}
+.tneg{color:var(--neg)}
+.alert{background:#2a2410;border:1px solid #4d3f12;color:#e8dcae;border-radius:8px;padding:14px 16px;font-size:12.5px;margin-bottom:20px}
+section{margin-bottom:28px}
+.s-head{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.idx{font-size:11px;color:var(--mut);font-weight:700}
+h2{margin:0;font-size:16px}
+.s-sub{font-size:12px;color:var(--mut);margin-bottom:12px}
+.controls{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.f{background:var(--panel);border:1px solid var(--line);color:var(--mut);font-size:11.5px;padding:6px 10px;border-radius:6px;cursor:pointer}
+.f.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sp{flex:1}
+.hint{font-size:11px;color:var(--mut)}
+.bars{display:flex;flex-direction:column;gap:6px}
+.bar-row{display:grid;grid-template-columns:200px 1fr 80px;align-items:center;gap:10px;font-size:12px}
+.br-name small{display:block;color:var(--mut);font-size:10.5px;font-weight:400}
+.br-track{position:relative;height:14px;background:var(--panel2);border-radius:3px}
+.br-mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line)}
+.br-fill{position:absolute;top:0;bottom:0;border-radius:3px}
+.br-fill.p{left:50%;background:var(--pos)}
+.br-fill.n{right:50%;background:var(--neg)}
+.br-val{text-align:right;font-weight:700}
+.dgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.dept{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.d-name{font-size:12.5px;font-weight:600}
+.d-name a{color:inherit;text-decoration:none}
+.br-name a{color:inherit;text-decoration:none}
+.d-meta{font-size:11px;color:var(--mut);margin:2px 0 6px}
+.d-mini{position:relative;height:6px;background:var(--panel2);border-radius:3px;width:160px}
+.d-mini i{position:absolute;top:0;bottom:0;border-radius:3px}
+.d-val{font-weight:700;font-size:13px}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;padding:6px 8px;border-bottom:1px solid var(--line)}
+.tbl td{padding:8px;border-bottom:1px solid var(--line)}
+.tbl .rt{text-align:right}
+.tbl .mono{font-variant-numeric:tabular-nums}
+.badge{background:var(--panel2);border:1px solid var(--line);color:var(--mut);font-size:10.5px;padding:2px 8px;border-radius:20px}
+footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-top:16px;margin-top:8px}
+</style>
+</head><body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="eyebrow">Fucape Business School · Cartão Ponto Secullum</div>
+    <h1>Banco de Horas <span>/ Painel do CEO</span></h1>
+  </div>
+  <div class="meta">
+    Período <b>21/06/2026 → 20/07/2026</b><br>
+    Emitido <b>21/07/2026</b> · 37 colaboradores<br>
+    <b>29 elegíveis</b> ao ponto · <b>8 fora</b> (isentos/config)
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-label">Saldo líquido consolidado · base elegível</div>
+    <div class="hero-note">exclui 8 registros sem batida de ponto</div>
+  </div>
+  <div style="font-size:40px;font-weight:800;letter-spacing:-.03em;color:var(--pos)">+131h07</div>
+  <div style="font-size:12.5px;color:var(--mut);margin-top:2px">A empresa deve mais horas do que tem a receber. Passivo trabalhista latente.</div>
+  <div class="gauge">
+    <div class="seg neg" style="width:25.6062%"><b>−68h49</b></div>
+    <div class="seg pos" style="width:74.3938%"><b>+199h56</b></div>
+    <div class="divider" style="left:25.6062%"></div>
+  </div>
+  <div class="gauge-legend">
+    <span class="l">&#9668; 8 credores da empresa (devem horas)</span>
+    <span class="r">21 credores de horas (a empresa deve) &#9658;</span>
+  </div>
+</div>
+
+<div class="kpis">
+  <div class="kpi p"><div class="k-val tpos">+199h56</div><div class="k-lab">Passivo de horas<br>(a empresa deve pagar/folgar)</div><div class="k-sub">21 pessoas · média +9h31</div></div>
+  <div class="kpi n"><div class="k-val tneg">−68h49</div><div class="k-lab">A empresa tem a receber<br>(devem horas)</div><div class="k-sub">8 pessoas · média −8h36</div></div>
+  <div class="kpi a"><div class="k-val" style="color:var(--amber)">+19h54</div><div class="k-lab">Concentração de risco<br>10% do passivo</div><div class="k-sub">RONALD · Centro de Serviços Compartilhados · maior saldo individual</div></div>
+  <div class="kpi b"><div class="k-val" style="color:var(--blue)">8</div><div class="k-lab">Registros não elegíveis<br>sem batida real no período</div><div class="k-sub">Sem nenhuma batida real no período · não indica ausência real</div></div>
+</div>
+
+
+<div class="alert"><b>Leitura de dado, não de gente.</b> 8 registros sem nenhuma batida real no período (isenção de ponto ou jornada mal configurada). Foram isolados na seção 03 para não contaminar o ranking.</div>
+
+
+<section>
+  <div class="s-head"><span class="idx">01</span><h2>Ranking individual</h2></div>
+  <div class="s-sub">Saldo acumulado no período por colaborador com ponto ativo. Verde = a empresa deve a ele; vermelho = ele deve à empresa.</div>
+  <div class="controls">
+    <button class="f on" data-f="all">Todos (29)</button>
+    <button class="f" data-f="pos">Só credores (21)</button>
+    <button class="f" data-f="neg">Só devedores (8)</button>
+    <div class="sp"></div>
+    <span class="hint">passe o mouse para detalhe · escala cortada em &plusmn;40h p/ leitura*</span>
+  </div>
+  <div class="bars" id="bars">
+    
+    <div class="bar-row" title="ANALISTA FINANCEIRO II · admitido 14/04/2026">
+      <div class="br-name"><a href="deptos/pessoas/ronald-azevedo-souza.html">RONALD AZEVEDO DE SOUZA</a><small>Centro de Serviços Compartilhados</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:24.8750%"></div></div>
+      <div class="br-val tpos">+19h54</div>
+    </div>
+    
+    <div class="bar-row" title="Assistente financeiro · admitido 03/06/2026">
+      <div class="br-name"><a href="deptos/pessoas/isabela-barbara-silva-goncalves.html">ISABELA BARBARA DA SILVA GONCALVES</a><small>Centro de Serviços Compartilhados</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:22.7083%"></div></div>
+      <div class="br-val tpos">+18h10</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE BIBLIOTECA I · admitido 21/01/2015">
+      <div class="br-name"><a href="deptos/pessoas/andrea-batista.html">ANDREA BATISTA</a><small>Biblioteca</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:22.1042%"></div></div>
+      <div class="br-val tpos">+17h41</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE ATENDIMENTO · admitido 17/03/2025">
+      <div class="br-name"><a href="deptos/pessoas/mayrla-oliveira-dantas.html">MAYRLA OLIVEIRA DANTAS</a><small>Atendimento</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:19.0000%"></div></div>
+      <div class="br-val tpos">+15h12</div>
+    </div>
+    
+    <div class="bar-row" title="ANALISTA CONTÁBIL · admitido 07/02/2024">
+      <div class="br-name"><a href="deptos/pessoas/raiane-gervasio-crivelari.html">RAIANE GERVASIO CRIVELARI</a><small>Centro de Serviços Compartilhados</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:18.8542%"></div></div>
+      <div class="br-val tpos">+15h05</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE DE COORDENAÇÃO · admitido 13/05/2026">
+      <div class="br-name"><a href="deptos/pessoas/ana-carla-cristovao-silva.html">ANA CARLA CRISTOVAO DA SILVA</a><small>Coordenação De Curso</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:18.0625%"></div></div>
+      <div class="br-val tpos">+14h27</div>
+    </div>
+    
+    <div class="bar-row" title="Trainee · admitido 03/06/2024">
+      <div class="br-name"><a href="deptos/pessoas/marcos-vinicius-rodolfo-silva.html">MARCOS VINICIUS RODOLFO DA SILVA</a><small>Centro de Serviços Compartilhados</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:13.1250%"></div></div>
+      <div class="br-val tpos">+10h30</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE ATENDIMENTO · admitido 13/05/2024">
+      <div class="br-name"><a href="deptos/pessoas/rosiani-godinho-cruz.html">ROSIANI GODINHO DA CRUZ</a><small>Secretaria Academica</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:13.1250%"></div></div>
+      <div class="br-val tpos">+10h30</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE ADMINISTRATIVO · admitido 25/05/2026">
+      <div class="br-name"><a href="deptos/pessoas/carolina-penha-santana-soares.html">CAROLINA DA PENHA SANTANA SOARES</a><small>Centro de Serviços Compartilhados</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:12.9792%"></div></div>
+      <div class="br-val tpos">+10h23</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE EXECUTIVO · admitido 18/05/2026">
+      <div class="br-name"><a href="deptos/pessoas/luan-patrick-reis-serafim-leite.html">LUAN PATRICK REIS SERAFIM LEITE</a><small>Diretoria</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:12.3542%"></div></div>
+      <div class="br-val tpos">+9h53</div>
+    </div>
+    
+    <div class="bar-row" title="BIBLIOTECARIO · admitido 16/04/2024">
+      <div class="br-name"><a href="deptos/pessoas/uarlens-jesus-souza.html">UARLENS DE JESUS SOUZA</a><small>Biblioteca</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:11.8333%"></div></div>
+      <div class="br-val tpos">+9h28</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE DE ATENDIMENTO · admitido 06/07/2026">
+      <div class="br-name"><a href="deptos/pessoas/winglis-santos-porto.html">WINGLIS SANTOS PORTO</a><small>Secretaria Academica</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:10.8958%"></div></div>
+      <div class="br-val tpos">+8h43</div>
+    </div>
+    
+    <div class="bar-row" title="ANALISTA COMERCIAL · admitido 25/05/2026">
+      <div class="br-name"><a href="deptos/pessoas/jamile-moreira-lopes.html">JAMILE MOREIRA LOPES</a><small>Comercial</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:10.6667%"></div></div>
+      <div class="br-val tpos">+8h32</div>
+    </div>
+    
+    <div class="bar-row" title="ANALISTA DEPARTAMENTO PESSOAL · admitido 30/03/2026">
+      <div class="br-name"><a href="deptos/pessoas/kristielle-barbosa-souza-dantas.html">KRISTIELLE BARBOSA DE SOUZA DANTAS</a><small>Centro de Serviços Compartilhados</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:10.5208%"></div></div>
+      <div class="br-val tpos">+8h25</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE DE DESENVOLVIMENTO HUMANO · admitido 01/10/2024">
+      <div class="br-name"><a href="deptos/pessoas/camila-carvalho-rafasky.html">CAMILA DE CARVALHO RAFASKY</a><small>Gente E Cultura</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:7.6250%"></div></div>
+      <div class="br-val tpos">+6h06</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE ACADEMICO · admitido 18/06/2026">
+      <div class="br-name"><a href="deptos/pessoas/daniele-martins-nunes-provietti.html">DANIELE MARTINS NUNES PROVIETTI</a><small>Secretaria Academica</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:6.2500%"></div></div>
+      <div class="br-val tpos">+5h00</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE ATENDIMENTO · admitido 14/11/2024">
+      <div class="br-name"><a href="deptos/pessoas/gustavo-martins-galvani.html">GUSTAVO MARTINS GALVANI</a><small>Atendimento</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:5.6250%"></div></div>
+      <div class="br-val tpos">+4h30</div>
+    </div>
+    
+    <div class="bar-row" title="ANALISTA DE CSC II · admitido 08/06/2026">
+      <div class="br-name"><a href="deptos/pessoas/maurides-carlos-oliveira-junior.html">MAURIDES CARLOS OLIVEIRA JUNIOR</a><small>Centro de Serviços Compartilhados</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:5.2292%"></div></div>
+      <div class="br-val tpos">+4h11</div>
+    </div>
+    
+    <div class="bar-row" title="ESTAGIARIA · admitido 14/05/2026">
+      <div class="br-name"><a href="deptos/pessoas/nathalia-dantas-handam-nunes.html">NATHALIA DANTAS HANDAM NUNES</a><small>Gente E Cultura</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:2.1042%"></div></div>
+      <div class="br-val tpos">+1h41</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE ATENDIMENTO · admitido 20/03/2024">
+      <div class="br-name"><a href="deptos/pessoas/sintique-quezia-sena-rangel.html">SINTIQUE QUEZIA SENA RANGEL</a><small>Atendimento</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:1.3333%"></div></div>
+      <div class="br-val tpos">+1h04</div>
+    </div>
+    
+    <div class="bar-row" title="ANALISTA COMERCIAL · admitido 25/05/2026">
+      <div class="br-name"><a href="deptos/pessoas/andre-filipe-lopes-faria.html">ANDRE FILIPE LOPES DE FARIA</a><small>Comercial</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:0.6458%"></div></div>
+      <div class="br-val tpos">+0h31</div>
+    </div>
+    
+    <div class="bar-row" title="OFICIAL POLIVALENTE · admitido 22/11/2019">
+      <div class="br-name"><a href="deptos/pessoas/hermesson-santos-pereira.html">HERMESSON DOS SANTOS PEREIRA</a><small>Hub Fucape</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill n" style="width:2.7083%"></div></div>
+      <div class="br-val tneg">−2h10</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE DE MARKETING · admitido 01/06/2026">
+      <div class="br-name"><a href="deptos/pessoas/filipe-chagas-pereira.html">FILIPE CHAGAS PEREIRA</a><small>Comunicação</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill n" style="width:3.1458%"></div></div>
+      <div class="br-val tneg">−2h31</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE TECNOLOGIA · admitido 18/05/2026">
+      <div class="br-name"><a href="deptos/pessoas/xeraclito-batista-rodrigues-araujo.html">XERACLITO BATISTA RODRIGUES ARAUJO</a><small>Tecnologia</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill n" style="width:5.1042%"></div></div>
+      <div class="br-val tneg">−4h05</div>
+    </div>
+    
+    <div class="bar-row" title="Analista Administrativo · admitido 06/03/2026">
+      <div class="br-name"><a href="deptos/pessoas/juliana-lima-barboza.html">JULIANA LIMA BARBOZA</a><small>Secretaria Academica</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill n" style="width:6.5625%"></div></div>
+      <div class="br-val tneg">−5h15</div>
+    </div>
+    
+    <div class="bar-row" title="Analista Administrativo · admitido 20/07/2026">
+      <div class="br-name"><a href="deptos/pessoas/carolina-santos-fantini.html">CAROLINA SANTOS FANTINI</a><small>Centro de Serviços Compartilhados</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill n" style="width:6.8958%"></div></div>
+      <div class="br-val tneg">−5h31</div>
+    </div>
+    
+    <div class="bar-row" title="ANALISTA COMERCIAL · admitido 25/05/2026">
+      <div class="br-name"><a href="deptos/pessoas/guido-freitas-morais.html">GUIDO DE FREITAS MORAIS</a><small>Comercial</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill n" style="width:8.5208%"></div></div>
+      <div class="br-val tneg">−6h49</div>
+    </div>
+    
+    <div class="bar-row" title="TECNICO DE INFORMATICA · admitido 11/03/2019">
+      <div class="br-name"><a href="deptos/pessoas/ewerson-santos-silva.html">EWERSON DOS SANTOS SILVA</a><small>Tecnologia</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill n" style="width:14.6667%"></div></div>
+      <div class="br-val tneg">−11h44</div>
+    </div>
+    
+    <div class="bar-row" title="ASSISTENTE ADMINISTRATIVO · admitido 11/12/2024">
+      <div class="br-name"><a href="deptos/pessoas/karla-araujo-ribeiro-faben.html">KARLA ARAUJO RIBEIRO FABEN</a><small>Coordenação De Curso</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill n" style="width:38.4167%"></div></div>
+      <div class="br-val tneg">−30h44</div>
+    </div>
+    
+  </div>
+  
+</section>
+
+
+<section>
+  <div class="s-head"><span class="idx">02</span><h2>Saldo por departamento</h2></div>
+  <div class="s-sub">Onde o passivo se acumula e onde a empresa está no positivo. Atenção aos negativos: são áreas com folga a compensar ou sobrecarga não paga.</div>
+  <div class="dgrid">
+    
+    <div class="dept">
+      <div class="d-l">
+        <div class="d-name"><a href="deptos/centro-servicos-compartilhados.html">Centro de Serviços Compartilhados</a></div>
+        <div class="d-meta">8 pessoas · média +10h08</div>
+        <div class="d-mini"><i style="width:100.0000%;background:var(--pos);left:0"></i></div>
+      </div>
+      <div class="d-val tpos">+81h07</div>
+    </div>
+    
+    <div class="dept">
+      <div class="d-l">
+        <div class="d-name"><a href="deptos/biblioteca.html">Biblioteca</a></div>
+        <div class="d-meta">2 pessoas · média +13h34</div>
+        <div class="d-mini"><i style="width:33.4703%;background:var(--pos);left:0"></i></div>
+      </div>
+      <div class="d-val tpos">+27h09</div>
+    </div>
+    
+    <div class="dept">
+      <div class="d-l">
+        <div class="d-name"><a href="deptos/atendimento.html">Atendimento</a></div>
+        <div class="d-meta">3 pessoas · média +6h55</div>
+        <div class="d-mini"><i style="width:25.6010%;background:var(--pos);left:0"></i></div>
+      </div>
+      <div class="d-val tpos">+20h46</div>
+    </div>
+    
+    <div class="dept">
+      <div class="d-l">
+        <div class="d-name"><a href="deptos/secretaria-academica.html">Secretaria Academica</a></div>
+        <div class="d-meta">4 pessoas · média +4h44</div>
+        <div class="d-mini"><i style="width:23.3820%;background:var(--pos);left:0"></i></div>
+      </div>
+      <div class="d-val tpos">+18h58</div>
+    </div>
+    
+    <div class="dept">
+      <div class="d-l">
+        <div class="d-name"><a href="deptos/diretoria.html">Diretoria</a></div>
+        <div class="d-meta">1 pessoa · média +9h53</div>
+        <div class="d-mini"><i style="width:12.1841%;background:var(--pos);left:0"></i></div>
+      </div>
+      <div class="d-val tpos">+9h53</div>
+    </div>
+    
+    <div class="dept">
+      <div class="d-l">
+        <div class="d-name"><a href="deptos/gente-cultura.html">Gente E Cultura</a></div>
+        <div class="d-meta">2 pessoas · média +3h54</div>
+        <div class="d-mini"><i style="width:9.5952%;background:var(--pos);left:0"></i></div>
+      </div>
+      <div class="d-val tpos">+7h47</div>
+    </div>
+    
+    <div class="dept">
+      <div class="d-l">
+        <div class="d-name"><a href="deptos/comercial.html">Comercial</a></div>
+        <div class="d-meta">3 pessoas · média +0h45</div>
+        <div class="d-mini"><i style="width:2.7532%;background:var(--pos);left:0"></i></div>
+      </div>
+      <div class="d-val tpos">+2h14</div>
+    </div>
+    
+    <div class="dept">
+      <div class="d-l">
+        <div class="d-name"><a href="deptos/hub-fucape.html">Hub Fucape</a></div>
+        <div class="d-meta">1 pessoa · média −2h10</div>
+        <div class="d-mini"><i style="width:2.6710%;background:var(--neg);right:0"></i></div>
+      </div>
+      <div class="d-val tneg">−2h10</div>
+    </div>
+    
+    <div class="dept">
+      <div class="d-l">
+        <div class="d-name"><a href="deptos/comunicacao.html">Comunicação</a></div>
+        <div class="d-meta">1 pessoa · média −2h31</div>
+        <div class="d-mini"><i style="width:3.1025%;background:var(--neg);right:0"></i></div>
+      </div>
+      <div class="d-val tneg">−2h31</div>
+    </div>
+    
+    <div class="dept">
+      <div class="d-l">
+        <div class="d-name"><a href="deptos/tecnologia.html">Tecnologia</a></div>
+        <div class="d-meta">2 pessoas · média −7h54</div>
+        <div class="d-mini"><i style="width:19.4987%;background:var(--neg);right:0"></i></div>
+      </div>
+      <div class="d-val tneg">−15h49</div>
+    </div>
+    
+    <div class="dept">
+      <div class="d-l">
+        <div class="d-name"><a href="deptos/coordenacao-curso.html">Coordenação De Curso</a></div>
+        <div class="d-meta">2 pessoas · média −8h08</div>
+        <div class="d-mini"><i style="width:20.0740%;background:var(--neg);right:0"></i></div>
+      </div>
+      <div class="d-val tneg">−16h17</div>
+    </div>
+    
+  </div>
+</section>
+
+
+
+<section>
+  <div class="s-head"><span class="idx">03</span><h2>Fora da base · revisar configuração</h2></div>
+  <div class="s-sub">Registros sem nenhuma batida real no período. Ação sugerida: confirmar no Secullum se a pessoa é isenta de ponto (cargo de confiança) ou se há um problema de jornada/batida a corrigir.</div>
+  <table class="tbl">
+    <thead><tr><th>Colaborador</th><th>Função</th><th>Depto</th><th class="rt">Saldo bruto</th><th class="rt">Status</th></tr></thead>
+    <tbody>
+      
+      <tr><td class="nm">CADDJA LUANA MOREIRA CALDAS</td><td>CONSULTOR COMERCIAL</td><td>Comercial</td>
+      <td class="rt mono">−185h00</td>
+      <td class="rt"><span class="badge">sem batida</span></td></tr>
+      
+      <tr><td class="nm">CARLOS HENRIQUE NERIS NOSSA</td><td>CEO</td><td>Diretoria</td>
+      <td class="rt mono">−172h00</td>
+      <td class="rt"><span class="badge">sem batida</span></td></tr>
+      
+      <tr><td class="nm">DARA DE ALMEIDA ELLER VIEIRA</td><td>ANALISTA DE CONTROLADORIA II</td><td>Centro de Serviços Compartilhados</td>
+      <td class="rt mono">−172h00</td>
+      <td class="rt"><span class="badge">sem batida</span></td></tr>
+      
+      <tr><td class="nm">JULIA MIRANDA FALCAO</td><td>Secretária Acadêmica</td><td>Secretaria Academica</td>
+      <td class="rt mono">−172h00</td>
+      <td class="rt"><span class="badge">sem batida</span></td></tr>
+      
+      <tr><td class="nm">LAURIENE FIGUEIREDO DE OLIVEIRA DA COSTA</td><td>GERENTE GENTE E CULTURA</td><td>Gente E Cultura</td>
+      <td class="rt mono">−172h00</td>
+      <td class="rt"><span class="badge">sem batida</span></td></tr>
+      
+      <tr><td class="nm">LORHAN AMILTON MOREIRA BERGER</td><td>SUPERVISOR DE TECNOLOGIA</td><td>Tecnologia</td>
+      <td class="rt mono">−172h00</td>
+      <td class="rt"><span class="badge">sem batida</span></td></tr>
+      
+      <tr><td class="nm">SILVANIA NERIS NOSSA</td><td>COORDENADORA DE PESQUISA E EXPANSAO</td><td>Secretaria De Pesquisa</td>
+      <td class="rt mono">−172h00</td>
+      <td class="rt"><span class="badge">sem batida</span></td></tr>
+      
+      <tr><td class="nm">WALTER SOUTO DE SOUSA</td><td>COORDENAÇÃO DE CURSO</td><td>Coordenação De Curso</td>
+      <td class="rt mono">−184h48</td>
+      <td class="rt"><span class="badge">sem batida</span></td></tr>
+      
+    </tbody>
+  </table>
+</section>
+
+
+<footer>
+  <b>Metodologia.</b> Fonte: Cartão Ponto Secullum Ponto Web, período 21/06/2026 → 20/07/2026.
+  Saldos somados a partir do saldo diário (BTotal) de cada colaborador. "Elegível" = tem ao menos uma batida real no período.
+  "Não elegível" = nenhuma batida real no período, indicando isenção de ponto ou jornada mal configurada.<br>
+  <b>Limite de leitura.</b> Banco de horas mede presença registrada, não produtividade nem entrega. Use como sinal de gestão de jornada e compliance, cruzando com desempenho antes de qualquer decisão sobre pessoas.
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('.controls .f').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.controls .f').forEach(function(b){ b.classList.remove('on'); });
+    btn.classList.add('on');
+    var filtro = btn.dataset.f;
+    document.querySelectorAll('#bars .bar-row').forEach(function(row){
+      var preenchimento = row.querySelector('.br-fill');
+      var ehPositivo = preenchimento.classList.contains('p');
+      var mostrar = filtro === 'all' || (filtro === 'pos' && ehPositivo) || (filtro === 'neg' && !ehPositivo);
+      row.style.display = mostrar ? '' : 'none';
+    });
+  });
+});
+</script>
+</body></html>
