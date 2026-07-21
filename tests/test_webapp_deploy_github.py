@@ -58,6 +58,19 @@ def test_copiar_conteudo_leva_arquivos_de_pasta_base_pro_worktree(tmp_path, work
     assert (worktree_isolado / "2026-06" / "index.html").read_text() == "<html></html>"
 
 
+def test_gerar_indice_raiz_lista_periodos_do_mais_recente_pro_mais_antigo(tmp_path):
+    pasta_base = tmp_path / "painel_web"
+    pasta_base.mkdir()
+    (pasta_base / "2026-06").mkdir()
+    (pasta_base / "2026-07").mkdir()
+
+    html = deploy_github._gerar_indice_raiz(pasta_base)
+
+    assert html.index("2026-07") < html.index("2026-06")
+    assert '<a href="2026-07/">2026-07</a>' in html
+    assert '<a href="2026-06/">2026-06</a>' in html
+
+
 def test_limpar_worktree_remove_conteudo_antigo_preservando_git(worktree_isolado):
     worktree_isolado.mkdir()
     (worktree_isolado / ".git").mkdir()

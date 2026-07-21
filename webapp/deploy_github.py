@@ -40,6 +40,19 @@ def _copiar_conteudo(pasta_base: Path):
             shutil.copy2(item, destino)
 
 
+def _gerar_indice_raiz(pasta_base: Path) -> str:
+    """painel_web/ só tem subpastas por período, sem index.html na raiz —
+    sem isso, a URL base do GitHub Pages cai em 404."""
+    periodos = sorted((item.name for item in pasta_base.iterdir() if item.is_dir()), reverse=True)
+    itens = "".join(f'<li><a href="{periodo}/">{periodo}</a></li>' for periodo in periodos)
+    return (
+        '<!doctype html><html><head><meta charset="UTF-8">'
+        "<title>Painel de horas · Fucape</title></head><body>"
+        f"<h1>Painel de horas · Fucape</h1><ul>{itens}</ul>"
+        "</body></html>"
+    )
+
+
 def publicar(pasta_base: Path) -> str:
     """Publica pasta_base inteira na branch gh-pages do GitHub Pages e retorna
     a URL base do site, sem barra final. Espera que a branch gh-pages já
@@ -54,6 +67,7 @@ def publicar(pasta_base: Path) -> str:
     _limpar_worktree()
     _copiar_conteudo(pasta_base)
     (PASTA_WORKTREE / ".nojekyll").touch()
+    (PASTA_WORKTREE / "index.html").write_text(_gerar_indice_raiz(pasta_base), encoding="utf-8")
 
     _git("add", "-A", cwd=PASTA_WORKTREE)
     commit = subprocess.run(
