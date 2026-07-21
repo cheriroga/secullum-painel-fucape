@@ -200,7 +200,7 @@ def test_post_enviar_publica_e_notifica_com_sucesso(tmp_path, monkeypatch, workb
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
 
-    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+    monkeypatch.setattr(main.deploy_github, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
     monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: "token-123")
 
     links_chamados = {}
@@ -245,7 +245,7 @@ def test_post_enviar_ceo_tambem_gestor_recebe_link_geral_nao_o_do_depto(tmp_path
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
 
-    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+    monkeypatch.setattr(main.deploy_github, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
     monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: "token-123")
 
     links_chamados = {}
@@ -283,7 +283,7 @@ def test_post_enviar_salva_config_antes_de_publicar_mesmo_sem_clicar_salvar(tmp_
     monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
-    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+    monkeypatch.setattr(main.deploy_github, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
     monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: "token-123")
     monkeypatch.setattr(
         main.mailer_graph, "enviar_notificacao",
@@ -326,7 +326,7 @@ def test_post_enviar_modo_teste_nao_chama_netlify_nem_graph(tmp_path, monkeypatc
     def nao_deveria_chamar(*a, **k):
         raise AssertionError("não deveria chamar Netlify/Graph em modo teste")
 
-    monkeypatch.setattr(main.deploy_netlify, "publicar", nao_deveria_chamar)
+    monkeypatch.setattr(main.deploy_github, "publicar", nao_deveria_chamar)
     monkeypatch.setattr(main.mailer_graph, "obter_token", nao_deveria_chamar)
     monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", nao_deveria_chamar)
 
@@ -391,9 +391,9 @@ def test_post_enviar_com_falha_de_deploy_nao_envia_email(tmp_path, monkeypatch, 
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
 
     def falha_deploy(pasta_base):
-        raise main.deploy_netlify.DeployError("not authenticated")
+        raise main.deploy_github.DeployError("not authenticated")
 
-    monkeypatch.setattr(main.deploy_netlify, "publicar", falha_deploy)
+    monkeypatch.setattr(main.deploy_github, "publicar", falha_deploy)
 
     chamado = []
     monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: chamado.append(1))
@@ -431,7 +431,7 @@ def test_post_enviar_sem_variavel_de_ambiente_nao_publica_nem_envia(tmp_path, mo
     def publicar_nao_deveria_ser_chamado(pasta_base):
         raise AssertionError("deploy_netlify.publicar não deveria ser chamado sem as variáveis de ambiente")
 
-    monkeypatch.setattr(main.deploy_netlify, "publicar", publicar_nao_deveria_ser_chamado)
+    monkeypatch.setattr(main.deploy_github, "publicar", publicar_nao_deveria_ser_chamado)
 
     chamado = []
     monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: chamado.append(1))
@@ -478,7 +478,7 @@ def test_post_reenviar_manda_so_pra_quem_falhou(tmp_path, monkeypatch, workbook_
     monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
-    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+    monkeypatch.setattr(main.deploy_github, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
     monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: "token-123")
 
     def enviar_com_uma_falha(token, remetente, destinatarios_links, periodo):
@@ -534,7 +534,7 @@ def test_post_enviar_com_falha_de_autenticacao_graph_mostra_link_e_marca_falhas(
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
 
-    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+    monkeypatch.setattr(main.deploy_github, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
 
     def falha_auth(*a, **k):
         raise main.mailer_graph.EnvioError("bad creds")
@@ -575,7 +575,7 @@ def test_post_enviar_metodo_outlook_nao_exige_graph_e_usa_mailer_outlook(tmp_pat
     monkeypatch.delenv("GRAPH_CLIENT_ID", raising=False)
     monkeypatch.delenv("GRAPH_CLIENT_SECRET", raising=False)
 
-    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+    monkeypatch.setattr(main.deploy_github, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
 
     def graph_nao_deveria_ser_chamado(*a, **k):
         raise AssertionError("mailer_graph não deveria ser chamado com PAINEL_METODO_ENVIO=outlook")
@@ -620,7 +620,7 @@ def test_post_enviar_metodo_outlook_falha_de_conexao_marca_falhas(tmp_path, monk
 
     monkeypatch.setenv("PAINEL_CEO_EMAIL", "ceo@fucape.br")
     monkeypatch.setenv("PAINEL_METODO_ENVIO", "outlook")
-    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+    monkeypatch.setattr(main.deploy_github, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
 
     def falha_outlook(*a, **k):
         raise main.mailer_outlook.EnvioError("Outlook não está instalado")
@@ -660,7 +660,7 @@ def test_post_reenviar_com_falha_de_autenticacao_graph_mantem_falha(tmp_path, mo
     monkeypatch.setenv("GRAPH_TENANT_ID", "tenant")
     monkeypatch.setenv("GRAPH_CLIENT_ID", "client")
     monkeypatch.setenv("GRAPH_CLIENT_SECRET", "segredo")
-    monkeypatch.setattr(main.deploy_netlify, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
+    monkeypatch.setattr(main.deploy_github, "publicar", lambda pasta_base: "https://painel-fucape.netlify.app")
     monkeypatch.setattr(main.mailer_graph, "obter_token", lambda *a, **k: "token-123")
 
     def enviar_com_uma_falha(token, remetente, destinatarios_links, periodo):

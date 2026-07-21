@@ -3,7 +3,7 @@
 Gera o painel de banco de horas a partir do cartão ponto do Secullum (`cartaoponto.xlsx`). Tem duas formas de uso:
 
 - **CLI local** (`atualizar_painel.bat`) — gera o HTML e abre no navegador, só isso.
-- **App web** (`iniciar_painel_web.bat`) — upload do xlsx pela tela, revisão, e um botão "Enviar" que publica no Netlify e manda e-mail (CEO + gestores), via Microsoft Graph API ou Outlook Desktop (à sua escolha).
+- **App web** (`iniciar_painel_web.bat`) — upload do xlsx pela tela, revisão, e um botão "Enviar" que publica no GitHub Pages (teste de MVP — o correto seria Azure) e manda e-mail (CEO + gestores), via Microsoft Graph API ou Outlook Desktop (à sua escolha).
 
 Este guia cobre como instalar do zero numa máquina nova.
 
@@ -12,8 +12,7 @@ Este guia cobre como instalar do zero numa máquina nova.
 | Ferramenta | Versão | Pra quê |
 |---|---|---|
 | [Python](https://www.python.org/downloads/) | 3.10 ou mais novo | Roda o painel e o app web |
-| [Node.js](https://nodejs.org/) (inclui npm) | qualquer versão recente | Só pra instalar o Netlify CLI (só pro app web) |
-| Conta [Netlify](https://www.netlify.com/) | plano gratuito serve | Publicar o painel (só pro app web) |
+| Git | qualquer versão recente | Publicar o painel no GitHub Pages (só pro app web) |
 | App registration no Entra ID | — | Enviar e-mail via Microsoft Graph API — só se for usar `PAINEL_METODO_ENVIO=graph` |
 | Outlook Desktop instalado e logado | — | Enviar e-mail via Outlook — só se for usar `PAINEL_METODO_ENVIO=outlook` |
 
@@ -40,24 +39,21 @@ No instalador do Python no Windows, marque **"Add python.exe to PATH"**.
 
    Os `.bat` de entrada (`atualizar_painel.bat`, `iniciar_painel_web.bat`, `iniciar_painel_web_silencioso.bat`) já chamam `.venv\Scripts\python.exe` diretamente — não precisam do venv ativado pra rodar, só que a etapa acima já tenha sido feita uma vez.
 
-4. **Só necessário se for usar o app web** (publicar no Netlify + mandar e-mail — pule pra "CLI local" abaixo se só quiser gerar o HTML):
+4. **Só necessário se for usar o app web** (publicar no GitHub Pages + mandar e-mail — pule pra "CLI local" abaixo se só quiser gerar o HTML):
 
-   a. Instalar o Netlify CLI:
-
-      ```
-      npm install -g netlify-cli
-      ```
-
-      No Windows, se depois disso o comando `netlify` não for reconhecido num terminal novo, a pasta do npm global (`%AppData%\npm`) não está no PATH — adicione manualmente em Configurações > Variáveis de Ambiente, ou rode `setx PATH "%PATH%;%AppData%\npm"` e abra um terminal novo.
-
-   b. Fazer login e linkar o site:
+   a. Criar a branch `gh-pages` uma vez (o `deploy_github.py` espera que ela já exista no remoto):
 
       ```
-      netlify login
-      netlify init
+      git checkout --orphan gh-pages
+      git rm -rf .
+      git commit --allow-empty -m "chore: cria branch gh-pages"
+      git push origin gh-pages
+      git checkout main
       ```
 
-      `netlify init` cria (ou linka) um site Netlify e salva a associação em `.netlify/` dentro da pasta do repositório — o `deploy_netlify.py` depende disso pra saber pra onde publicar.
+   b. Ativar o GitHub Pages pra essa branch: no repositório no GitHub, Settings > Pages > Source > branch `gh-pages` / pasta `/ (root)`.
+
+      **Atenção:** repositório privado no GitHub Pages publica o site com URL pública (sem login) pra quem tiver o link — mesma exposição que já existia no Netlify. É só MVP de teste; o método correto de produção é Azure.
 
    c. Escolher como o e-mail vai ser enviado — `PAINEL_METODO_ENVIO=graph` (default) ou `PAINEL_METODO_ENVIO=outlook`:
 
@@ -116,4 +112,4 @@ Use sempre `python -m pytest`, **não** `pytest` sozinho — nesse projeto o `py
 - `painel/` — saída do CLI local
 - `painel_web/` — saída do app web, uma subpasta por período (ex.: `painel_web/2026-06/`)
 - `webapp_data/` — config de gestores (`config.json`), uploads temporários e log do modo silencioso
-- `.netlify/` — associação do site criado pelo `netlify init`
+- `.gh-pages-worktree/` — worktree git temporário usado pelo `deploy_github.py` durante a publicação (apagado ao fim de cada deploy)

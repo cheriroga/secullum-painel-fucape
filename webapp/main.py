@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 
 from painel_horas.slug import slugify
 from webapp import config as config_mod
-from webapp import deploy_netlify, mailer_graph, mailer_outlook
+from webapp import deploy_github, mailer_graph, mailer_outlook
 from webapp.pipeline import processar_upload
 
 load_dotenv()
@@ -216,7 +216,7 @@ def _renderizar_resultado(link_geral: str, resultados: dict[str, str], links: di
         botao_retry = ""
 
     aviso_modo_teste = (
-        "<div class='warn'>Modo teste ativo (PAINEL_MODO_TESTE) — nada foi publicado no Netlify "
+        "<div class='warn'>Modo teste ativo (PAINEL_MODO_TESTE) — nada foi publicado no GitHub Pages "
         "nem enviado por e-mail de verdade.</div>"
         if os.environ.get("PAINEL_MODO_TESTE") else ""
     )
@@ -290,8 +290,8 @@ async def enviar(request: Request) -> HTMLResponse | RedirectResponse:
         url_site = "https://modo-teste.invalido"
     else:
         try:
-            url_site = deploy_netlify.publicar(PASTA_BASE)
-        except deploy_netlify.DeployError as erro:
+            url_site = deploy_github.publicar(PASTA_BASE)
+        except deploy_github.DeployError as erro:
             return HTMLResponse(f"""
             <html><head><meta charset="UTF-8"><title>Erro · Fucape</title>{ESTILO}</head><body>
             <div class="wrap">

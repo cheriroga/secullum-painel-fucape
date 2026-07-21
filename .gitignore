@@ -8,10 +8,9 @@ __pycache__/
 *.pyc
 webapp_data/
 painel_web/
-netlify.toml
 
-# Local Netlify folder
-.netlify
+# Worktree local do deploy_github.py
+.gh-pages-worktree/
 
 .env
 
