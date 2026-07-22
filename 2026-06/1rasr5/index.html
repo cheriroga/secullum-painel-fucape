@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="pt-BR"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Banco de Horas · Painel Coordenação De Curso · Fucape</title>
+<title>Banco de Horas · Painel Secretaria De Pesquisa · Fucape</title>
 <style>
 :root{--bg:#0b0f14;--panel:#121821;--panel2:#0e141c;--line:#1f2933;--ink:#e8edf2;--mut:#8a97a6;--pos:#3ddc84;--neg:#ff5c5c;--amber:#ffb020;--blue:#4da3ff}
 *{box-sizing:border-box}
@@ -77,12 +77,12 @@ footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-
 <header>
   <div>
     <div class="eyebrow">Fucape Business School · Cartão Ponto Secullum</div>
-    <h1>Banco de Horas <span>/ Painel Coordenação De Curso</span></h1>
+    <h1>Banco de Horas <span>/ Painel Secretaria De Pesquisa</span></h1>
   </div>
   <div class="meta">
     Período <b>21/06/2026 → 20/07/2026</b><br>
-    Emitido <b>21/07/2026</b> · 3 colaboradores<br>
-    <b>2 elegíveis</b> ao ponto · <b>1 fora</b> (isentos/config)
+    Emitido <b>22/07/2026</b> · 1 colaboradores<br>
+    <b>0 elegíveis</b> ao ponto · <b>1 fora</b> (isentos/config)
   </div>
 </header>
 
@@ -91,23 +91,23 @@ footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-
     <div class="hero-label">Saldo líquido consolidado · base elegível</div>
     <div class="hero-note">exclui 1 registros sem batida de ponto</div>
   </div>
-  <div style="font-size:40px;font-weight:800;letter-spacing:-.03em;color:var(--neg)">−16h17</div>
-  <div style="font-size:12.5px;color:var(--mut);margin-top:2px">A empresa tem mais horas a receber do que deve. Situação favorável de banco de horas.</div>
+  <div style="font-size:40px;font-weight:800;letter-spacing:-.03em;color:var(--pos)">+0h00</div>
+  <div style="font-size:12.5px;color:var(--mut);margin-top:2px">A empresa deve mais horas do que tem a receber. Passivo trabalhista latente.</div>
   <div class="gauge">
-    <div class="seg neg" style="width:68.0192%"><b>−30h44</b></div>
-    <div class="seg pos" style="width:31.9808%"><b>+14h27</b></div>
-    <div class="divider" style="left:68.0192%"></div>
+    <div class="seg neg" style="width:0.0000%"><b>+0h00</b></div>
+    <div class="seg pos" style="width:0.0000%"><b>+0h00</b></div>
+    <div class="divider" style="left:0.0000%"></div>
   </div>
   <div class="gauge-legend">
-    <span class="l">&#9668; 1 credores da empresa (devem horas)</span>
-    <span class="r">1 credores de horas (a empresa deve) &#9658;</span>
+    <span class="l">&#9668; 0 credores da empresa (devem horas)</span>
+    <span class="r">0 credores de horas (a empresa deve) &#9658;</span>
   </div>
 </div>
 
 <div class="kpis">
-  <div class="kpi p"><div class="k-val tpos">+14h27</div><div class="k-lab">Passivo de horas<br>(a empresa deve pagar/folgar)</div><div class="k-sub">1 pessoa · média +14h27</div></div>
-  <div class="kpi n"><div class="k-val tneg">−30h44</div><div class="k-lab">A empresa tem a receber<br>(devem horas)</div><div class="k-sub">1 pessoa · média −30h44</div></div>
-  <div class="kpi a"><div class="k-val" style="color:var(--amber)">+14h27</div><div class="k-lab">Concentração de risco<br>100% do passivo</div><div class="k-sub">ANA · Coordenação De Curso · maior saldo individual</div></div>
+  <div class="kpi p"><div class="k-val tpos">+0h00</div><div class="k-lab">Passivo de horas<br>(a empresa deve pagar/folgar)</div><div class="k-sub">0 pessoas · média +0h00</div></div>
+  <div class="kpi n"><div class="k-val tneg">+0h00</div><div class="k-lab">A empresa tem a receber<br>(devem horas)</div><div class="k-sub">0 pessoas · média +0h00</div></div>
+  <div class="kpi a"><div class="k-val" style="color:var(--amber)">+0h00</div><div class="k-lab">Concentração de risco<br>0% do passivo</div><div class="k-sub">sem concentração relevante</div></div>
   <div class="kpi b"><div class="k-val" style="color:var(--blue)">1</div><div class="k-lab">Registros não elegíveis<br>sem batida real no período</div><div class="k-sub">Sem nenhuma batida real no período · não indica ausência real</div></div>
 </div>
 
@@ -119,27 +119,13 @@ footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-
   <div class="s-head"><span class="idx">01</span><h2>Ranking individual</h2></div>
   <div class="s-sub">Saldo acumulado no período por colaborador com ponto ativo. Verde = a empresa deve a ele; vermelho = ele deve à empresa.</div>
   <div class="controls">
-    <button class="f on" data-f="all">Todos (2)</button>
-    <button class="f" data-f="pos">Só credores (1)</button>
-    <button class="f" data-f="neg">Só devedores (1)</button>
+    <button class="f on" data-f="all">Todos (0)</button>
+    <button class="f" data-f="pos">Só credores (0)</button>
+    <button class="f" data-f="neg">Só devedores (0)</button>
     <div class="sp"></div>
     <span class="hint">passe o mouse para detalhe · escala cortada em &plusmn;40h p/ leitura*</span>
   </div>
   <div class="bars" id="bars">
-    
-    <div class="bar-row" title="ASSISTENTE DE COORDENAÇÃO · admitido 13/05/2026">
-      <div class="br-name"><a href="pessoas/ana-carla-cristovao-silva.html">ANA CARLA CRISTOVAO DA SILVA</a><small>admitido 13/05/2026</small></div>
-      <div class="br-track"><div class="br-mid"></div>
-        <div class="br-fill p" style="width:18.0625%"></div></div>
-      <div class="br-val tpos">+14h27</div>
-    </div>
-    
-    <div class="bar-row" title="ASSISTENTE ADMINISTRATIVO · admitido 11/12/2024">
-      <div class="br-name"><a href="pessoas/karla-araujo-ribeiro-faben.html">KARLA ARAUJO RIBEIRO FABEN</a><small>admitido 11/12/2024</small></div>
-      <div class="br-track"><div class="br-mid"></div>
-        <div class="br-fill n" style="width:38.4167%"></div></div>
-      <div class="br-val tneg">−30h44</div>
-    </div>
     
   </div>
   
@@ -155,8 +141,8 @@ footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-
     <thead><tr><th>Colaborador</th><th>Função</th><th>Depto</th><th class="rt">Saldo bruto</th><th class="rt">Status</th></tr></thead>
     <tbody>
       
-      <tr><td class="nm">WALTER SOUTO DE SOUSA</td><td>COORDENAÇÃO DE CURSO</td><td>Coordenação De Curso</td>
-      <td class="rt mono">−184h48</td>
+      <tr><td class="nm">SILVANIA NERIS NOSSA</td><td>COORDENADORA DE PESQUISA E EXPANSAO</td><td>Secretaria De Pesquisa</td>
+      <td class="rt mono">−172h00</td>
       <td class="rt"><span class="badge">sem batida</span></td></tr>
       
     </tbody>
