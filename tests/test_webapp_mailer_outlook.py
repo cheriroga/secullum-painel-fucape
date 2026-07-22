@@ -35,19 +35,58 @@ class _FakeMailItem:
         self.HTMLBody = None
         self.Attachments = _FakeAttachments()
         self.enviado = False
+        self.conta_usada = None
 
     def Send(self):
         self.enviado = True
 
 
+class _FakeAccount:
+    def __init__(self, smtp):
+        self.SmtpAddress = smtp
+        self.DisplayName = smtp
+
+
+class _FakeAccounts:
+    def __init__(self, smtps):
+        self._contas = [_FakeAccount(s) for s in smtps]
+
+    @property
+    def Count(self):
+        return len(self._contas)
+
+    def Item(self, i):  # coleção COM é 1-based
+        return self._contas[i - 1]
+
+
+class _FakeSession:
+    def __init__(self, smtps):
+        self.Accounts = _FakeAccounts(smtps)
+
+
+# Espelha a máquina real: duas contas, a padrão (Item 1) NÃO é a kristielle.
+_CONTAS_PADRAO = ["nathalianunes@fucape.br", "kristielledantas@fucape.br"]
+
+
 class _FakeOutlookApp:
-    def __init__(self):
+    def __init__(self, smtps=_CONTAS_PADRAO):
         self.itens_criados = []
+        self.Session = _FakeSession(smtps)
 
     def CreateItem(self, tipo_item):
         item = _FakeMailItem()
         self.itens_criados.append(item)
         return item
+
+
+@pytest.fixture(autouse=True)
+def _mock_send_using_account(monkeypatch):
+    # _usar_conta usa Invoke de baixo nível (email._oleobj_), que os fakes não
+    # têm — registra a conta escolhida no item pra dar pra checar.
+    monkeypatch.setattr(
+        mailer_outlook, "_usar_conta",
+        lambda email, conta: setattr(email, "conta_usada", conta),
+    )
 
 
 def test_enviar_notificacao_manda_um_email_por_destinatario(monkeypatch):
@@ -101,6 +140,7 @@ def test_enviar_notificacao_marca_erro_por_destinatario_sem_abortar_os_outros(mo
     class _AppComUmaFalha:
         def __init__(self):
             self.chamadas = 0
+            self.Session = _FakeSession(_CONTAS_PADRAO)
 
         def CreateItem(self, tipo_item):
             self.chamadas += 1
@@ -116,3 +156,36 @@ def test_enviar_notificacao_marca_erro_por_destinatario_sem_abortar_os_outros(mo
 
     assert resultado["falha@fucape.br"].startswith("erro:")
     assert resultado["ok@fucape.br"] == "ok"
+
+
+def test_enviar_notificacao_usa_a_conta_do_remetente_configurado(monkeypatch):
+    app_falso = _FakeOutlookApp()
+    monkeypatch.setattr(mailer_outlook.win32com.client, "Dispatch", lambda nome: app_falso)
+
+    mailer_outlook.enviar_notificacao(
+        {"ceo@fucape.br": "https://x/2026-06/"}, "Junho/2026",
+        remetente="kristielledantas@fucape.br",
+    )
+
+    item = app_falso.itens_criados[0]
+    assert item.conta_usada is not None
+    assert item.conta_usada.SmtpAddress == "kristielledantas@fucape.br"
+
+
+def test_enviar_notificacao_remetente_default_e_kristielle_nao_a_conta_padrao(monkeypatch):
+    app_falso = _FakeOutlookApp()
+    monkeypatch.setattr(mailer_outlook.win32com.client, "Dispatch", lambda nome: app_falso)
+
+    # sem passar remetente -> usa REMETENTE_PADRAO; NÃO pode cair na conta padrão
+    # do perfil (Item 1 = nathalianunes).
+    mailer_outlook.enviar_notificacao({"ceo@fucape.br": "https://x/2026-06/"}, "Junho/2026")
+
+    assert app_falso.itens_criados[0].conta_usada.SmtpAddress == "kristielledantas@fucape.br"
+
+
+def test_enviar_notificacao_conta_inexistente_levanta_envio_error(monkeypatch):
+    app_falso = _FakeOutlookApp(smtps=["nathalianunes@fucape.br"])  # sem kristielle
+    monkeypatch.setattr(mailer_outlook.win32com.client, "Dispatch", lambda nome: app_falso)
+
+    with pytest.raises(mailer_outlook.EnvioError):
+        mailer_outlook.enviar_notificacao({"ceo@fucape.br": "https://x/"}, "Junho/2026")
