@@ -80,7 +80,7 @@ def test_gerar_painel_cria_index_deptos_e_paginas_de_pessoa(tmp_path, workbook_p
 
     conteudo_ceo = (pasta_saida / resumo["ceo_slug"] / "index.html").read_text(encoding="utf-8")
     assert 'href="../pessoas/pessoa-tecnologia.html"' in conteudo_ceo
-    assert 'href="../tecnologia/"' in conteudo_ceo
+    assert 'href="../tecnologia/index.html"' in conteudo_ceo
 
 
 def test_gerar_painel_remove_paginas_obsoletas_de_departamento_e_pessoa(tmp_path, workbook_path):

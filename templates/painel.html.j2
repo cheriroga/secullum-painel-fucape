@@ -146,7 +146,7 @@ footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-
     {% for d in r.deptos %}
     <div class="dept">
       <div class="d-l">
-        <div class="d-name"><a href="../{{ d.slug }}/">{{ d.nome }}</a></div>
+        <div class="d-name"><a href="../{{ d.slug }}/index.html">{{ d.nome }}</a></div>
         <div class="d-meta">{{ d.pessoas }} pessoa{{ 's' if d.pessoas != 1 else '' }} · média {{ d.media_fmt }}</div>
         <div class="d-mini"><i style="width:{{ '%.4f'|format(d.mini_pct) }}%;background:{{ 'var(--pos)' if d.total_min >= 0 else 'var(--neg)' }};{{ 'left:0' if d.total_min >= 0 else 'right:0' }}"></i></div>
       </div>

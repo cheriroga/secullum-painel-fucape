@@ -27,7 +27,7 @@ def test_render_pagina_geral_contem_secoes_esperadas():
     assert "Painel do CEO" in html
     assert "Fulano" in html
     assert "Saldo por departamento" in html
-    assert 'href="../tecnologia/"' in html
+    assert 'href="../tecnologia/index.html"' in html
     assert "<script>" in html and "<link" not in html
 
 
