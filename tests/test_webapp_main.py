@@ -3,6 +3,7 @@ import threading
 
 from fastapi.testclient import TestClient
 
+from painel_horas.codigos import LABEL_CEO
 from webapp import main
 
 
@@ -27,6 +28,12 @@ def test_iniciar_monitor_heartbeat_inicia_thread_em_segundo_plano():
 def _dia_com_batida(data_str, btotal_str):
     return (data_str, "Qui", datetime.timedelta(hours=8), datetime.timedelta(hours=17),
             None, None, None, None, None, None, btotal_str, None)
+
+
+def _codigo_depto(tmp_path, label):
+    import json
+    caminho = tmp_path / "webapp_data" / "deptos_codigos.json"
+    return json.loads(caminho.read_text(encoding="utf-8"))[label]
 
 
 def test_get_index_mostra_formulario_de_upload():
@@ -118,7 +125,8 @@ def test_get_preview_apos_upload_mostra_resumo_e_iframe(tmp_path, monkeypatch, w
 
     assert resposta.status_code == 200
     assert "2026-06" in resposta.text
-    assert '/painel/2026-06/index.html' in resposta.text
+    ceo_slug = _codigo_depto(tmp_path, LABEL_CEO)
+    assert f'/painel/2026-06/{ceo_slug}/index.html' in resposta.text
     assert 'name="ceo_email"' in resposta.text
     assert 'Tecnologia <span class="badge-warn">sem e-mail</span>' in resposta.text
     assert "Nenhum e-mail configurado" in resposta.text
@@ -222,8 +230,12 @@ def test_post_enviar_publica_e_notifica_com_sucesso(tmp_path, monkeypatch, workb
     resposta = client.post("/enviar", data={"ceo_email": "ceo@fucape.br", "email_Tecnologia": "gestor.ti@fucape.br"})
 
     assert resposta.status_code == 200
-    assert links_chamados["ceo@fucape.br"] == "https://painel-fucape.netlify.app/2026-06/"
-    assert links_chamados["gestor.ti@fucape.br"] == "https://painel-fucape.netlify.app/2026-06/deptos/tecnologia.html"
+    ceo_slug = _codigo_depto(tmp_path, LABEL_CEO)
+    assert links_chamados["ceo@fucape.br"] == f"https://painel-fucape.netlify.app/2026-06/{ceo_slug}/"
+    codigo_ti = _codigo_depto(tmp_path, "Tecnologia")
+    assert links_chamados["gestor.ti@fucape.br"] == \
+        f"https://painel-fucape.netlify.app/2026-06/{codigo_ti}/"
+    assert codigo_ti != "tecnologia"  # URL opaca, não o slug do nome
     assert "Todos os envios OK" in resposta.text
 
 
@@ -267,7 +279,8 @@ def test_post_enviar_ceo_tambem_gestor_recebe_link_geral_nao_o_do_depto(tmp_path
 
     client.post("/enviar", data={"ceo_email": "ceo@fucape.br", "email_Tecnologia": "ceo@fucape.br"})
 
-    assert links_chamados == {"ceo@fucape.br": "https://painel-fucape.netlify.app/2026-06/"}
+    ceo_slug = _codigo_depto(tmp_path, LABEL_CEO)
+    assert links_chamados == {"ceo@fucape.br": f"https://painel-fucape.netlify.app/2026-06/{ceo_slug}/"}
 
 
 def test_post_enviar_salva_config_antes_de_publicar_mesmo_sem_clicar_salvar(tmp_path, monkeypatch, workbook_path):
@@ -525,10 +538,12 @@ def test_post_reenviar_manda_so_pra_quem_falhou(tmp_path, monkeypatch, workbook_
     client.post("/enviar", data={"ceo_email": "ceo@fucape.br", "email_Tecnologia": "gestor.ti@fucape.br"})
     assert main.ESTADO["ultima_publicacao"]["resultados"]["gestor.ti@fucape.br"].startswith("erro:")
 
+    codigo_ti = _codigo_depto(tmp_path, "Tecnologia")
+
     def reenviar_com_sucesso(token, remetente, destinatarios_links, periodo):
         assert list(destinatarios_links.keys()) == ["gestor.ti@fucape.br"]
         assert destinatarios_links["gestor.ti@fucape.br"] == \
-            "https://painel-fucape.netlify.app/2026-06/deptos/tecnologia.html"
+            f"https://painel-fucape.netlify.app/2026-06/{codigo_ti}/"
         return {"gestor.ti@fucape.br": "ok"}
 
     monkeypatch.setattr(main.mailer_graph, "enviar_notificacao", reenviar_com_sucesso)
@@ -630,7 +645,9 @@ def test_post_enviar_metodo_outlook_nao_exige_graph_e_usa_mailer_outlook(tmp_pat
 
     assert resposta.status_code == 200
     assert "Todos os envios OK" in resposta.text
-    assert chamado_com["destinatarios_links"]["ceo@fucape.br"] == "https://painel-fucape.netlify.app/2026-06/"
+    ceo_slug = _codigo_depto(tmp_path, LABEL_CEO)
+    assert chamado_com["destinatarios_links"]["ceo@fucape.br"] == \
+        f"https://painel-fucape.netlify.app/2026-06/{ceo_slug}/"
     assert chamado_com["periodo"] == "Junho/2026"
 
 

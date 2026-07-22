@@ -60,7 +60,11 @@ def _subtitulo(colab, escopo: str) -> str:
     return base
 
 
-def montar_relatorio(colaboradores: list, escopo: str = "geral", prefixo_pessoas: str = "") -> dict:
+def montar_relatorio(colaboradores: list, escopo: str = "geral", prefixo_pessoas: str = "", codigo=None) -> dict:
+    # codigo: função rótulo/nome -> slug do arquivo (depto e pessoa). Default
+    # slugify (nome legível); a geração real passa o código opaco pra ninguém
+    # adivinhar a URL de outro departamento nem de outra pessoa.
+    resolver_slug = codigo or slugify
     elegiveis = [c for c in colaboradores if not sem_batida_real(c)]
     nao_elegiveis = [c for c in colaboradores if sem_batida_real(c)]
 
@@ -85,7 +89,7 @@ def montar_relatorio(colaboradores: list, escopo: str = "geral", prefixo_pessoas
             "classe": "p" if c.total_bruto_min >= 0 else "n",
             "pct": _pct_ranking(c.total_bruto_min),
             "valor_fmt": format_horas(c.total_bruto_min),
-            "pessoa_href": f"{prefixo_pessoas}{slugify(c.nome)}.html",
+            "pessoa_href": f"{prefixo_pessoas}{resolver_slug(c.nome)}.html",
         })
 
     nota_ranking = None
@@ -166,7 +170,7 @@ def montar_relatorio(colaboradores: list, escopo: str = "geral", prefixo_pessoas
             soma = sum(m.total_bruto_min for m in membros)
             deptos_lista.append({
                 "nome": label,
-                "slug": slugify(label),
+                "slug": resolver_slug(label),
                 "pessoas": len(membros),
                 "media_fmt": format_horas(round(soma / len(membros))),
                 "total_min": soma,

@@ -7,6 +7,9 @@ painel/
 __pycache__/
 *.pyc
 webapp_data/
+# Dicionário departamento -> código opaco de URL (mora dentro de webapp_data/,
+# então já não vai pro git; explícito aqui só pra deixar claro que é secreto).
+webapp_data/deptos_codigos.json
 painel_web/
 
 # Worktree local do deploy_github.py

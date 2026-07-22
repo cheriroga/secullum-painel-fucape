@@ -57,22 +57,30 @@ def test_gerar_painel_cria_index_deptos_e_paginas_de_pessoa(tmp_path, workbook_p
 
     assert resumo["colaboradores"] == 4
     assert resumo["departamentos"] == 3  # Tecnologia + CSC (Controladoria+Administrativo) + Diretoria
-    assert (pasta_saida / "index.html").exists()
-    assert (pasta_saida / "deptos" / "tecnologia.html").exists()
-    assert (pasta_saida / "deptos" / "centro-servicos-compartilhados.html").exists()
-    assert not (pasta_saida / "deptos" / "controladoria.html").exists()
 
-    # páginas de pessoa: uma por colaborador elegível, nenhuma pro isento
-    assert (pasta_saida / "deptos" / "pessoas" / "pessoa-tecnologia.html").exists()
-    assert (pasta_saida / "deptos" / "pessoas" / "pessoa-controladoria.html").exists()
-    assert (pasta_saida / "deptos" / "pessoas" / "pessoa-administrativo.html").exists()
-    assert not (pasta_saida / "deptos" / "pessoas" / "pessoa-isenta.html").exists()
+    # raiz do período só tem o stub neutro; o painel do CEO fica na pasta dele
+    conteudo_raiz = (pasta_saida / "index.html").read_text(encoding="utf-8")
+    assert "Nada por aqui" in conteudo_raiz
+    assert (pasta_saida / resumo["ceo_slug"] / "index.html").exists()
 
-    conteudo_dept = (pasta_saida / "deptos" / "tecnologia.html").read_text(encoding="utf-8")
-    assert 'href="pessoas/pessoa-tecnologia.html"' in conteudo_dept
+    # cada depto na própria pasta de slug, com index.html dentro
+    assert (pasta_saida / "tecnologia" / "index.html").exists()
+    assert (pasta_saida / "centro-servicos-compartilhados" / "index.html").exists()
+    assert not (pasta_saida / "controladoria").exists()
 
-    conteudo_index = (pasta_saida / "index.html").read_text(encoding="utf-8")
-    assert 'href="deptos/pessoas/pessoa-tecnologia.html"' in conteudo_index
+    # páginas de pessoa: pasta compartilhada, uma por elegível, nenhuma pro isento
+    assert (pasta_saida / "pessoas" / "pessoa-tecnologia.html").exists()
+    assert (pasta_saida / "pessoas" / "pessoa-controladoria.html").exists()
+    assert (pasta_saida / "pessoas" / "pessoa-administrativo.html").exists()
+    assert not (pasta_saida / "pessoas" / "pessoa-isenta.html").exists()
+
+    # links entre escopos são relativos e sobem só até a pasta compartilhada/irmã
+    conteudo_dept = (pasta_saida / "tecnologia" / "index.html").read_text(encoding="utf-8")
+    assert 'href="../pessoas/pessoa-tecnologia.html"' in conteudo_dept
+
+    conteudo_ceo = (pasta_saida / resumo["ceo_slug"] / "index.html").read_text(encoding="utf-8")
+    assert 'href="../pessoas/pessoa-tecnologia.html"' in conteudo_ceo
+    assert 'href="../tecnologia/"' in conteudo_ceo
 
 
 def test_gerar_painel_remove_paginas_obsoletas_de_departamento_e_pessoa(tmp_path, workbook_path):
@@ -86,8 +94,8 @@ def test_gerar_painel_remove_paginas_obsoletas_de_departamento_e_pessoa(tmp_path
         },
     ])
     gerar_painel(caminho_v1, pasta_saida)
-    assert (pasta_saida / "deptos" / "marketing.html").exists()
-    assert (pasta_saida / "deptos" / "pessoas" / "pessoa-marketing.html").exists()
+    assert (pasta_saida / "marketing" / "index.html").exists()
+    assert (pasta_saida / "pessoas" / "pessoa-marketing.html").exists()
 
     caminho_v2 = workbook_path([
         {
@@ -99,10 +107,10 @@ def test_gerar_painel_remove_paginas_obsoletas_de_departamento_e_pessoa(tmp_path
     gerar_painel(caminho_v2, pasta_saida)
 
     # arquivos obsoletos da rodada anterior não podem continuar no ar com dado desatualizado
-    assert not (pasta_saida / "deptos" / "marketing.html").exists()
-    assert not (pasta_saida / "deptos" / "pessoas" / "pessoa-marketing.html").exists()
-    assert (pasta_saida / "deptos" / "tecnologia.html").exists()
-    assert (pasta_saida / "deptos" / "pessoas" / "pessoa-tecnologia.html").exists()
+    assert not (pasta_saida / "marketing").exists()
+    assert not (pasta_saida / "pessoas" / "pessoa-marketing.html").exists()
+    assert (pasta_saida / "tecnologia" / "index.html").exists()
+    assert (pasta_saida / "pessoas" / "pessoa-tecnologia.html").exists()
 
 
 def test_main_sem_xlsx_nao_gera_nada_e_avisa(tmp_path, monkeypatch, capsys):

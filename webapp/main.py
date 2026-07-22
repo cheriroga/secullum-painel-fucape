@@ -9,7 +9,7 @@ from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from painel_horas.slug import slugify
+from painel_horas.codigos import MapaCodigos, caminho_dicionario
 from webapp import config as config_mod
 from webapp import deploy_github, mailer_graph, mailer_outlook
 from webapp.pipeline import processar_upload
@@ -171,7 +171,7 @@ def preview() -> HTMLResponse | RedirectResponse:
          {resumo['elegiveis']} elegíveis · {resumo['nao_elegiveis']} fora da base</p>
 
       <div class="card">
-        <iframe src="/painel/{resumo['periodo']}/index.html" width="100%" height="600"></iframe>
+        <iframe src="/painel/{resumo['periodo']}/{resumo['ceo_slug']}/index.html" width="100%" height="600"></iframe>
       </div>
 
       <div class="card">
@@ -333,11 +333,17 @@ async def enviar(request: Request) -> HTMLResponse | RedirectResponse:
             </body></html>
             """)
 
-    link_geral = f"{url_site}/{resumo['periodo']}/"
+    # Cada escopo tem sua pasta de código opaco: <periodo>/<codigo>/. O CEO
+    # recebe a pasta do painel geral; cada gestor, a do seu depto. Truncar a URL
+    # até <periodo>/ cai no stub neutro, não no painel de ninguém.
+    base = f"{url_site}/{resumo['periodo']}"
+    link_geral = f"{base}/{resumo['ceo_slug']}/"
 
+    mapa_codigos = MapaCodigos.carregar(caminho_dicionario(PASTA_BASE.parent))
     destinatarios_links = {
-        email: f"{link_geral}deptos/{slugify(depto)}.html" for depto, email in mapa.items()
+        email: f"{base}/{mapa_codigos.codigo(depto)}/" for depto, email in mapa.items()
     }
+    mapa_codigos.salvar()
     if ceo_email:
         destinatarios_links[ceo_email] = link_geral  # CEO sempre recebe o painel geral, mesmo se também for gestor
 
