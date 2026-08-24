@@ -1,0 +1,166 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco de Horas · Painel Hub Fucape · Fucape</title>
+<style>
+:root{--bg:#0b0f14;--panel:#121821;--panel2:#0e141c;--line:#1f2933;--ink:#e8edf2;--mut:#8a97a6;--pos:#3ddc84;--neg:#ff5c5c;--amber:#ffb020;--blue:#4da3ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:32px 24px 64px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:24px}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+h1{margin:0;font-size:24px;font-weight:800}
+h1 span{color:var(--mut);font-weight:600}
+.meta{font-size:12px;color:var(--mut);text-align:right}
+.meta b{color:var(--ink)}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:20px}
+.hero-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.hero-label{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+.hero-note{font-size:11.5px;color:var(--mut)}
+.gauge{position:relative;display:flex;height:28px;border-radius:6px;overflow:hidden;margin-top:16px;background:var(--panel2)}
+.seg{display:flex;align-items:center;font-size:12px;font-weight:700}
+.seg.neg{background:var(--neg);color:#2a0b0b;justify-content:flex-end;padding-right:8px}
+.seg.pos{background:var(--pos);color:#08110c;justify-content:flex-start;padding-left:8px}
+.divider{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.6}
+.gauge-legend{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mut);margin-top:8px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--mut);border-radius:8px;padding:14px}
+.kpi.p{border-left-color:var(--pos)}
+.kpi.n{border-left-color:var(--neg)}
+.kpi.a{border-left-color:var(--amber)}
+.kpi.b{border-left-color:var(--blue)}
+.k-val{font-size:20px;font-weight:800}
+.k-lab{font-size:11.5px;color:var(--mut);margin-top:4px}
+.k-sub{font-size:11px;color:var(--mut);margin-top:6px;opacity:.85}
+.tpos{color:var(--pos)}
+.tneg{color:var(--neg)}
+.alert{background:#2a2410;border:1px solid #4d3f12;color:#e8dcae;border-radius:8px;padding:14px 16px;font-size:12.5px;margin-bottom:20px}
+section{margin-bottom:28px}
+.s-head{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.idx{font-size:11px;color:var(--mut);font-weight:700}
+h2{margin:0;font-size:16px}
+.s-sub{font-size:12px;color:var(--mut);margin-bottom:12px}
+.controls{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.f{background:var(--panel);border:1px solid var(--line);color:var(--mut);font-size:11.5px;padding:6px 10px;border-radius:6px;cursor:pointer}
+.f.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sp{flex:1}
+.hint{font-size:11px;color:var(--mut)}
+.bars{display:flex;flex-direction:column;gap:6px}
+.bar-row{display:grid;grid-template-columns:200px 1fr 80px;align-items:center;gap:10px;font-size:12px}
+.br-name small{display:block;color:var(--mut);font-size:10.5px;font-weight:400}
+.br-track{position:relative;height:14px;background:var(--panel2);border-radius:3px}
+.br-mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line)}
+.br-fill{position:absolute;top:0;bottom:0;border-radius:3px}
+.br-fill.p{left:50%;background:var(--pos)}
+.br-fill.n{right:50%;background:var(--neg)}
+.br-val{text-align:right;font-weight:700}
+.dgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.dept{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.d-name{font-size:12.5px;font-weight:600}
+.d-name a{color:inherit;text-decoration:none}
+.br-name a{color:inherit;text-decoration:none}
+.d-meta{font-size:11px;color:var(--mut);margin:2px 0 6px}
+.d-mini{position:relative;height:6px;background:var(--panel2);border-radius:3px;width:160px}
+.d-mini i{position:absolute;top:0;bottom:0;border-radius:3px}
+.d-val{font-weight:700;font-size:13px}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;padding:6px 8px;border-bottom:1px solid var(--line)}
+.tbl td{padding:8px;border-bottom:1px solid var(--line)}
+.tbl .rt{text-align:right}
+.tbl .mono{font-variant-numeric:tabular-nums}
+.badge{background:var(--panel2);border:1px solid var(--line);color:var(--mut);font-size:10.5px;padding:2px 8px;border-radius:20px}
+footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-top:16px;margin-top:8px}
+</style>
+</head><body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="eyebrow">Fucape Business School · Cartão Ponto Secullum</div>
+    <h1>Banco de Horas <span>/ Painel Hub Fucape</span></h1>
+  </div>
+  <div class="meta">
+    Período <b>21/07/2026 → 20/08/2026</b><br>
+    Emitido <b>21/08/2026</b> · 1 colaboradores<br>
+    <b>1 elegíveis</b> ao ponto · <b>0 fora</b> (isentos/config)
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-label">Saldo líquido consolidado · base elegível</div>
+    <div class="hero-note">exclui 0 registros sem batida de ponto</div>
+  </div>
+  <div style="font-size:40px;font-weight:800;letter-spacing:-.03em;color:var(--pos)">+4h23</div>
+  <div style="font-size:12.5px;color:var(--mut);margin-top:2px">A empresa deve mais horas do que tem a receber. Passivo trabalhista latente.</div>
+  <div class="gauge">
+    <div class="seg neg" style="width:0.0000%"><b>+0h00</b></div>
+    <div class="seg pos" style="width:100.0000%"><b>+4h23</b></div>
+    <div class="divider" style="left:0.0000%"></div>
+  </div>
+  <div class="gauge-legend">
+    <span class="l">&#9668; 0 credores da empresa (devem horas)</span>
+    <span class="r">1 credores de horas (a empresa deve) &#9658;</span>
+  </div>
+</div>
+
+<div class="kpis">
+  <div class="kpi p"><div class="k-val tpos">+4h23</div><div class="k-lab">Passivo de horas<br>(a empresa deve pagar/folgar)</div><div class="k-sub">1 pessoa · média +4h23</div></div>
+  <div class="kpi n"><div class="k-val tneg">+0h00</div><div class="k-lab">A empresa tem a receber<br>(devem horas)</div><div class="k-sub">0 pessoas · média +0h00</div></div>
+  <div class="kpi a"><div class="k-val" style="color:var(--amber)">+4h23</div><div class="k-lab">Concentração de risco<br>100% do passivo</div><div class="k-sub">ELISSA · Hub Fucape · maior saldo individual</div></div>
+  <div class="kpi b"><div class="k-val" style="color:var(--blue)">0</div><div class="k-lab">Registros não elegíveis<br>sem batida real no período</div><div class="k-sub">Sem nenhuma batida real no período · não indica ausência real</div></div>
+</div>
+
+
+
+<section>
+  <div class="s-head"><span class="idx">01</span><h2>Ranking individual</h2></div>
+  <div class="s-sub">Saldo acumulado no período por colaborador com ponto ativo. Verde = a empresa deve a ele; vermelho = ele deve à empresa.</div>
+  <div class="controls">
+    <button class="f on" data-f="all">Todos (1)</button>
+    <button class="f" data-f="pos">Só credores (1)</button>
+    <button class="f" data-f="neg">Só devedores (0)</button>
+    <div class="sp"></div>
+    <span class="hint">passe o mouse para detalhe · escala cortada em &plusmn;40h p/ leitura*</span>
+  </div>
+  <div class="bars" id="bars">
+    
+    <div class="bar-row" title="ASSISTENTE TALENT HUB · admitido 20/07/2026">
+      <div class="br-name"><a href="../pessoas/aw5hl3.html">ELISSA MATIAS BORGES</a><small>admitido 20/07/2026</small></div>
+      <div class="br-track"><div class="br-mid"></div>
+        <div class="br-fill p" style="width:5.4792%"></div></div>
+      <div class="br-val tpos">+4h23</div>
+    </div>
+    
+  </div>
+  
+</section>
+
+
+
+
+
+<footer>
+  <b>Metodologia.</b> Fonte: Cartão Ponto Secullum Ponto Web, período 21/07/2026 → 20/08/2026.
+  Saldos somados a partir do saldo diário (BTotal) de cada colaborador. "Elegível" = tem ao menos uma batida real no período.
+  "Não elegível" = nenhuma batida real no período, indicando isenção de ponto ou jornada mal configurada.<br>
+  <b>Limite de leitura.</b> Banco de horas mede presença registrada, não produtividade nem entrega. Use como sinal de gestão de jornada e compliance, cruzando com desempenho antes de qualquer decisão sobre pessoas.
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('.controls .f').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.controls .f').forEach(function(b){ b.classList.remove('on'); });
+    btn.classList.add('on');
+    var filtro = btn.dataset.f;
+    document.querySelectorAll('#bars .bar-row').forEach(function(row){
+      var preenchimento = row.querySelector('.br-fill');
+      var ehPositivo = preenchimento.classList.contains('p');
+      var mostrar = filtro === 'all' || (filtro === 'pos' && ehPositivo) || (filtro === 'neg' && !ehPositivo);
+      row.style.display = mostrar ? '' : 'none';
+    });
+  });
+});
+</script>
+</body></html>

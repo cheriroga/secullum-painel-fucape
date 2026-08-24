@@ -1,0 +1,493 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MARCOS VINICIUS RODOLFO DA SILVA · Cartão Ponto · Fucape</title>
+<style>
+:root{--bg:#0b0f14;--panel:#121821;--panel2:#0e141c;--line:#1f2933;--ink:#e8edf2;--mut:#8a97a6;--pos:#3ddc84;--neg:#ff5c5c;--amber:#ffb020;--blue:#4da3ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:32px 24px 64px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:24px}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+h1{margin:0;font-size:24px;font-weight:800}
+h1 span{color:var(--mut);font-weight:600}
+.meta{font-size:12px;color:var(--mut);text-align:right}
+.meta b{color:var(--ink)}
+.destaques{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.dcard{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
+.d-val{font-size:18px;font-weight:800}
+.d-lab{font-size:11.5px;color:var(--mut);margin-top:4px}
+.d-sub{font-size:11px;color:var(--mut);margin-top:6px}
+.tpos{color:var(--pos)}
+.tneg{color:var(--neg)}
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tab{background:var(--panel);border:1px solid var(--line);color:var(--mut);font-size:12px;padding:8px 14px;border-radius:6px;cursor:pointer}
+.tab.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.painel-tab{display:none}
+.painel-tab.on{display:block}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;padding:6px 8px;border-bottom:1px solid var(--line)}
+.tbl td{padding:8px;border-bottom:1px solid var(--line)}
+.tbl .rt{text-align:right}
+.tbl .mono{font-variant-numeric:tabular-nums}
+footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-top:16px;margin-top:8px}
+</style>
+</head><body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="eyebrow">Fucape Business School · Cartão Ponto Secullum</div>
+    <h1>MARCOS VINICIUS RODOLFO DA SILVA <span>/ Controle de ponto</span></h1>
+  </div>
+  <div class="meta">
+    Trainee · Centro de Serviços Compartilhados<br>
+    Período <b>21/07/2026 → 20/08/2026</b><br>
+    Admitido <b>03/06/2024</b><br>
+    Saldo total <b class="tpos">+4h48</b>
+  </div>
+</header>
+
+<div class="destaques">
+  <div class="dcard">
+    <div class="d-val tpos">+2h00</div>
+    <div class="d-lab">Melhor dia</div>
+    <div class="d-sub">14/08/2026</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val tneg">−2h18</div>
+    <div class="d-lab">Pior dia</div>
+    <div class="d-sub">18/08/2026</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val">+4h48</div>
+    <div class="d-lab">Saldo total do período</div>
+    <div class="d-sub">&nbsp;</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val tpos">+4h10</div>
+    <div class="d-lab">Melhor semana</div>
+    <div class="d-sub">10/08 – 16/08</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val tneg">−1h21</div>
+    <div class="d-lab">Pior semana</div>
+    <div class="d-sub">03/08 – 09/08</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val tpos">+3h00</div>
+    <div class="d-lab">Melhor mês</div>
+    <div class="d-sub">Julho/2026</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val tpos">+1h48</div>
+    <div class="d-lab">Pior mês</div>
+    <div class="d-sub">Agosto/2026</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" data-tab="mensal">Resumo mensal</button>
+  <button class="tab" data-tab="semanal">Semanal</button>
+  <button class="tab" data-tab="diario">Diário completo</button>
+</div>
+
+<div class="painel-tab on" id="tab-mensal">
+  <table class="tbl">
+    <thead><tr><th>Mês</th><th class="rt">Saldo</th></tr></thead>
+    <tbody>
+      
+      <tr><td>Julho/2026</td><td class="rt mono tpos">+3h00</td></tr>
+      
+      <tr><td>Agosto/2026</td><td class="rt mono tpos">+1h48</td></tr>
+      
+    </tbody>
+  </table>
+</div>
+
+<div class="painel-tab" id="tab-semanal">
+  <table class="tbl">
+    <thead><tr><th>Semana</th><th class="rt">Saldo</th></tr></thead>
+    <tbody>
+      
+      <tr><td>20/07 – 26/07</td><td class="rt mono tpos">+2h16</td></tr>
+      
+      <tr><td>27/07 – 02/08</td><td class="rt mono tpos">+0h44</td></tr>
+      
+      <tr><td>03/08 – 09/08</td><td class="rt mono tneg">−1h21</td></tr>
+      
+      <tr><td>10/08 – 16/08</td><td class="rt mono tpos">+4h10</td></tr>
+      
+      <tr><td>17/08 – 23/08</td><td class="rt mono tneg">−1h01</td></tr>
+      
+    </tbody>
+  </table>
+</div>
+
+<div class="painel-tab" id="tab-diario">
+  <table class="tbl">
+    <thead><tr><th>Data</th><th>Ent.1</th><th>Saí.1</th><th>Ent.2</th><th>Saí.2</th><th>Ent.3</th><th>Saí.3</th><th class="rt">Ex50%</th><th class="rt">Atraso</th><th class="rt">Saldo</th><th class="rt">Ex.Not</th></tr></thead>
+    <tbody>
+      
+      <tr>
+        <td>21/07/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">08:06</td><td class="mono">12:11</td>
+        <td class="mono">13:17</td><td class="mono">18:35</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+0h29</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+0h29</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>22/07/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">08:10</td><td class="mono">12:28</td>
+        <td class="mono">13:33</td><td class="mono">18:26</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+0h21</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+0h21</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>23/07/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:54</td><td class="mono">11:51</td>
+        <td class="mono">12:59</td><td class="mono">18:53</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+0h53</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+0h53</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>24/07/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">08:18</td><td class="mono">12:01</td>
+        <td class="mono">13:02</td><td class="mono">17:51</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+0h33</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+0h33</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>25/07/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>26/07/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>27/07/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">08:11</td><td class="mono">12:19</td>
+        <td class="mono">13:19</td><td class="mono">18:22</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+0h11</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+0h11</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>28/07/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">08:04</td><td class="mono">12:18</td>
+        <td class="mono">13:19</td><td class="mono">19:27</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+1h26</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+1h26</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>29/07/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">08:15</td><td class="mono">12:11</td>
+        <td class="mono">13:11</td><td class="mono">17:26</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h49</td>
+        <td class="rt mono tneg">−0h49</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>30/07/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">08:14</td><td class="mono">12:35</td>
+        <td class="mono">13:38</td><td class="mono">18:27</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+0h10</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+0h10</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>31/07/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">08:14</td><td class="mono">12:09</td>
+        <td class="mono">13:10</td><td class="mono">16:51</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h14</td>
+        <td class="rt mono tneg">−0h14</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>01/08/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>02/08/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>03/08/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">08:12</td><td class="mono">12:02</td>
+        <td class="mono">13:10</td><td class="mono">15:55</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h12</td>
+        <td class="rt mono tneg">−0h12</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>04/08/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">08:11</td><td class="mono">12:06</td>
+        <td class="mono">13:16</td><td class="mono">17:50</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h27</td>
+        <td class="rt mono tneg">−0h27</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>05/08/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">08:16</td><td class="mono">11:38</td>
+        <td class="mono">13:29</td><td class="mono">18:07</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h07</td>
+        <td class="rt mono tneg">−1h07</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>06/08/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:57</td><td class="mono">12:16</td>
+        <td class="mono">13:11</td><td class="mono">19:06</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+1h11</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+1h11</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>07/08/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">08:08</td><td class="mono">12:27</td>
+        <td class="mono">14:13</td><td class="mono">17:03</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h46</td>
+        <td class="rt mono tneg">−0h46</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>08/08/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>09/08/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>10/08/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">08:10</td><td class="mono">12:10</td>
+        <td class="mono">13:10</td><td class="mono">18:34</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+0h34</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+0h34</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>11/08/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">08:56</td><td class="mono">12:20</td>
+        <td class="mono">13:19</td><td class="mono">18:56</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>12/08/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">08:01</td><td class="mono">12:25</td>
+        <td class="mono">13:26</td><td class="mono">18:29</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+0h28</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+0h28</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>13/08/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:54</td><td class="mono">12:06</td>
+        <td class="mono">12:57</td><td class="mono">19:08</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+1h08</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+1h08</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>14/08/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:59</td><td class="mono">12:10</td>
+        <td class="mono">13:16</td><td class="mono">19:16</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+2h00</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+2h00</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>15/08/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>16/08/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>17/08/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">08:25</td><td class="mono">12:26</td>
+        <td class="mono">13:14</td><td class="mono">18:50</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+0h37</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+0h37</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>18/08/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">11:24</td><td class="mono">18:06</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h18</td>
+        <td class="rt mono tneg">−2h18</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>19/08/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">ATEST</td><td class="mono">ATEST</td>
+        <td class="mono">ATEST</td><td class="mono">ATEST</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>20/08/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">08:02</td><td class="mono">12:35</td>
+        <td class="mono">13:34</td><td class="mono">18:39</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono">+0h40</td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+0h40</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  <b>Metodologia.</b> Fonte: Cartão Ponto Secullum Ponto Web. Saldo diário (BTotal) somado dia a dia; os resumos mensal e semanal são agregações do mesmo valor.<br>
+  <b>Limite de leitura.</b> Cartão ponto mede presença registrada, não produtividade nem entrega.
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('.tabs .tab').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tabs .tab').forEach(function(b){ b.classList.remove('on'); });
+    btn.classList.add('on');
+    document.querySelectorAll('.painel-tab').forEach(function(p){ p.classList.remove('on'); });
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('on');
+  });
+});
+</script>
+</body></html>

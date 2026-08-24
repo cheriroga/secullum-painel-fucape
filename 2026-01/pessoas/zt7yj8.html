@@ -1,0 +1,2774 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HERMESSON DOS SANTOS PEREIRA · Cartão Ponto · Fucape</title>
+<style>
+:root{--bg:#0b0f14;--panel:#121821;--panel2:#0e141c;--line:#1f2933;--ink:#e8edf2;--mut:#8a97a6;--pos:#3ddc84;--neg:#ff5c5c;--amber:#ffb020;--blue:#4da3ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:32px 24px 64px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:24px}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+h1{margin:0;font-size:24px;font-weight:800}
+h1 span{color:var(--mut);font-weight:600}
+.meta{font-size:12px;color:var(--mut);text-align:right}
+.meta b{color:var(--ink)}
+.destaques{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.dcard{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
+.d-val{font-size:18px;font-weight:800}
+.d-lab{font-size:11.5px;color:var(--mut);margin-top:4px}
+.d-sub{font-size:11px;color:var(--mut);margin-top:6px}
+.tpos{color:var(--pos)}
+.tneg{color:var(--neg)}
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tab{background:var(--panel);border:1px solid var(--line);color:var(--mut);font-size:12px;padding:8px 14px;border-radius:6px;cursor:pointer}
+.tab.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.painel-tab{display:none}
+.painel-tab.on{display:block}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;color:var(--mut);font-weight:600;font-size:11px;text-transform:uppercase;padding:6px 8px;border-bottom:1px solid var(--line)}
+.tbl td{padding:8px;border-bottom:1px solid var(--line)}
+.tbl .rt{text-align:right}
+.tbl .mono{font-variant-numeric:tabular-nums}
+footer{font-size:11px;color:var(--mut);border-top:1px solid var(--line);padding-top:16px;margin-top:8px}
+</style>
+</head><body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="eyebrow">Fucape Business School · Cartão Ponto Secullum</div>
+    <h1>HERMESSON DOS SANTOS PEREIRA <span>/ Controle de ponto</span></h1>
+  </div>
+  <div class="meta">
+    OFICIAL POLIVALENTE · Centro de Serviços Compartilhados<br>
+    Período <b>01/01/2026 → 20/08/2026</b><br>
+    Admitido <b>22/11/2019</b><br>
+    Saldo total <b class="tpos">+12h56</b>
+  </div>
+</header>
+
+<div class="destaques">
+  <div class="dcard">
+    <div class="d-val tpos">+13h05</div>
+    <div class="d-lab">Melhor dia</div>
+    <div class="d-sub">14/03/2026</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val tneg">−78h45</div>
+    <div class="d-lab">Pior dia</div>
+    <div class="d-sub">20/02/2026</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val">+12h56</div>
+    <div class="d-lab">Saldo total do período</div>
+    <div class="d-sub">&nbsp;</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val tpos">+31h00</div>
+    <div class="d-lab">Melhor semana</div>
+    <div class="d-sub">09/03 – 15/03</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val tneg">−68h39</div>
+    <div class="d-lab">Pior semana</div>
+    <div class="d-sub">16/02 – 22/02</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val tpos">+52h37</div>
+    <div class="d-lab">Melhor mês</div>
+    <div class="d-sub">Março/2026</div>
+  </div>
+  <div class="dcard">
+    <div class="d-val tneg">−30h27</div>
+    <div class="d-lab">Pior mês</div>
+    <div class="d-sub">Maio/2026</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" data-tab="mensal">Resumo mensal</button>
+  <button class="tab" data-tab="semanal">Semanal</button>
+  <button class="tab" data-tab="diario">Diário completo</button>
+</div>
+
+<div class="painel-tab on" id="tab-mensal">
+  <table class="tbl">
+    <thead><tr><th>Mês</th><th class="rt">Saldo</th></tr></thead>
+    <tbody>
+      
+      <tr><td>Janeiro/2026</td><td class="rt mono tneg">−9h30</td></tr>
+      
+      <tr><td>Fevereiro/2026</td><td class="rt mono tneg">−8h06</td></tr>
+      
+      <tr><td>Março/2026</td><td class="rt mono tpos">+52h37</td></tr>
+      
+      <tr><td>Abril/2026</td><td class="rt mono tneg">−8h04</td></tr>
+      
+      <tr><td>Maio/2026</td><td class="rt mono tneg">−30h27</td></tr>
+      
+      <tr><td>Junho/2026</td><td class="rt mono tneg">−25h32</td></tr>
+      
+      <tr><td>Julho/2026</td><td class="rt mono tpos">+27h46</td></tr>
+      
+      <tr><td>Agosto/2026</td><td class="rt mono tpos">+14h12</td></tr>
+      
+    </tbody>
+  </table>
+</div>
+
+<div class="painel-tab" id="tab-semanal">
+  <table class="tbl">
+    <thead><tr><th>Semana</th><th class="rt">Saldo</th></tr></thead>
+    <tbody>
+      
+      <tr><td>29/12 – 04/01</td><td class="rt mono tpos">+12h31</td></tr>
+      
+      <tr><td>05/01 – 11/01</td><td class="rt mono tneg">−10h38</td></tr>
+      
+      <tr><td>12/01 – 18/01</td><td class="rt mono tpos">+22h54</td></tr>
+      
+      <tr><td>19/01 – 25/01</td><td class="rt mono tneg">−55h40</td></tr>
+      
+      <tr><td>26/01 – 01/02</td><td class="rt mono tpos">+28h47</td></tr>
+      
+      <tr><td>02/02 – 08/02</td><td class="rt mono tpos">+15h37</td></tr>
+      
+      <tr><td>09/02 – 15/02</td><td class="rt mono tpos">+16h34</td></tr>
+      
+      <tr><td>16/02 – 22/02</td><td class="rt mono tneg">−68h39</td></tr>
+      
+      <tr><td>23/02 – 01/03</td><td class="rt mono tpos">+29h38</td></tr>
+      
+      <tr><td>02/03 – 08/03</td><td class="rt mono tneg">−10h09</td></tr>
+      
+      <tr><td>09/03 – 15/03</td><td class="rt mono tpos">+31h00</td></tr>
+      
+      <tr><td>16/03 – 22/03</td><td class="rt mono tpos">+14h22</td></tr>
+      
+      <tr><td>23/03 – 29/03</td><td class="rt mono tpos">+8h30</td></tr>
+      
+      <tr><td>30/03 – 05/04</td><td class="rt mono tpos">+1h54</td></tr>
+      
+      <tr><td>06/04 – 12/04</td><td class="rt mono tneg">−28h58</td></tr>
+      
+      <tr><td>13/04 – 19/04</td><td class="rt mono tpos">+4h08</td></tr>
+      
+      <tr><td>20/04 – 26/04</td><td class="rt mono tpos">+11h20</td></tr>
+      
+      <tr><td>27/04 – 03/05</td><td class="rt mono tpos">+4h54</td></tr>
+      
+      <tr><td>04/05 – 10/05</td><td class="rt mono tneg">−36h44</td></tr>
+      
+      <tr><td>11/05 – 17/05</td><td class="rt mono tpos">+2h19</td></tr>
+      
+      <tr><td>18/05 – 24/05</td><td class="rt mono tpos">+2h09</td></tr>
+      
+      <tr><td>25/05 – 31/05</td><td class="rt mono tpos">+0h41</td></tr>
+      
+      <tr><td>01/06 – 07/06</td><td class="rt mono tneg">−1h00</td></tr>
+      
+      <tr><td>08/06 – 14/06</td><td class="rt mono tneg">−11h07</td></tr>
+      
+      <tr><td>15/06 – 21/06</td><td class="rt mono tneg">−1h07</td></tr>
+      
+      <tr><td>22/06 – 28/06</td><td class="rt mono tneg">−8h27</td></tr>
+      
+      <tr><td>29/06 – 05/07</td><td class="rt mono tneg">−4h20</td></tr>
+      
+      <tr><td>06/07 – 12/07</td><td class="rt mono tpos">+7h00</td></tr>
+      
+      <tr><td>13/07 – 19/07</td><td class="rt mono tpos">+11h34</td></tr>
+      
+      <tr><td>20/07 – 26/07</td><td class="rt mono tpos">+6h58</td></tr>
+      
+      <tr><td>27/07 – 02/08</td><td class="rt mono tpos">+2h43</td></tr>
+      
+      <tr><td>03/08 – 09/08</td><td class="rt mono tpos">+7h46</td></tr>
+      
+      <tr><td>10/08 – 16/08</td><td class="rt mono tpos">+6h26</td></tr>
+      
+      <tr><td>17/08 – 23/08</td><td class="rt mono tpos">+0h00</td></tr>
+      
+    </tbody>
+  </table>
+</div>
+
+<div class="painel-tab" id="tab-diario">
+  <table class="tbl">
+    <thead><tr><th>Data</th><th>Ent.1</th><th>Saí.1</th><th>Ent.2</th><th>Saí.2</th><th>Ent.3</th><th>Saí.3</th><th class="rt">Ex50%</th><th class="rt">Atraso</th><th class="rt">Saldo</th><th class="rt">Ex.Not</th></tr></thead>
+    <tbody>
+      
+      <tr>
+        <td>01/01/2026 <span style="color:var(--mut)">Fer</span></td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>02/01/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">05:37</td><td class="mono">11:06</td>
+        <td class="mono">12:03</td><td class="mono">18:43</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+4h09</td>
+        <td class="rt mono tpos">+4h09</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>03/01/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">05:42</td><td class="mono">14:04</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+8h22</td>
+        <td class="rt mono tpos">+8h22</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>04/01/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>05/01/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">05:33</td><td class="mono">11:06</td>
+        <td class="mono">12:07</td><td class="mono">21:17</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+5h43</td>
+        <td class="rt mono tpos">+5h43</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>06/01/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">05:34</td><td class="mono">11:02</td>
+        <td class="mono">12:07</td><td class="mono">21:40</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+6h01</td>
+        <td class="rt mono tneg">−40h41</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>07/01/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:33</td><td class="mono">11:13</td>
+        <td class="mono">12:13</td><td class="mono">19:05</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+3h32</td>
+        <td class="rt mono tpos">+3h32</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>08/01/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">05:44</td><td class="mono">11:02</td>
+        <td class="mono">12:02</td><td class="mono">17:43</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h59</td>
+        <td class="rt mono tpos">+1h59</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>09/01/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">05:35</td><td class="mono">11:06</td>
+        <td class="mono">12:05</td><td class="mono">17:01</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h27</td>
+        <td class="rt mono tpos">+2h27</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>10/01/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">05:37</td><td class="mono">15:41</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+10h04</td>
+        <td class="rt mono tpos">+10h04</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>11/01/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">05:59</td><td class="mono">12:17</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+6h18</td>
+        <td class="rt mono tpos">+6h18</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>12/01/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">05:41</td><td class="mono">11:10</td>
+        <td class="mono">12:08</td><td class="mono">17:29</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h50</td>
+        <td class="rt mono tpos">+1h50</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>13/01/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">05:35</td><td class="mono">11:18</td>
+        <td class="mono">12:18</td><td class="mono">17:29</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h54</td>
+        <td class="rt mono tpos">+1h54</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>14/01/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:32</td><td class="mono">11:23</td>
+        <td class="mono">12:24</td><td class="mono">18:01</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h28</td>
+        <td class="rt mono tpos">+2h28</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>15/01/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">05:33</td><td class="mono">11:08</td>
+        <td class="mono">12:03</td><td class="mono">17:23</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h55</td>
+        <td class="rt mono tpos">+1h55</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>16/01/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">05:35</td><td class="mono">11:07</td>
+        <td class="mono">12:03</td><td class="mono">15:57</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h29</td>
+        <td class="rt mono tpos">+1h29</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>17/01/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">05:52</td><td class="mono">11:17</td>
+        <td class="mono">12:17</td><td class="mono">13:57</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+7h05</td>
+        <td class="rt mono tpos">+7h05</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>18/01/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">05:31</td><td class="mono">11:44</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+6h13</td>
+        <td class="rt mono tpos">+6h13</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>19/01/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">05:41</td><td class="mono">11:11</td>
+        <td class="mono">12:05</td><td class="mono">17:47</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h12</td>
+        <td class="rt mono tpos">+2h12</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>20/01/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">05:34</td><td class="mono">11:19</td>
+        <td class="mono">12:23</td><td class="mono">17:32</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h54</td>
+        <td class="rt mono tneg">−73h41</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>21/01/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:29</td><td class="mono">11:01</td>
+        <td class="mono">12:01</td><td class="mono">16:59</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h31</td>
+        <td class="rt mono tpos">+1h31</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>22/01/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">05:40</td><td class="mono">11:16</td>
+        <td class="mono">12:19</td><td class="mono">16:58</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h17</td>
+        <td class="rt mono tpos">+1h17</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>23/01/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">05:40</td><td class="mono">11:09</td>
+        <td class="mono">12:10</td><td class="mono">17:22</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h41</td>
+        <td class="rt mono tpos">+2h41</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>24/01/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">05:36</td><td class="mono">15:56</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+10h20</td>
+        <td class="rt mono tpos">+10h20</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>25/01/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>26/01/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">05:43</td><td class="mono">11:43</td>
+        <td class="mono">12:47</td><td class="mono">18:31</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h44</td>
+        <td class="rt mono tpos">+2h44</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>27/01/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">05:36</td><td class="mono">11:18</td>
+        <td class="mono">12:23</td><td class="mono">17:26</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h45</td>
+        <td class="rt mono tpos">+1h45</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>28/01/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:36</td><td class="mono">11:45</td>
+        <td class="mono">12:37</td><td class="mono">17:14</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h46</td>
+        <td class="rt mono tpos">+1h46</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>29/01/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">05:33</td><td class="mono">11:00</td>
+        <td class="mono">12:00</td><td class="mono">18:07</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h34</td>
+        <td class="rt mono tpos">+2h34</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>30/01/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">05:35</td><td class="mono">11:18</td>
+        <td class="mono">12:07</td><td class="mono">19:19</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+4h55</td>
+        <td class="rt mono tpos">+4h55</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>31/01/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">05:34</td><td class="mono">13:13</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+7h39</td>
+        <td class="rt mono tpos">+7h39</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>01/02/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">05:40</td><td class="mono">13:04</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+7h24</td>
+        <td class="rt mono tpos">+7h24</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>02/02/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">05:40</td><td class="mono">11:13</td>
+        <td class="mono">12:13</td><td class="mono">17:02</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h20</td>
+        <td class="rt mono tpos">+1h20</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>03/02/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">05:54</td><td class="mono">11:00</td>
+        <td class="mono">12:15</td><td class="mono">17:32</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h23</td>
+        <td class="rt mono tpos">+1h23</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>04/02/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:38</td><td class="mono">11:09</td>
+        <td class="mono">12:09</td><td class="mono">18:46</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+3h08</td>
+        <td class="rt mono tpos">+3h08</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>05/02/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">08:37</td><td class="mono">12:10</td>
+        <td class="mono">13:02</td><td class="mono">17:35</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h52</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>06/02/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">05:35</td><td class="mono">11:02</td>
+        <td class="mono">12:02</td><td class="mono">18:36</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+4h01</td>
+        <td class="rt mono tpos">+4h01</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>07/02/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">05:32</td><td class="mono">12:09</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+6h37</td>
+        <td class="rt mono tpos">+6h37</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>08/02/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>09/02/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">05:37</td><td class="mono">12:01</td>
+        <td class="mono">13:05</td><td class="mono">18:45</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+3h08</td>
+        <td class="rt mono tpos">+3h08</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>10/02/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">05:44</td><td class="mono">11:28</td>
+        <td class="mono">12:39</td><td class="mono">16:49</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h54</td>
+        <td class="rt mono tpos">+0h54</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>11/02/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:36</td><td class="mono">12:26</td>
+        <td class="mono">13:27</td><td class="mono">18:37</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+3h00</td>
+        <td class="rt mono tpos">+3h00</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>12/02/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">05:34</td><td class="mono">12:00</td>
+        <td class="mono">13:00</td><td class="mono">17:13</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h39</td>
+        <td class="rt mono tpos">+1h39</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>13/02/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">05:39</td><td class="mono">11:36</td>
+        <td class="mono">12:22</td><td class="mono">16:58</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h33</td>
+        <td class="rt mono tpos">+2h33</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>14/02/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">06:55</td><td class="mono">12:15</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+5h20</td>
+        <td class="rt mono tpos">+5h20</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>15/02/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>16/02/2026 <span style="color:var(--mut)">Fer</span></td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>17/02/2026 <span style="color:var(--mut)">Fer</span></td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>18/02/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:33</td><td class="mono">11:18</td>
+        <td class="mono">12:17</td><td class="mono">16:48</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h16</td>
+        <td class="rt mono tpos">+1h16</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>19/02/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">05:54</td><td class="mono">11:17</td>
+        <td class="mono">12:15</td><td class="mono">16:34</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h42</td>
+        <td class="rt mono tpos">+0h42</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>20/02/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">05:32</td><td class="mono">12:20</td>
+        <td class="mono">13:20</td><td class="mono">15:18</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h46</td>
+        <td class="rt mono tneg">−78h45</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>21/02/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">06:26</td><td class="mono">14:34</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+8h08</td>
+        <td class="rt mono tpos">+8h08</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>22/02/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>23/02/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">05:39</td><td class="mono">11:12</td>
+        <td class="mono">12:17</td><td class="mono">18:42</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h58</td>
+        <td class="rt mono tpos">+2h58</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>24/02/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">05:36</td><td class="mono">11:15</td>
+        <td class="mono">12:12</td><td class="mono">17:00</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h27</td>
+        <td class="rt mono tpos">+1h27</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>25/02/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:38</td><td class="mono">11:09</td>
+        <td class="mono">12:12</td><td class="mono">16:42</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h01</td>
+        <td class="rt mono tpos">+1h01</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>26/02/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">05:39</td><td class="mono">12:05</td>
+        <td class="mono">12:59</td><td class="mono">17:04</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h21</td>
+        <td class="rt mono tpos">+1h21</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>27/02/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">05:43</td><td class="mono">11:20</td>
+        <td class="mono">12:23</td><td class="mono">16:48</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h02</td>
+        <td class="rt mono tpos">+2h02</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>28/02/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">05:36</td><td class="mono">12:00</td>
+        <td class="mono">13:00</td><td class="mono">18:45</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+12h09</td>
+        <td class="rt mono tpos">+12h09</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>01/03/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">05:30</td><td class="mono">14:10</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+8h40</td>
+        <td class="rt mono tpos">+8h40</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>02/03/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">05:40</td><td class="mono">11:08</td>
+        <td class="mono">12:08</td><td class="mono">17:00</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h20</td>
+        <td class="rt mono tpos">+1h20</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>03/03/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">05:37</td><td class="mono">11:20</td>
+        <td class="mono">12:15</td><td class="mono">17:06</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h34</td>
+        <td class="rt mono tpos">+1h34</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>04/03/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:31</td><td class="mono">11:04</td>
+        <td class="mono">12:03</td><td class="mono">17:20</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h50</td>
+        <td class="rt mono tpos">+1h50</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>05/03/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">05:33</td><td class="mono">11:42</td>
+        <td class="mono">12:42</td><td class="mono">16:22</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h49</td>
+        <td class="rt mono tpos">+0h49</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>06/03/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">05:39</td><td class="mono">12:08</td>
+        <td class="mono">13:16</td><td class="mono">15:33</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h46</td>
+        <td class="rt mono tneg">−22h07</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>07/03/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">05:32</td><td class="mono">11:57</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+6h25</td>
+        <td class="rt mono tpos">+6h25</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>08/03/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>09/03/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">05:31</td><td class="mono">12:12</td>
+        <td class="mono">13:12</td><td class="mono">21:07</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+5h36</td>
+        <td class="rt mono tpos">+5h36</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>10/03/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">05:48</td><td class="mono">11:03</td>
+        <td class="mono">12:10</td><td class="mono">17:19</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h24</td>
+        <td class="rt mono tpos">+1h24</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>11/03/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:37</td><td class="mono">11:25</td>
+        <td class="mono">12:28</td><td class="mono">18:15</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h35</td>
+        <td class="rt mono tpos">+2h35</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>12/03/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">05:49</td><td class="mono">11:39</td>
+        <td class="mono">12:25</td><td class="mono">17:01</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h25</td>
+        <td class="rt mono tpos">+1h25</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>13/03/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">05:39</td><td class="mono">11:14</td>
+        <td class="mono">12:17</td><td class="mono">21:37</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+6h55</td>
+        <td class="rt mono tpos">+6h55</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>14/03/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">06:52</td><td class="mono">12:00</td>
+        <td class="mono">13:10</td><td class="mono">21:07</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+13h05</td>
+        <td class="rt mono tpos">+13h05</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>15/03/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>16/03/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">05:54</td><td class="mono">11:59</td>
+        <td class="mono">12:59</td><td class="mono">17:30</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h36</td>
+        <td class="rt mono tpos">+1h36</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>17/03/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">05:35</td><td class="mono">11:07</td>
+        <td class="mono">12:07</td><td class="mono">16:29</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h54</td>
+        <td class="rt mono tpos">+0h54</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>18/03/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:35</td><td class="mono">11:05</td>
+        <td class="mono">11:59</td><td class="mono">17:15</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h46</td>
+        <td class="rt mono tpos">+1h46</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>19/03/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">06:00</td><td class="mono">11:42</td>
+        <td class="mono">12:43</td><td class="mono">16:28</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h27</td>
+        <td class="rt mono tpos">+0h27</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>20/03/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">06:05</td><td class="mono">11:17</td>
+        <td class="mono">12:17</td><td class="mono">16:27</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h22</td>
+        <td class="rt mono tpos">+1h22</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>21/03/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">05:50</td><td class="mono">13:00</td>
+        <td class="mono">14:03</td><td class="mono">15:10</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+8h17</td>
+        <td class="rt mono tpos">+8h17</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>22/03/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>23/03/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">05:55</td><td class="mono">11:02</td>
+        <td class="mono">12:22</td><td class="mono">17:45</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h30</td>
+        <td class="rt mono tpos">+1h30</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>24/03/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">06:01</td><td class="mono">11:02</td>
+        <td class="mono">12:02</td><td class="mono">18:53</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h52</td>
+        <td class="rt mono tpos">+2h52</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>25/03/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">06:21</td><td class="mono">11:05</td>
+        <td class="mono">12:05</td><td class="mono">17:07</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h46</td>
+        <td class="rt mono tpos">+0h46</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>26/03/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">06:01</td><td class="mono">11:11</td>
+        <td class="mono">12:08</td><td class="mono">17:22</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h24</td>
+        <td class="rt mono tpos">+1h24</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>27/03/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">06:12</td><td class="mono">12:00</td>
+        <td class="mono">13:00</td><td class="mono">17:10</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h58</td>
+        <td class="rt mono tpos">+1h58</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>28/03/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>29/03/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>30/03/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">06:12</td><td class="mono">11:01</td>
+        <td class="mono">12:05</td><td class="mono">17:09</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h53</td>
+        <td class="rt mono tpos">+0h53</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>31/03/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:11</td><td class="mono">11:04</td>
+        <td class="mono">12:02</td><td class="mono">16:30</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h39</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>01/04/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">06:09</td><td class="mono">11:17</td>
+        <td class="mono">12:17</td><td class="mono">17:09</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h00</td>
+        <td class="rt mono tpos">+1h00</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>02/04/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">06:10</td><td class="mono">11:07</td>
+        <td class="mono">12:08</td><td class="mono">16:51</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h40</td>
+        <td class="rt mono tpos">+0h40</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>03/04/2026 <span style="color:var(--mut)">Fer</span></td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>04/04/2026 <span style="color:var(--mut)">Fer</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>05/04/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>06/04/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">06:07</td><td class="mono">11:08</td>
+        <td class="mono">12:12</td><td class="mono">16:58</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h49</td>
+        <td class="rt mono tpos">+0h49</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>07/04/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">06:02</td><td class="mono">11:00</td>
+        <td class="mono">12:00</td><td class="mono">17:11</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h09</td>
+        <td class="rt mono tneg">−38h04</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>08/04/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">06:55</td><td class="mono">11:20</td>
+        <td class="mono">12:15</td><td class="mono">17:04</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>09/04/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">06:00</td><td class="mono">11:24</td>
+        <td class="mono">12:30</td><td class="mono">17:07</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h01</td>
+        <td class="rt mono tpos">+1h01</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>10/04/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">06:00</td><td class="mono">11:11</td>
+        <td class="mono">12:16</td><td class="mono">16:16</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h11</td>
+        <td class="rt mono tpos">+1h11</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>11/04/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">06:04</td><td class="mono">12:09</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+6h05</td>
+        <td class="rt mono tpos">+6h05</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>12/04/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>13/04/2026 <span style="color:var(--mut)">Fer</span></td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>14/04/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">06:17</td><td class="mono">11:19</td>
+        <td class="mono">12:20</td><td class="mono">17:19</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h01</td>
+        <td class="rt mono tpos">+1h01</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>15/04/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">06:10</td><td class="mono">11:10</td>
+        <td class="mono">12:09</td><td class="mono">17:14</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h05</td>
+        <td class="rt mono tpos">+1h05</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>16/04/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">05:56</td><td class="mono">11:11</td>
+        <td class="mono">12:07</td><td class="mono">16:52</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h00</td>
+        <td class="rt mono tpos">+1h00</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>17/04/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">06:09</td><td class="mono">11:07</td>
+        <td class="mono">12:09</td><td class="mono">16:13</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h02</td>
+        <td class="rt mono tpos">+1h02</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>18/04/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>19/04/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>20/04/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">05:40</td><td class="mono">11:01</td>
+        <td class="mono">12:01</td><td class="mono">17:16</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h36</td>
+        <td class="rt mono tpos">+1h36</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>21/04/2026 <span style="color:var(--mut)">Fer</span></td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>22/04/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:55</td><td class="mono">11:11</td>
+        <td class="mono">12:03</td><td class="mono">18:01</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h14</td>
+        <td class="rt mono tpos">+2h14</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>23/04/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">06:01</td><td class="mono">11:02</td>
+        <td class="mono">12:02</td><td class="mono">17:25</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h24</td>
+        <td class="rt mono tpos">+1h24</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>24/04/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">05:56</td><td class="mono">11:08</td>
+        <td class="mono">12:09</td><td class="mono">17:37</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h40</td>
+        <td class="rt mono tpos">+2h40</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>25/04/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>26/04/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">07:46</td><td class="mono">11:12</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+3h26</td>
+        <td class="rt mono tpos">+3h26</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>27/04/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">06:10</td><td class="mono">11:06</td>
+        <td class="mono">12:05</td><td class="mono">16:59</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h51</td>
+        <td class="rt mono tpos">+0h51</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>28/04/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">05:54</td><td class="mono">11:13</td>
+        <td class="mono">12:04</td><td class="mono">17:06</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h21</td>
+        <td class="rt mono tpos">+1h21</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>29/04/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">05:53</td><td class="mono">12:18</td>
+        <td class="mono">13:12</td><td class="mono">17:07</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h20</td>
+        <td class="rt mono tpos">+1h20</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>30/04/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:03</td><td class="mono">11:03</td>
+        <td class="mono">11:59</td><td class="mono">17:10</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h14</td>
+        <td class="rt mono tpos">+0h14</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>01/05/2026 <span style="color:var(--mut)">Fer</span></td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="mono">Feriado</td><td class="mono">Feriado</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>02/05/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">07:32</td><td class="mono">08:40</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h08</td>
+        <td class="rt mono tpos">+1h08</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>03/05/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>04/05/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">07:00</td><td class="mono">11:00</td>
+        <td class="mono">12:04</td><td class="mono">17:14</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h10</td>
+        <td class="rt mono tpos">+0h10</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>05/05/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:14</td><td class="mono">11:02</td>
+        <td class="mono">12:04</td><td class="mono">17:11</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>06/05/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">07:04</td><td class="mono">11:06</td>
+        <td class="mono">12:06</td><td class="mono">17:05</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>07/05/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:08</td><td class="mono">11:18</td>
+        <td class="mono">12:19</td><td class="mono">15:18</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−36h58</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>08/05/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:05</td><td class="mono">11:22</td>
+        <td class="mono">12:22</td><td class="mono">16:00</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tpos">+0h04</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>09/05/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>10/05/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>11/05/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">06:57</td><td class="mono">11:06</td>
+        <td class="mono">12:07</td><td class="mono">16:46</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h15</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>12/05/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:04</td><td class="mono">11:33</td>
+        <td class="mono">12:24</td><td class="mono">14:47</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h09</td>
+        <td class="rt mono tpos">+1h09</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>13/05/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">ATEST</td><td class="mono">ATEST</td>
+        <td class="mono">ATEST</td><td class="mono">ATEST</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>14/05/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:07</td><td class="mono">11:39</td>
+        <td class="mono">12:39</td><td class="mono">17:32</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h25</td>
+        <td class="rt mono tpos">+0h25</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>15/05/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:00</td><td class="mono">11:00</td>
+        <td class="mono">12:00</td><td class="mono">17:00</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h00</td>
+        <td class="rt mono tpos">+1h00</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>16/05/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>17/05/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>18/05/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">07:01</td><td class="mono">11:23</td>
+        <td class="mono">12:23</td><td class="mono">17:00</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>19/05/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:00</td><td class="mono">11:12</td>
+        <td class="mono">12:12</td><td class="mono">17:00</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>20/05/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">07:05</td><td class="mono">10:57</td>
+        <td class="mono">12:03</td><td class="mono">17:18</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h12</td>
+        <td class="rt mono tpos">+0h12</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>21/05/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">06:59</td><td class="mono">11:14</td>
+        <td class="mono">12:14</td><td class="mono">18:02</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h02</td>
+        <td class="rt mono tpos">+1h02</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>22/05/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:01</td><td class="mono">11:11</td>
+        <td class="mono">12:16</td><td class="mono">17:00</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h55</td>
+        <td class="rt mono tpos">+0h55</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>23/05/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>24/05/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>25/05/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">06:57</td><td class="mono">11:26</td>
+        <td class="mono">12:26</td><td class="mono">16:13</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h47</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>26/05/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:00</td><td class="mono">11:14</td>
+        <td class="mono">12:14</td><td class="mono">16:46</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h14</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>27/05/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">07:00</td><td class="mono">11:07</td>
+        <td class="mono">12:08</td><td class="mono">17:10</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>28/05/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:08</td><td class="mono">11:13</td>
+        <td class="mono">12:11</td><td class="mono">17:28</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h22</td>
+        <td class="rt mono tpos">+0h22</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>29/05/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:01</td><td class="mono">11:17</td>
+        <td class="mono">12:24</td><td class="mono">17:27</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h20</td>
+        <td class="rt mono tpos">+1h20</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>30/05/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>31/05/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>01/06/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">07:05</td><td class="mono">11:14</td>
+        <td class="mono">12:14</td><td class="mono">16:56</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>02/06/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:00</td><td class="mono">12:08</td>
+        <td class="mono">11:08</td><td class="mono">15:17</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h00</td>
+        <td class="rt mono tpos">+2h00</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>03/06/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">07:00</td><td class="mono">11:24</td>
+        <td class="mono">12:24</td><td class="mono">17:02</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>04/06/2026 <span style="color:var(--mut)">Fer</span></td>
+        <td class="mono">FERIADO</td><td class="mono">FERIADO</td>
+        <td class="mono">FERIADO</td><td class="mono">FERIADO</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>05/06/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:00</td><td class="mono">12:00</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−3h00</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>06/06/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>07/06/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>08/06/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−9h00</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>09/06/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">09:49</td><td class="mono">11:06</td>
+        <td class="mono">12:23</td><td class="mono">17:46</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−2h20</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>10/06/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">06:59</td><td class="mono">11:58</td>
+        <td class="mono">12:58</td><td class="mono">17:03</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>11/06/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:03</td><td class="mono">12:01</td>
+        <td class="mono">13:04</td><td class="mono">17:03</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>12/06/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:02</td><td class="mono">11:07</td>
+        <td class="mono">12:12</td><td class="mono">16:18</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h13</td>
+        <td class="rt mono tpos">+0h13</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>13/06/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>14/06/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>15/06/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">07:01</td><td class="mono">11:41</td>
+        <td class="mono">12:52</td><td class="mono">16:58</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h11</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>16/06/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:04</td><td class="mono">11:07</td>
+        <td class="mono">12:07</td><td class="mono">16:23</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h37</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>17/06/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">06:59</td><td class="mono">11:02</td>
+        <td class="mono">12:02</td><td class="mono">16:41</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h19</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>18/06/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:03</td><td class="mono">11:04</td>
+        <td class="mono">12:06</td><td class="mono">16:56</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>19/06/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">ATEST</td><td class="mono">ATEST</td>
+        <td class="mono">Atestad</td><td class="mono">Atestad</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>20/06/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>21/06/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>22/06/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">07:07</td><td class="mono">11:16</td>
+        <td class="mono">12:15</td><td class="mono">15:49</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>23/06/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:06</td><td class="mono">11:40</td>
+        <td class="mono">12:42</td><td class="mono">16:41</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h27</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>24/06/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">07:04</td><td class="mono">11:02</td>
+        <td class="mono">12:02</td><td class="mono">17:06</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>25/06/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:05</td><td class="mono">11:19</td>
+        <td class="mono">12:19</td><td class="mono">17:00</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>26/06/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−8h00</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>27/06/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>28/06/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>29/06/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">07:01</td><td class="mono">11:04</td>
+        <td class="mono">12:04</td><td class="mono">12:52</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−2h48</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>30/06/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:04</td><td class="mono">11:08</td>
+        <td class="mono">12:09</td><td class="mono">15:58</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−1h03</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>01/07/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">07:01</td><td class="mono">11:08</td>
+        <td class="mono">12:08</td><td class="mono">16:56</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>02/07/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:00</td><td class="mono">11:02</td>
+        <td class="mono">12:02</td><td class="mono">16:31</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h29</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>03/07/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:03</td><td class="mono">11:02</td>
+        <td class="mono">12:02</td><td class="mono">16:02</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>04/07/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>05/07/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>06/07/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">07:10</td><td class="mono">11:22</td>
+        <td class="mono">12:25</td><td class="mono">17:30</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h17</td>
+        <td class="rt mono tpos">+0h17</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>07/07/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:02</td><td class="mono">11:12</td>
+        <td class="mono">12:12</td><td class="mono">17:55</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h55</td>
+        <td class="rt mono tpos">+0h55</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>08/07/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">07:04</td><td class="mono">11:07</td>
+        <td class="mono">12:07</td><td class="mono">17:12</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h12</td>
+        <td class="rt mono tpos">+0h12</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>09/07/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:02</td><td class="mono">11:12</td>
+        <td class="mono">12:14</td><td class="mono">16:49</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h13</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>10/07/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:06</td><td class="mono">12:02</td>
+        <td class="mono">13:02</td><td class="mono">16:11</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>11/07/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">07:02</td><td class="mono">12:51</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+5h49</td>
+        <td class="rt mono tpos">+5h49</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>12/07/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>13/07/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">07:00</td><td class="mono">11:19</td>
+        <td class="mono">12:19</td><td class="mono">17:19</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h19</td>
+        <td class="rt mono tpos">+0h19</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>14/07/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:06</td><td class="mono">11:24</td>
+        <td class="mono">12:25</td><td class="mono">16:44</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h23</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>15/07/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">06:59</td><td class="mono">10:58</td>
+        <td class="mono">12:01</td><td class="mono">17:00</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>16/07/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:01</td><td class="mono">11:19</td>
+        <td class="mono">12:19</td><td class="mono">17:29</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h29</td>
+        <td class="rt mono tpos">+0h29</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>17/07/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:03</td><td class="mono">11:02</td>
+        <td class="mono">12:03</td><td class="mono">17:56</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h55</td>
+        <td class="rt mono tpos">+1h55</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>18/07/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">07:04</td><td class="mono">16:18</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+9h14</td>
+        <td class="rt mono tpos">+9h14</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>19/07/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>20/07/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">07:00</td><td class="mono">11:16</td>
+        <td class="mono">12:19</td><td class="mono">17:28</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h25</td>
+        <td class="rt mono tpos">+0h25</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>21/07/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:01</td><td class="mono">11:53</td>
+        <td class="mono">12:53</td><td class="mono">17:51</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h51</td>
+        <td class="rt mono tpos">+0h51</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>22/07/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">07:04</td><td class="mono">12:00</td>
+        <td class="mono">13:00</td><td class="mono">17:13</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h13</td>
+        <td class="rt mono tpos">+0h13</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>23/07/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:04</td><td class="mono">11:11</td>
+        <td class="mono">12:11</td><td class="mono">16:54</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>24/07/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:01</td><td class="mono">11:09</td>
+        <td class="mono">12:10</td><td class="mono">15:47</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h14</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>25/07/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">06:59</td><td class="mono">12:42</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+5h43</td>
+        <td class="rt mono tpos">+5h43</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>26/07/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>27/07/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">07:00</td><td class="mono">11:11</td>
+        <td class="mono">12:13</td><td class="mono">17:19</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h17</td>
+        <td class="rt mono tpos">+0h17</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>28/07/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:03</td><td class="mono">11:05</td>
+        <td class="mono">12:03</td><td class="mono">16:29</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h29</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>29/07/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">07:13</td><td class="mono">11:13</td>
+        <td class="mono">12:11</td><td class="mono">20:02</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+2h51</td>
+        <td class="rt mono tpos">+2h51</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>30/07/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:11</td><td class="mono">11:11</td>
+        <td class="mono">12:16</td><td class="mono">16:47</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h29</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>31/07/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:07</td><td class="mono">11:00</td>
+        <td class="mono">12:00</td><td class="mono">16:40</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h33</td>
+        <td class="rt mono tpos">+0h33</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>01/08/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>02/08/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>03/08/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">07:00</td><td class="mono">11:20</td>
+        <td class="mono">12:21</td><td class="mono">16:04</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h57</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>04/08/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:09</td><td class="mono">11:12</td>
+        <td class="mono">12:11</td><td class="mono">16:58</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>05/08/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">07:06</td><td class="mono">11:20</td>
+        <td class="mono">12:24</td><td class="mono">16:58</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono tneg">−0h10</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>06/08/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:07</td><td class="mono">10:59</td>
+        <td class="mono">12:00</td><td class="mono">17:15</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>07/08/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">07:04</td><td class="mono">10:59</td>
+        <td class="mono">12:01</td><td class="mono">15:57</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>08/08/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">07:01</td><td class="mono">15:54</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+8h53</td>
+        <td class="rt mono tpos">+8h53</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>09/08/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>10/08/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">07:02</td><td class="mono">11:07</td>
+        <td class="mono">12:10</td><td class="mono">17:00</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>11/08/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">07:00</td><td class="mono">11:32</td>
+        <td class="mono">12:31</td><td class="mono">17:07</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>12/08/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">06:59</td><td class="mono">11:06</td>
+        <td class="mono">12:11</td><td class="mono">16:55</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>13/08/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">07:02</td><td class="mono">11:06</td>
+        <td class="mono">12:07</td><td class="mono">17:15</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+0h14</td>
+        <td class="rt mono tpos">+0h14</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>14/08/2026 <span style="color:var(--mut)">Sex</span></td>
+        <td class="mono">11:05</td><td class="mono">12:09</td>
+        <td class="mono">13:09</td><td class="mono">17:11</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+1h11</td>
+        <td class="rt mono tpos">+1h11</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>15/08/2026 <span style="color:var(--mut)">Sáb</span></td>
+        <td class="mono">06:59</td><td class="mono">12:00</td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="mono"></td><td class="mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono">+5h01</td>
+        <td class="rt mono tpos">+5h01</td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>16/08/2026 <span style="color:var(--mut)">Dom</span></td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="mono">FOLGA</td><td class="mono">FOLGA</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>17/08/2026 <span style="color:var(--mut)">Seg</span></td>
+        <td class="mono">FÉRIAS</td><td class="mono">FÉRIAS</td>
+        <td class="mono">FÉRIAS</td><td class="mono">FÉRIAS</td>
+        <td class="mono">FÉRIAS</td><td class="mono">FÉRIAS</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>18/08/2026 <span style="color:var(--mut)">Ter</span></td>
+        <td class="mono">FÉRIAS</td><td class="mono">FÉRIAS</td>
+        <td class="mono">FÉRIAS</td><td class="mono">FÉRIAS</td>
+        <td class="mono">FÉRIAS</td><td class="mono">FÉRIAS</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>19/08/2026 <span style="color:var(--mut)">Qua</span></td>
+        <td class="mono">FÉRIAS</td><td class="mono">FÉRIAS</td>
+        <td class="mono">FÉRIAS</td><td class="mono">FÉRIAS</td>
+        <td class="mono">FÉRIAS</td><td class="mono">FÉRIAS</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+      <tr>
+        <td>20/08/2026 <span style="color:var(--mut)">Qui</span></td>
+        <td class="mono">FÉRIAS</td><td class="mono">FÉRIAS</td>
+        <td class="mono">FÉRIAS</td><td class="mono">FÉRIAS</td>
+        <td class="mono">FÉRIAS</td><td class="mono">FÉRIAS</td>
+        <td class="rt mono"></td>
+        <td class="rt mono"></td>
+        <td class="rt mono "></td>
+        <td class="rt mono"></td>
+      </tr>
+      
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  <b>Metodologia.</b> Fonte: Cartão Ponto Secullum Ponto Web. Saldo diário (BTotal) somado dia a dia; os resumos mensal e semanal são agregações do mesmo valor.<br>
+  <b>Limite de leitura.</b> Cartão ponto mede presença registrada, não produtividade nem entrega.
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('.tabs .tab').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tabs .tab').forEach(function(b){ b.classList.remove('on'); });
+    btn.classList.add('on');
+    document.querySelectorAll('.painel-tab').forEach(function(p){ p.classList.remove('on'); });
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('on');
+  });
+});
+</script>
+</body></html>
